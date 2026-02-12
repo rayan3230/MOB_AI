@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'Produit',
     'Users',
-    'warhouse'
+    'warhouse',
+    'Transaction'
 ]
 
 MIDDLEWARE = [
@@ -132,9 +133,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
-# Custom user model
-AUTH_USER_MODEL = 'Users.CustomUser'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
