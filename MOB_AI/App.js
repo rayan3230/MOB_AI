@@ -4,7 +4,10 @@ import Login from './pages/common/Login/login';
 
 export default function App() {
   return (
-   <Login />
+    <>
+      <StatusBar style="dark" />
+      <Login />
+    </>
   )
 }
 

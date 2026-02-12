@@ -8,8 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
-  Modal,
-  TouchableWithoutFeedback,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,82 +16,12 @@ import {
   FontAwesome
 } from '@expo/vector-icons';
 import { COLORS } from '../../../constants/theme.js';
+import { authService } from '../../../services/authService';
+import Logo from '../../../components/Logo';
 
-const Dropfield = ({ label, value, options, onSelect }) => {
-  const [modalVisible, setModalVisible] = useState(false);
-
-  return (
-    <View>
-      <TouchableOpacity
-        style={styles.dropfield}
-        onPress={() => setModalVisible(true)}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.dropfieldText}>{value}</Text>
-        <FontAwesome name="chevron-down" size={18} color={COLORS.primary} />
-      </TouchableOpacity>
-
-      <Modal visible={modalVisible} transparent animationType="fade">
-        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>{label}</Text>
-                <TouchableOpacity onPress={() => setModalVisible(false)}>
-                  <FontAwesome name="close" size={24} color="#333" />
-                </TouchableOpacity>
-              </View>
-
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {options.map((option, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.modalOption,
-                      value === option && styles.modalOptionSelected,
-                    ]}
-                    onPress={() => {
-                      onSelect(option);
-                      setModalVisible(false);
-                    }}
-                  >
-                    <Text
-                      style={[
-                        styles.modalOptionText,
-                        value === option && styles.modalOptionTextSelected,
-                      ]}
-                    >
-                      {option}
-                    </Text>
-
-                    {value === option && (
-                      <FontAwesome
-                        name="check-circle"
-                        size={24}
-                        color={COLORS.primary}
-                      />
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-    </View>
-  );
-};
-
-const SigninSignup = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [selectedRole, setSelectedRole] = useState('voyager');
-  const [selectedCountry, setSelectedCountry] = useState('Wilaya');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [email, setEmail] = useState('');
+const Signin = () => {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -105,35 +33,31 @@ const SigninSignup = () => {
       duration: 800,
       useNativeDriver: true,
     }).start();
-  }, [isLogin]);
+  }, []);
 
-  const countries = [
-    'Wilaya','Adrar','Chlef','Laghouat','Batna','Béjaïa',
-    'Blida','Tlemcen','Tizi Ouzou','Algiers','Oran','Tipaza'
-  ];
+  const handleContinue = async () => {
+    if (!username || !password) {
+        setError('Please enter both username and password');
+        return;
+    }
 
-  const handleContinue = () => {
     setLoading(true);
     setError('');
 
-    setTimeout(() => {
-      console.log('FAKE FRONTEND SUBMIT', {
-        email,
-        password,
-        confirmPassword,
-        firstName,
-        lastName,
-        phoneNumber,
-        selectedCountry,
-        selectedRole,
-        isLogin,
-      });
-
+    try {
+      const response = await authService.login(username, password);
+      console.log('Login Success:', response);
+      alert('Login Successful!');
+    } catch (err) {
+      console.error('Auth error:', err);
+      const errorMsg = err.non_field_errors?.[0] || err.detail || 'Authentication failed';
+      setError(errorMsg);
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
-  return (  /* Signup */
+  return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -147,109 +71,34 @@ const SigninSignup = () => {
           >
 
             <View style={styles.logoContainer}>
-              <Text style={styles.logoText}>MOB AI</Text>
+              <View style={styles.logoIcon}>
+                <Logo width={45} height={45} color="#1E13FE" />
+              </View>
+              <Text style={styles.logoText}>FLOWLOGIX</Text>
             </View>
 
+            <Text style={styles.title}>Log in to continue</Text>
 
-            <Text style={styles.title}>
-              {isLogin ? 'Welcome Back!' : 'Create Account'}
-            </Text>
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-            <Text style={styles.subtitle}>
-              {isLogin
-                ? 'Login to continue'
-                : 'Join our community of Algerian explorers'}
-            </Text>
-
-            <Text style={styles.inputLabel}>Email</Text>
-            <View style={styles.inputContainer}>
-              <FontAwesome
-                name="envelope"
-                size={18}
-                color={COLORS.primary}
-                style={styles.inputIcon}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="your@email.com"
-                value={email}
-                onChangeText={setEmail}
-              />
-            </View>
-
-            {!isLogin && (
-              <>
-                <Text style={styles.inputLabel}>First Name</Text>
-                <View style={styles.inputContainer}>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="First Name"
-                    value={firstName}
-                    onChangeText={setFirstName}
-                  />
-                </View>
-
-                <Text style={styles.inputLabel}>Last Name</Text>
-                <View style={styles.inputContainer}>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Last Name"
-                    value={lastName}
-                    onChangeText={setLastName}
-                  />
-                </View>
-              </>
-            )}
-
-            <Text style={styles.inputLabel}>Password</Text>
-            <View style={styles.inputContainer}>
-              <FontAwesome
-              name="lock"
-              size={18}
-              color={COLORS.primary}
-              style={styles.inputIcon}
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="#adb5bd"
+              value={username}
+              onChangeText={setUsername}
+              autoCapitalize="none"
+              keyboardType="email-address"
             />
-              <TextInput
-                style={styles.input}
-                placeholder='Enter Your Password'
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
 
-              />
-            </View>
-
-            {!isLogin && (
-              <>
-                <Text style={styles.inputLabel}>Confirm Password</Text>
-                <View style={styles.inputContainer}>
-                  <TextInput
-                    style={styles.input}
-                    secureTextEntry
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                  />
-                </View>
-
-                <Text style={styles.inputLabel}>Where are you from?</Text>
-                <Dropfield
-                  label="Select Wilaya"
-                  value={selectedCountry}
-                  options={countries}
-                  onSelect={setSelectedCountry}
-                />
-
-                <Text style={styles.inputLabel}>Phone Number</Text>
-                <View style={styles.inputContainer}>
-                  <Text style={styles.countryCode}>+213</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={phoneNumber}
-                    onChangeText={setPhoneNumber}
-                  />
-                </View>
-              </>
-            )}
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="#adb5bd"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
 
             <TouchableOpacity
               style={styles.continueButton}
@@ -259,10 +108,28 @@ const SigninSignup = () => {
               {loading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.continueButtonText}>
-                  {isLogin ? 'Sign In' : 'Continue'}
-                </Text>
+                <Text style={styles.continueButtonText}>Continue</Text>
               )}
+            </TouchableOpacity>
+
+            <View style={styles.dividerContainer}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            <TouchableOpacity style={styles.socialButton}>
+              <View style={styles.socialIcon}>
+                <FontAwesome name="envelope-o" size={18} color="#333" />
+              </View>
+              <Text style={styles.socialButtonText}>Continue with Email address</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.socialButton}>
+              <View style={styles.socialIcon}>
+                <FontAwesome name="google" size={20} color="#EA4335" />
+              </View>
+              <Text style={styles.socialButtonText}>Continue with Google</Text>
             </TouchableOpacity>
 
           </ScrollView>
@@ -272,4 +139,4 @@ const SigninSignup = () => {
   );
 };
 
-export default SigninSignup;
+export default Signin;
