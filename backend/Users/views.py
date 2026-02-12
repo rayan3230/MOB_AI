@@ -17,9 +17,9 @@ def Login(request):
         return Response({
             'token': token.key,
             'user': {
-                'id': user.id,
-                'user_name': user.user_name,
-                'user_role': user.user_role,
+                'id': user.id_utilisateur,
+                'user_name': user.nom_complet,
+                'user_role': user.role,
             }
                          
                          }, status=status.HTTP_200_OK)

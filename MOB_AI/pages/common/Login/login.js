@@ -18,8 +18,10 @@ import {
 import { COLORS } from '../../../constants/theme.js';
 import { authService } from '../../../services/authService';
 import Logo from '../../../components/Logo';
+import { useNavigation } from '@react-navigation/native';
 
 const Signin = () => {
+  const navigation = useNavigation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -47,7 +49,18 @@ const Signin = () => {
     try {
       const response = await authService.login(username, password);
       console.log('Login Success:', response);
-      alert('Login Successful!');
+      
+      // Determine navigation based on role from response
+      const role = response.user?.user_role || 'supervisor'; // Adjust based on your API response structure
+      
+      if (role === 'admin') {
+        navigation.replace('AdminHome');
+      } else if (role === 'supervisor') {
+        navigation.replace('SupervisorHome');
+      } else {
+        navigation.replace('EmployeeHome');
+      }
+      
     } catch (err) {
       console.error('Auth error:', err);
       const errorMsg = err.non_field_errors?.[0] || err.detail || 'Authentication failed';

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 
-from Users.models import CustomUser
+from Users.models import Utilisateur
 
 class UserLoginSerializer(serializers.Serializer):
     """Serializer for user login"""
@@ -13,8 +13,8 @@ class UserLoginSerializer(serializers.Serializer):
         password = data.get('password')
         
         if username and password:
-            # Note: CustomUser uses 'username' from AbstractUser as unique identifier
-            # or if the user specifically wants 'user_name' field to be the login field:
+            # Note: Utilisateur uses 'id_utilisateur' as unique identifier
+            # or if the user specifically wants 'nom_complet' field to be the login field:
             user = authenticate(username=username, password=password)
             
             if not user:

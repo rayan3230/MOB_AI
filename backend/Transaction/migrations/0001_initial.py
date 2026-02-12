@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('Produit', '0001_initial'),
-        ('Users', '0001_initial'),
+        ('Users', '0002_utilisateur_delete_customuser'),
         ('warhouse', '0001_initial'),
     ]
 
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('cree_le', models.DateTimeField()),
                 ('statut', models.CharField(choices=[('PENDING', 'Pending'), ('CONFIRMED', 'Confirmed'), ('COMPLETED', 'Completed'), ('CANCELLED', 'Cancelled')], max_length=50)),
                 ('notes', models.TextField(blank=True, null=True)),
-                ('cree_par_id_utilisateur', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='transactions', to='Users.utilisateur')),
+                ('cree_par_id_utilisateur', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='transactions', to='Users.Utilisateur')),
             ],
             options={
                 'db_table': 'transactions',

@@ -1,10 +1,6 @@
 from django.db import models
 
 
-
-
-
-
 class Utilisateur(models.Model):
     ROLE_CHOICES = [
         ('OPERATOR', 'Operator'),

@@ -1,8 +1,8 @@
 export const lightTheme = {
   // Primary colors
-  primary: '#1E13FE',
-  secondary: '#AFD3FF',
-  thirdary: '#04324C',
+  primary: '#04324C',
+  secondary: '#FFDD1C',
+  thirdary: '#5DB86D',
   
   
   // Neutral colors
