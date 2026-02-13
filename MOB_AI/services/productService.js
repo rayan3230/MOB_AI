@@ -7,6 +7,7 @@ import { apiCall } from './api';
 export const getProducts = async (token = null, search = '', options = {}) => {
     const {
         actif = null,
+        warehouse_id = null,
         limit = 20,
         offset = 0,
     } = options;
@@ -21,6 +22,10 @@ export const getProducts = async (token = null, search = '', options = {}) => {
         params.append('actif', String(actif));
     }
 
+    if (warehouse_id !== null && warehouse_id !== undefined && String(warehouse_id).trim() !== '') {
+        params.append('warehouse_id', String(warehouse_id).trim());
+    }
+
     params.append('limit', String(limit));
     params.append('offset', String(offset));
 
@@ -29,7 +34,7 @@ export const getProducts = async (token = null, search = '', options = {}) => {
     return Array.isArray(response?.results) ? response.results : [];
 };
 
-export const getProductsPaged = async ({ token = null, search = '', actif = null, limit = 20, offset = 0 } = {}) => {
+export const getProductsPaged = async ({ token = null, search = '', actif = null, warehouse_id = null, limit = 20, offset = 0 } = {}) => {
     const params = new URLSearchParams();
 
     if (search) {
@@ -38,6 +43,10 @@ export const getProductsPaged = async ({ token = null, search = '', actif = null
 
     if (actif !== null && actif !== undefined) {
         params.append('actif', String(actif));
+    }
+
+    if (warehouse_id !== null && warehouse_id !== undefined && String(warehouse_id).trim() !== '') {
+        params.append('warehouse_id', String(warehouse_id).trim());
     }
 
     params.append('limit', String(limit));

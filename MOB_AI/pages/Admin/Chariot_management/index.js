@@ -19,6 +19,9 @@ import { chariotService } from '../../../services/chariotService';
 const ChariotManagement = () => {
   const [chariots, setChariots] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState('');
+  const [warehouseFilterModalVisible, setWarehouseFilterModalVisible] = useState(false);
+  const [filterLoading, setFilterLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -33,15 +36,32 @@ const ChariotManagement = () => {
     capacite: ''
   });
 
-  const fetchData = async () => {
+  const fetchData = async (warehouseIdOverride = null) => {
     try {
       setLoading(true);
-      const [chariotsData, warehousesData] = await Promise.all([
-        chariotService.getChariots(),
+      const normalizedOverrideId = warehouseIdOverride ? String(warehouseIdOverride).trim() : '';
+      const [warehousesData] = await Promise.all([
         warehouseService.getWarehouses()
       ]);
+
+      const safeWarehouses = Array.isArray(warehousesData)
+        ? warehousesData
+            .filter((w) => w && w.id_entrepot)
+            .map((w) => ({ ...w, id_entrepot: String(w.id_entrepot).trim() }))
+        : [];
+
+      const stateWarehouseId = selectedWarehouseId ? String(selectedWarehouseId).trim() : '';
+      let effectiveWarehouseId = normalizedOverrideId || stateWarehouseId;
+      const isKnownWarehouse = safeWarehouses.some((w) => String(w.id_entrepot) === String(effectiveWarehouseId));
+      if (!isKnownWarehouse) {
+        effectiveWarehouseId = '';
+      }
+
+      const chariotsData = await chariotService.getChariots(effectiveWarehouseId || null);
+
+      setSelectedWarehouseId(effectiveWarehouseId);
       setChariots(chariotsData);
-      setWarehouses(warehousesData);
+      setWarehouses(safeWarehouses);
     } catch (error) {
       console.error('Error fetching data:', error);
       Alert.alert('Error', 'Failed to load chariots or warehouses');
@@ -57,7 +77,24 @@ const ChariotManagement = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchData();
+    fetchData(selectedWarehouseId);
+  };
+
+  const handleWarehouseFilterChange = async (warehouseId) => {
+    setWarehouseFilterModalVisible(false);
+    setFilterLoading(true);
+    try {
+      const selectedId = warehouseId ? String(warehouseId).trim() : '';
+      setSelectedWarehouseId(selectedId);
+      setRefreshing(true);
+      await fetchData(selectedId);
+    } catch (error) {
+      console.error('Error changing chariot warehouse filter:', error);
+      Alert.alert('Error', 'Failed to change warehouse filter');
+      setRefreshing(false);
+    } finally {
+      setFilterLoading(false);
+    }
   };
 
   const handleSubmitChariot = async () => {
@@ -76,7 +113,7 @@ const ChariotManagement = () => {
         Alert.alert('Success', 'Chariot added successfully');
       }
       closeModal();
-      fetchData();
+      fetchData(selectedWarehouseId);
     } catch (error) {
       console.error('Error submitting chariot:', error);
       Alert.alert('Error', `Failed to ${isEditing ? 'update' : 'add'} chariot`);
@@ -89,7 +126,7 @@ const ChariotManagement = () => {
     try {
       await chariotService.setMaintenance(id);
       Alert.alert('Success', 'Chariot set to maintenance');
-      fetchData();
+      fetchData(selectedWarehouseId);
     } catch (error) {
       Alert.alert('Error', 'Failed to update status');
     }
@@ -99,7 +136,7 @@ const ChariotManagement = () => {
     try {
       await chariotService.releaseChariot(id);
       Alert.alert('Success', 'Chariot released');
-      fetchData();
+      fetchData(selectedWarehouseId);
     } catch (error) {
       Alert.alert('Error', 'Failed to release chariot');
     }
@@ -118,7 +155,7 @@ const ChariotManagement = () => {
             try {
               await chariotService.deleteChariot(id);
               Alert.alert('Success', 'Chariot deleted successfully');
-              fetchData();
+              fetchData(selectedWarehouseId);
             } catch (error) {
               console.error('Error deleting chariot:', error);
               Alert.alert('Error', 'Failed to delete chariot');
@@ -169,7 +206,7 @@ const ChariotManagement = () => {
   };
 
   const renderChariotItem = ({ item }) => (
-    <View style={styles.card}>
+    <View style={[styles.card, { borderLeftColor: getStatusColor(item.statut) }]}>
       <View style={styles.infoContainer}>
         <View style={styles.row}>
           <Text style={styles.codeText}>{item.code_chariot}</Text>
@@ -177,12 +214,18 @@ const ChariotManagement = () => {
             <Text style={styles.statusText}>{item.statut}</Text>
           </View>
         </View>
-        <Text style={styles.subText}>
-          <Feather name="home" size={12} /> {item.id_entrepot?.nom_entrepot || 'N/A'}
-        </Text>
-        {item.capacite ? (
-          <Text style={styles.capaciteText}>Capacity: {item.capacite} kg</Text>
-        ) : null}
+        <View style={styles.metaRow}>
+          <View style={styles.metaChip}>
+            <Feather name="home" size={12} color="#5f6b77" />
+            <Text style={styles.metaText}>{item.id_entrepot?.nom_entrepot || 'N/A'}</Text>
+          </View>
+          {item.capacite ? (
+            <View style={styles.metaChip}>
+              <Feather name="package" size={12} color="#5f6b77" />
+              <Text style={styles.metaText}>{item.capacite} kg</Text>
+            </View>
+          ) : null}
+        </View>
       </View>
       
       <View style={styles.actionButtons}>
@@ -218,6 +261,10 @@ const ChariotManagement = () => {
     </View>
   );
 
+  const selectedWarehouseLabel = selectedWarehouseId
+    ? (warehouses.find((warehouse) => String(warehouse.id_entrepot) === String(selectedWarehouseId))?.nom_entrepot || selectedWarehouseId)
+    : 'All Warehouses';
+
   if (loading && !refreshing) {
     return (
       <View style={styles.centered}>
@@ -237,6 +284,22 @@ const ChariotManagement = () => {
           <Text style={styles.addButtonText}>+ Add Chariot</Text>
         </TouchableOpacity>
       </View>
+
+      <View style={styles.filterCard}>
+        <Text style={styles.filterLabel}>Warehouse Filter</Text>
+        <TouchableOpacity
+          style={styles.filterSelector}
+          onPress={() => setWarehouseFilterModalVisible(true)}
+          disabled={warehouses.length === 0 || filterLoading}
+        >
+          <Text style={styles.filterSelectorText}>{selectedWarehouseLabel}</Text>
+          {filterLoading ? (
+            <ActivityIndicator size="small" color="#2196F3" />
+          ) : (
+            <Feather name="chevron-down" size={18} color="#666" />
+          )}
+        </TouchableOpacity>
+      </View>
       
       {chariots.length === 0 ? (
         <View style={styles.centered}>
@@ -252,6 +315,49 @@ const ChariotManagement = () => {
           contentContainerStyle={styles.listContainer}
         />
       )}
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={warehouseFilterModalVisible}
+        onRequestClose={() => setWarehouseFilterModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.filterModalContent}>
+            <Text style={styles.modalTitle}>Select Warehouse</Text>
+            <ScrollView>
+              <TouchableOpacity
+                style={[styles.filterOption, !selectedWarehouseId && styles.filterOptionSelected]}
+                onPress={() => handleWarehouseFilterChange('')}
+              >
+                <Text style={[styles.filterOptionText, !selectedWarehouseId && styles.filterOptionTextSelected]}>All Warehouses</Text>
+              </TouchableOpacity>
+
+              {warehouses.map((warehouse) => {
+                const warehouseId = String(warehouse.id_entrepot);
+                const isSelected = warehouseId === String(selectedWarehouseId);
+                return (
+                  <TouchableOpacity
+                    key={warehouseId}
+                    style={[styles.filterOption, isSelected && styles.filterOptionSelected]}
+                    onPress={() => handleWarehouseFilterChange(warehouseId)}
+                  >
+                    <Text style={[styles.filterOptionText, isSelected && styles.filterOptionTextSelected]}>
+                      {warehouse.nom_entrepot || warehouse.code_entrepot || warehouseId}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.cancelButton]}
+              onPress={() => setWarehouseFilterModalVisible(false)}
+            >
+              <Text style={styles.cancelButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       <Modal
         animationType="slide"
@@ -375,11 +481,71 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingBottom: 20,
   },
+  filterCard: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+  },
+  filterLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#555',
+    marginBottom: 6,
+  },
+  filterSelector: {
+    backgroundColor: '#f8f9fa',
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  filterSelectorText: {
+    fontSize: 15,
+    color: '#333',
+    flex: 1,
+    marginRight: 8,
+  },
+  filterModalContent: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    maxHeight: '70%',
+    padding: 16,
+  },
+  filterOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    marginBottom: 6,
+    backgroundColor: '#f8f9fa',
+  },
+  filterOptionSelected: {
+    backgroundColor: '#E3F2FD',
+  },
+  filterOptionText: {
+    fontSize: 15,
+    color: '#333',
+  },
+  filterOptionTextSelected: {
+    color: '#1565C0',
+    fontWeight: '600',
+  },
   card: {
     backgroundColor: 'white',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#4CAF50',
     flexDirection: 'row',
     justifyContent: 'space-between',
     elevation: 2,
@@ -390,17 +556,19 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     flex: 1,
+    paddingRight: 8,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 8,
+    flexWrap: 'wrap',
   },
   codeText: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#2c3e50',
-    marginRight: 8,
+    marginRight: 10,
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -412,21 +580,35 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
   },
-  subText: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
+  metaRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
   },
-  capaciteText: {
-    fontSize: 14,
-    color: '#7f8c8d',
+  metaChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f1f3f5',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  metaText: {
+    fontSize: 12,
+    color: '#4f5b66',
+    marginLeft: 4,
+    fontWeight: '500',
   },
   actionButtons: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    alignSelf: 'center',
   },
   actionButton: {
-    padding: 8,
+    width: 34,
+    height: 34,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginLeft: 4,
     borderRadius: 8,
     backgroundColor: '#f1f3f5',

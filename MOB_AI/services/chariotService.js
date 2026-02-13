@@ -1,93 +1,46 @@
-import api from './api';
+import { apiCall } from './api';
 
 export const chariotService = {
-  getChariots: async () => {
-    try {
-      const response = await api.get('/warehouse/chariots/');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching chariots:', error);
-      throw error;
-    }
+  getChariots: async (warehouseId = null) => {
+    const normalizedWarehouseId = warehouseId !== null && warehouseId !== undefined
+      ? String(warehouseId).trim().replace(/^"|"$/g, '')
+      : '';
+    const hasWarehouse = normalizedWarehouseId && normalizedWarehouseId !== 'undefined' && normalizedWarehouseId !== 'null';
+    const endpoint = hasWarehouse
+      ? `/api/warehouse/chariots/?warehouse_id=${encodeURIComponent(normalizedWarehouseId)}`
+      : '/api/warehouse/chariots/';
+    return await apiCall(endpoint, 'GET');
   },
 
   getAvailableChariots: async () => {
-    try {
-      const response = await api.get('/warehouse/chariots/list_available_chariots/');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching available chariots:', error);
-      throw error;
-    }
+    return await apiCall('/api/warehouse/chariots/list_available_chariots/', 'GET');
   },
 
   getChariotByCode: async (code) => {
-    try {
-      const response = await api.get(`/warehouse/chariots/by_code/?code=${code}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching chariot by code:', error);
-      throw error;
-    }
+    return await apiCall(`/api/warehouse/chariots/by_code/?code=${encodeURIComponent(code)}`, 'GET');
   },
 
   assignChariot: async (id) => {
-    try {
-      const response = await api.post(`/warehouse/chariots/${id}/assign_chariot/`);
-      return response.data;
-    } catch (error) {
-      console.error('Error assigning chariot:', error);
-      throw error;
-    }
+    return await apiCall(`/api/warehouse/chariots/${id}/assign_chariot/`, 'POST');
   },
 
   releaseChariot: async (id) => {
-    try {
-      const response = await api.post(`/warehouse/chariots/${id}/release_chariot/`);
-      return response.data;
-    } catch (error) {
-      console.error('Error releasing chariot:', error);
-      throw error;
-    }
+    return await apiCall(`/api/warehouse/chariots/${id}/release_chariot/`, 'POST');
   },
 
   setMaintenance: async (id) => {
-    try {
-      const response = await api.post(`/warehouse/chariots/${id}/set_maintenance/`);
-      return response.data;
-    } catch (error) {
-      console.error('Error setting chariot to maintenance:', error);
-      throw error;
-    }
+    return await apiCall(`/api/warehouse/chariots/${id}/set_maintenance/`, 'POST');
   },
 
   createChariot: async (data) => {
-    try {
-      const response = await api.post('/warehouse/chariots/', data);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating chariot:', error);
-      throw error;
-    }
+    return await apiCall('/api/warehouse/chariots/', 'POST', data);
   },
 
   updateChariot: async (id, data) => {
-    try {
-      const response = await api.put(`/warehouse/chariots/${id}/`, data);
-      return response.data;
-    } catch (error) {
-      console.error('Error updating chariot:', error);
-      throw error;
-    }
+    return await apiCall(`/api/warehouse/chariots/${id}/`, 'PATCH', data);
   },
 
   deleteChariot: async (id) => {
-    try {
-      const response = await api.delete(`/warehouse/chariots/${id}/`);
-      return response.data;
-    } catch (error) {
-      console.error('Error deleting chariot:', error);
-      throw error;
-    }
+    return await apiCall(`/api/warehouse/chariots/${id}/`, 'DELETE');
   }
 };

@@ -2,7 +2,14 @@ import { apiCall } from './api';
 
 export const warehouseService = {
     getWarehouses: async () => {
-        return await apiCall('/api/warehouse/warehouses/', 'GET');
+        const response = await apiCall('/api/warehouse/warehouses/', 'GET');
+        if (Array.isArray(response)) {
+            return response;
+        }
+        if (Array.isArray(response?.results)) {
+            return response.results;
+        }
+        return [];
     },
 
     getWarehouseDetail: async (warehouseId) => {
@@ -57,7 +64,30 @@ export const warehouseService = {
 
     // Location Management
     getLocations: async (warehouseId = null) => {
-        const url = warehouseId ? `/api/warehouse/locations/?warehouse_id=${warehouseId}` : '/api/warehouse/locations/';
+        const normalizedWarehouseId = warehouseId !== null && warehouseId !== undefined
+            ? String(warehouseId).trim().replace(/^"|"$/g, '')
+            : '';
+        const hasValidWarehouseId = normalizedWarehouseId && normalizedWarehouseId !== 'undefined' && normalizedWarehouseId !== 'null';
+        const url = hasValidWarehouseId
+            ? `/api/warehouse/locations/?warehouse_id=${encodeURIComponent(normalizedWarehouseId)}`
+            : '/api/warehouse/locations/';
+        return await apiCall(url, 'GET');
+    },
+
+    getLocationsPaged: async (warehouseId = null, { limit = 20, offset = 0 } = {}) => {
+        const normalizedWarehouseId = warehouseId !== null && warehouseId !== undefined
+            ? String(warehouseId).trim().replace(/^"|"$/g, '')
+            : '';
+        const params = new URLSearchParams();
+
+        if (normalizedWarehouseId && normalizedWarehouseId !== 'undefined' && normalizedWarehouseId !== 'null') {
+            params.append('warehouse_id', normalizedWarehouseId);
+        }
+
+        params.append('limit', String(limit));
+        params.append('offset', String(offset));
+
+        const url = `/api/warehouse/locations/?${params.toString()}`;
         return await apiCall(url, 'GET');
     },
 

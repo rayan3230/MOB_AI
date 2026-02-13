@@ -12,8 +12,16 @@ class Produit(models.Model):
     poids = models.DecimalField(max_digits=10, decimal_places=3, default=0.0)
     actif = models.BooleanField(default=True)
     
-    # Store reference to main storage location
-    id_rack = models.CharField(max_length=100, null=True, blank=True)
+    # Store reference to main storage rack
+    id_rack = models.ForeignKey(
+        'warhouse.Rack',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='products',
+        db_column='id_rack',
+        to_field='id_rack'
+    )
     
     def save(self, *args, **kwargs):
         if not self.id_produit:
@@ -41,10 +49,11 @@ class Produit(models.Model):
 
 class CodeBarresProduit(models.Model):
     code_barres = models.CharField(max_length=50, primary_key=True)
-    id_produit = models.ForeignKey(Produit, on_delete=models.CASCADE, related_name='codes_barres')
     type_code_barres = models.CharField(max_length=50)
     principal = models.BooleanField(default=False)
-    
+    code_barre_fardeau = models.CharField(max_length=50, blank=True, null=True)
+    id_produit = models.ForeignKey(Produit, on_delete=models.CASCADE, related_name='codes_barres')
+    code_barre_palette = models.CharField(max_length=50, blank=True, null=True)
    
 
     def __str__(self):

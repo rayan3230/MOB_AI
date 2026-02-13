@@ -43,7 +43,7 @@ class ProduitViewSet(viewsets.ModelViewSet):
     - POST   /produits/{id}/update-weight/      - Update SKU weight
     """
 
-    queryset = Produit.objects.all()
+    queryset = Produit.objects.select_related('id_rack').all()
     serializer_class = ProduitSerializer
     lookup_field = 'id_produit'
     permission_classes = [AllowAny]
@@ -132,6 +132,7 @@ class ProduitViewSet(viewsets.ModelViewSet):
         queryset = self.get_queryset().order_by('id_produit')
         actif = request.query_params.get('actif')
         search = request.query_params.get('search')
+        warehouse_id = request.query_params.get('warehouse_id')
         limit_param = request.query_params.get('limit')
         offset_param = request.query_params.get('offset')
 
@@ -142,6 +143,13 @@ class ProduitViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(
                 Q(sku__icontains=search) | Q(nom_produit__icontains=search)
             )
+
+        if warehouse_id:
+            normalized_warehouse_id = str(warehouse_id).strip().strip('"')
+            queryset = queryset.filter(
+                Q(id_rack__storage_floor__id_entrepot_id=normalized_warehouse_id)
+                | Q(id_rack__picking_floor__id_entrepot_id=normalized_warehouse_id)
+            ).distinct()
 
         if limit_param is None and offset_param is None:
             serializer = self.get_serializer(queryset, many=True)

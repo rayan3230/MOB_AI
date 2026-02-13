@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -12,15 +12,19 @@ import {
   ScrollView
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { warehouseService } from '../../../services/warehouseService';
+
+const FLOOR_CACHE_TTL_MS = 2 * 60 * 1000;
 
 const FloorManagement = () => {
   const [floors, setFloors] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState('');
+  const [warehouseFilterModalVisible, setWarehouseFilterModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [filterLoading, setFilterLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -33,31 +37,93 @@ const FloorManagement = () => {
     id_entrepot_id: ''
   });
 
-  const fetchData = async () => {
+  const floorsCacheRef = useRef({});
+
+  const normalizeFloors = (floors) => {
+    if (!Array.isArray(floors)) {
+      return [];
+    }
+
+    return floors.map((floor) => ({
+      ...floor,
+      id_niveau: floor.id_niveau || floor.id_niveau_picking,
+      type_niveau: floor.type_niveau || (floor.id_niveau_picking ? 'PICKING' : 'STOCK'),
+    }));
+  };
+
+  const getCachedFloors = (warehouseId) => {
+    const cacheEntry = floorsCacheRef.current[String(warehouseId)];
+    if (!cacheEntry) {
+      return null;
+    }
+
+    const isFresh = Date.now() - cacheEntry.cachedAt < FLOOR_CACHE_TTL_MS;
+    return isFresh ? cacheEntry.data : null;
+  };
+
+  const setCachedFloors = (warehouseId, floors) => {
+    floorsCacheRef.current[String(warehouseId)] = {
+      data: floors,
+      cachedAt: Date.now(),
+    };
+  };
+
+  const fetchFloorsForWarehouse = async (warehouseId, { forceRefresh = false } = {}) => {
+    const key = String(warehouseId);
+
+    if (!forceRefresh) {
+      const cached = getCachedFloors(key);
+      if (cached) {
+        return cached;
+      }
+    }
+
+    const rawFloors = await warehouseService.getWarehouseFloors(key);
+    const normalized = normalizeFloors(rawFloors);
+    setCachedFloors(key, normalized);
+    return normalized;
+  };
+
+  const fetchData = async (warehouseIdOverride = null, { forceRefresh = false } = {}) => {
     try {
       setLoading(true);
-      const activeWhId = await AsyncStorage.getItem('activeWarehouseId');
-      const [stockFloors, pickingFloors, warehousesData] = await Promise.all([
-        warehouseService.getFloors(),
-        warehouseService.getPickingFloors(),
-        warehouseService.getWarehouses()
-      ]);
-      
-      let allFloors = [
-        ...stockFloors,
-        ...pickingFloors.map(f => ({ ...f, id_niveau: f.id_niveau_picking }))
-      ];
-      
-      if (activeWhId) {
-        allFloors = allFloors.filter(f => f.id_entrepot === activeWhId || f.id_entrepot_id === activeWhId);
+      const normalizedOverrideWhId = warehouseIdOverride
+        ? String(warehouseIdOverride).trim().replace(/^"|"$/g, '')
+        : '';
+
+      const warehousesData = await warehouseService.getWarehouses();
+      const safeWarehouses = Array.isArray(warehousesData) ? warehousesData : [];
+      setWarehouses(safeWarehouses);
+
+      const normalizedSelectedWhId = selectedWarehouseId
+        ? String(selectedWarehouseId).trim().replace(/^"|"$/g, '')
+        : '';
+      const effectiveWhId = normalizedOverrideWhId || normalizedSelectedWhId;
+      const isKnownWarehouse = safeWarehouses.some((w) => String(w.id_entrepot) === String(effectiveWhId));
+
+      if (safeWarehouses.length === 0) {
+        setFloors([]);
+        setSelectedWarehouseId('');
+        setNewFloor((prev) => ({ ...prev, id_entrepot_id: '' }));
+        return;
       }
-      
-      setFloors(allFloors);
-      setWarehouses(warehousesData);
-      
-      if (activeWhId) {
-        setNewFloor(prev => ({ ...prev, id_entrepot_id: activeWhId }));
+
+      if (!effectiveWhId || !isKnownWarehouse) {
+        const floorsByWarehouse = await Promise.all(
+          safeWarehouses.map((warehouse) =>
+            fetchFloorsForWarehouse(String(warehouse.id_entrepot), { forceRefresh })
+          )
+        );
+        setSelectedWarehouseId('');
+        setFloors(floorsByWarehouse.flat());
+        setNewFloor((prev) => ({ ...prev, id_entrepot_id: prev.id_entrepot_id || String(safeWarehouses[0].id_entrepot) }));
+        return;
       }
+
+      const warehouseFloors = await fetchFloorsForWarehouse(effectiveWhId, { forceRefresh });
+      setSelectedWarehouseId(effectiveWhId);
+      setFloors(warehouseFloors);
+      setNewFloor((prev) => ({ ...prev, id_entrepot_id: effectiveWhId }));
     } catch (error) {
       console.error('Error fetching data:', error);
       Alert.alert('Error', 'Failed to load floors or warehouses');
@@ -73,7 +139,24 @@ const FloorManagement = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchData();
+    fetchData(selectedWarehouseId, { forceRefresh: true });
+  };
+
+  const handleWarehouseFilterChange = async (warehouseId) => {
+    setWarehouseFilterModalVisible(false);
+    setFilterLoading(true);
+    try {
+      const selectedId = warehouseId ? String(warehouseId) : '';
+      setSelectedWarehouseId(selectedId);
+      setRefreshing(true);
+      await fetchData(selectedId, { forceRefresh: false });
+    } catch (error) {
+      console.error('Error changing floor warehouse filter:', error);
+      setRefreshing(false);
+      Alert.alert('Error', 'Failed to change warehouse filter');
+    } finally {
+      setFilterLoading(false);
+    }
   };
 
   const handleSubmitFloor = async () => {
@@ -91,8 +174,9 @@ const FloorManagement = () => {
         await warehouseService.createFloor(newFloor);
         Alert.alert('Success', 'Floor added successfully');
       }
+      floorsCacheRef.current = {};
       closeModal();
-      fetchData();
+      fetchData(selectedWarehouseId, { forceRefresh: true });
     } catch (error) {
       console.error('Error submitting floor:', error);
       // Display the specific error message from the backend if available
@@ -116,7 +200,8 @@ const FloorManagement = () => {
             try {
               await warehouseService.deleteFloor(id, type);
               Alert.alert('Success', 'Floor deleted successfully');
-              fetchData();
+              floorsCacheRef.current = {};
+              fetchData(selectedWarehouseId, { forceRefresh: true });
             } catch (error) {
               console.error('Error deleting floor:', error);
               Alert.alert('Error', 'Failed to delete floor');
@@ -144,7 +229,7 @@ const FloorManagement = () => {
       code_niveau: '',
       type_niveau: 'STOCK',
       description: '',
-      id_entrepot_id: warehouses.length > 0 ? warehouses[0].id_entrepot : ''
+      id_entrepot_id: selectedWarehouseId || (warehouses.length > 0 ? warehouses[0].id_entrepot : '')
     });
     setIsEditing(false);
     setEditingId(null);
@@ -197,6 +282,10 @@ const FloorManagement = () => {
     </View>
   );
 
+  const selectedWarehouseLabel = selectedWarehouseId
+    ? (warehouses.find((warehouse) => String(warehouse.id_entrepot) === String(selectedWarehouseId))?.nom_entrepot || selectedWarehouseId)
+    : 'All Warehouses';
+
   if (loading && !refreshing) {
     return (
       <View style={styles.centered}>
@@ -218,6 +307,29 @@ const FloorManagement = () => {
           </TouchableOpacity>
         </View>
       </View>
+
+      <View style={styles.filterCard}>
+        <Text style={styles.filterLabel}>Warehouse Filter</Text>
+        <TouchableOpacity
+          style={styles.filterSelector}
+          onPress={() => setWarehouseFilterModalVisible(true)}
+          disabled={warehouses.length === 0 || filterLoading}
+        >
+          <Text style={styles.filterSelectorText}>{selectedWarehouseLabel}</Text>
+          {filterLoading ? (
+            <ActivityIndicator size="small" color="#2196F3" />
+          ) : (
+            <Feather name="chevron-down" size={18} color="#666" />
+          )}
+        </TouchableOpacity>
+      </View>
+
+      {filterLoading ? (
+        <View style={styles.switchLoadingContainer}>
+          <ActivityIndicator size="small" color="#2196F3" />
+          <Text style={styles.switchLoadingText}>Loading floors...</Text>
+        </View>
+      ) : null}
       
       {floors.length === 0 ? (
         <View style={styles.centered}>
@@ -233,6 +345,49 @@ const FloorManagement = () => {
           refreshing={refreshing}
         />
       )}
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={warehouseFilterModalVisible}
+        onRequestClose={() => setWarehouseFilterModalVisible(false)}
+      >
+        <View style={styles.filterModalOverlay}>
+          <View style={styles.filterModalContent}>
+            <Text style={styles.filterModalTitle}>Select Warehouse</Text>
+            <ScrollView>
+              <TouchableOpacity
+                style={[styles.filterOption, !selectedWarehouseId && styles.filterOptionSelected]}
+                onPress={() => handleWarehouseFilterChange('')}
+              >
+                <Text style={[styles.filterOptionText, !selectedWarehouseId && styles.filterOptionTextSelected]}>All Warehouses</Text>
+              </TouchableOpacity>
+
+              {warehouses.map((warehouse) => {
+                const warehouseId = String(warehouse.id_entrepot);
+                const isSelected = warehouseId === String(selectedWarehouseId);
+                return (
+                  <TouchableOpacity
+                    key={warehouseId}
+                    style={[styles.filterOption, isSelected && styles.filterOptionSelected]}
+                    onPress={() => handleWarehouseFilterChange(warehouseId)}
+                  >
+                    <Text style={[styles.filterOptionText, isSelected && styles.filterOptionTextSelected]}>
+                      {warehouse.nom_entrepot || warehouse.code_entrepot || warehouseId}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+            <TouchableOpacity
+              style={styles.filterCloseButton}
+              onPress={() => setWarehouseFilterModalVisible(false)}
+            >
+              <Text style={styles.filterCloseButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       <Modal
         animationType="slide"
@@ -317,7 +472,7 @@ const FloorManagement = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#ffffff',
     padding: 16,
   },
   header: {
@@ -356,6 +511,98 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 20,
+  },
+  filterCard: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+  },
+  filterLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#555',
+    marginBottom: 6,
+  },
+  filterSelector: {
+    backgroundColor: '#f8f9fa',
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  filterSelectorText: {
+    fontSize: 15,
+    color: '#333',
+    flex: 1,
+    marginRight: 8,
+  },
+  switchLoadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    paddingHorizontal: 4,
+  },
+  switchLoadingText: {
+    marginLeft: 8,
+    color: '#666',
+    fontSize: 13,
+  },
+  filterModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  filterModalContent: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    maxHeight: '70%',
+    padding: 16,
+  },
+  filterModalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 12,
+  },
+  filterOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    marginBottom: 6,
+    backgroundColor: '#f8f9fa',
+  },
+  filterOptionSelected: {
+    backgroundColor: '#E3F2FD',
+  },
+  filterOptionText: {
+    fontSize: 15,
+    color: '#333',
+  },
+  filterOptionTextSelected: {
+    color: '#1565C0',
+    fontWeight: '600',
+  },
+  filterCloseButton: {
+    marginTop: 10,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: '#f1f3f5',
+    alignItems: 'center',
+  },
+  filterCloseButtonText: {
+    color: '#495057',
+    fontWeight: '600',
   },
   floorCard: {
     backgroundColor: 'white',

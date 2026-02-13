@@ -3,6 +3,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from django.core.management.base import BaseCommand
+from django.core.management import call_command
 from django.db import transaction
 from django.contrib.auth.hashers import make_password
 from django.utils.dateparse import parse_date, parse_datetime
@@ -91,18 +92,49 @@ class Command(BaseCommand):
             self.stdout.write(f"- {name}: {count}")
 
     def _truncate_data(self):
-        with transaction.atomic():
-            LigneTransaction.objects.all().delete()
-            Transaction.objects.all().delete()
-            cmd_achat_ouvertes_opt.objects.all().delete()
-            PolitiqueReapprovisionnement.objects.all().delete()
-            DelaisApprovisionnement.objects.all().delete()
-            HistoriqueDemande.objects.all().delete()
-            CodeBarresProduit.objects.all().delete()
-            Emplacement.objects.all().delete()
-            Entrepot.objects.all().delete()
-            Produit.objects.all().delete()
-            Utilisateur.objects.all().delete()
+        try:
+            with transaction.atomic():
+                LigneTransaction.objects.all().delete()
+                Transaction.objects.all().delete()
+                cmd_achat_ouvertes_opt.objects.all().delete()
+                PolitiqueReapprovisionnement.objects.all().delete()
+                DelaisApprovisionnement.objects.all().delete()
+                HistoriqueDemande.objects.all().delete()
+                CodeBarresProduit.objects.all().delete()
+                Emplacement.objects.all().delete()
+                Entrepot.objects.all().delete()
+                Produit.objects.all().delete()
+                Utilisateur.objects.all().delete()
+        except Exception as exc:
+            self.stdout.write(self.style.WARNING(f"Standard truncate failed ({exc}). Falling back to full flush..."))
+            try:
+                call_command('flush', verbosity=0, interactive=False)
+            except Exception as flush_exc:
+                self.stdout.write(self.style.WARNING(f"Flush fallback failed ({flush_exc}). Continuing without truncate."))
+
+    @staticmethod
+    def _extract_product_id(row):
+        return row.get("id_produit", "") or row.get("id_produit_id", "")
+
+    def _get_or_create_product(self, product_id):
+        if not product_id:
+            return None
+
+        product = Produit.objects.filter(id_produit=product_id).first()
+        if product:
+            return product
+
+        product, _ = Produit.objects.get_or_create(
+            id_produit=product_id,
+            defaults={
+                "sku": f"AUTO-{product_id}",
+                "nom_produit": f"Produit auto {product_id}",
+                "unite_mesure": "Unité(s)",
+                "categorie": "AUTO",
+                "actif": True,
+            },
+        )
+        return product
 
     def _read_rows(self, path: Path):
         if not path.exists():
@@ -259,11 +291,12 @@ class Command(BaseCommand):
     def _import_produits(self, path: Path):
         count = 0
         for row in self._read_rows(path):
-            product_id = row.get("id_produit", "")
-            sku = row.get("sku", "")
-            name = row.get("nom_produit", "")
-            if not product_id or not sku or not name:
+            product_id = self._extract_product_id(row)
+            if not product_id:
                 continue
+
+            sku = row.get("sku", "") or f"AUTO-{product_id}"
+            name = row.get("nom_produit", "") or f"Produit {product_id}"
 
             Produit.objects.update_or_create(
                 id_produit=product_id,
@@ -282,14 +315,12 @@ class Command(BaseCommand):
         count = 0
         for row in self._read_rows(path):
             code = row.get("code_barres", "")
-            product_id = row.get("id_produit", "")
-            barcode_type = row.get("type_code_barres", "")
-            if not code or not product_id or not barcode_type:
+            product_id = self._extract_product_id(row)
+            barcode_type = row.get("type_code_barres", "") or "EAN13"
+            if not code or not product_id:
                 continue
 
-            product = Produit.objects.filter(id_produit=product_id).first()
-            if not product:
-                continue
+            product = self._get_or_create_product(product_id)
 
             CodeBarresProduit.objects.update_or_create(
                 code_barres=code,
@@ -297,6 +328,8 @@ class Command(BaseCommand):
                     "id_produit": product,
                     "type_code_barres": barcode_type,
                     "principal": self._as_bool(row.get("principal", ""), False),
+                    "code_barre_fardeau": row.get("code_barre_fardeau") or None,
+                    "code_barre_palette": row.get("code_barre_palette") or None,
                 },
             )
             count += 1
@@ -356,8 +389,8 @@ class Command(BaseCommand):
 
             quantity = self._as_decimal_text(row.get("quantite", ""), "0")
 
-            product_id = row.get("id_produit", "")
-            product = Produit.objects.filter(id_produit=product_id).first() if product_id else None
+            product_id = self._extract_product_id(row)
+            product = self._get_or_create_product(product_id) if product_id else None
 
             src_id = row.get("id_emplacement_source", "")
             src = Emplacement.objects.filter(id_emplacement=src_id).first() if src_id else None
@@ -396,14 +429,12 @@ class Command(BaseCommand):
 
         for row in self._read_rows(path):
             history_date = self._as_date(row.get("date", ""))
-            product_id = row.get("id_produit", "")
+            product_id = self._extract_product_id(row)
             quantity = row.get("quantite_demande", "")
             if not history_date or not product_id or quantity in {"", None}:
                 continue
 
-            product = Produit.objects.filter(id_produit=product_id).first()
-            if not product:
-                continue
+            product = self._get_or_create_product(product_id)
 
             history_cache.append(
                 HistoriqueDemande(
@@ -427,14 +458,12 @@ class Command(BaseCommand):
     def _import_delais(self, path: Path):
         count = 0
         for row in self._read_rows(path):
-            product_id = row.get("id_produit", "")
+            product_id = self._extract_product_id(row)
             delay = self._as_int(row.get("delai_jours", ""))
             if not product_id or delay is None:
                 continue
 
-            product = Produit.objects.filter(id_produit=product_id).first()
-            if not product:
-                continue
+            product = self._get_or_create_product(product_id)
 
             DelaisApprovisionnement.objects.update_or_create(
                 id_produit=product,
@@ -446,13 +475,11 @@ class Command(BaseCommand):
     def _import_politique(self, path: Path):
         count = 0
         for row in self._read_rows(path):
-            product_id = row.get("id_produit", "")
+            product_id = self._extract_product_id(row)
             if not product_id:
                 continue
 
-            product = Produit.objects.filter(id_produit=product_id).first()
-            if not product:
-                continue
+            product = self._get_or_create_product(product_id)
 
             PolitiqueReapprovisionnement.objects.update_or_create(
                 id_produit=product,
@@ -469,7 +496,7 @@ class Command(BaseCommand):
         count = 0
         for row in self._read_rows(path):
             purchase_order_id = row.get("id_commande_achat", "")
-            product_id = row.get("id_produit", "")
+            product_id = self._extract_product_id(row)
             quantity = row.get("quantite_commandee", "")
             expected_date = self._as_date(row.get("date_reception_prevue", ""))
             status = (row.get("statut") or "").upper()
@@ -478,9 +505,7 @@ class Command(BaseCommand):
             if status not in {"OPEN", "PARTIALLY_RECEIVED", "COMPLETED", "CANCELLED"}:
                 continue
 
-            product = Produit.objects.filter(id_produit=product_id).first()
-            if not product:
-                continue
+            product = self._get_or_create_product(product_id)
 
             cmd_achat_ouvertes_opt.objects.update_or_create(
                 id_commande_achat=purchase_order_id,

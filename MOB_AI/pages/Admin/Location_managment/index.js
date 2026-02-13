@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -13,16 +13,24 @@ import {
   Switch
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { warehouseService } from '../../../services/warehouseService';
+
+const PAGE_SIZE = 20;
+const PRELOAD_INDEX = 13;
 
 const LocationManagement = () => {
   const [locations, setLocations] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState('');
+  const [warehouseFilterModalVisible, setWarehouseFilterModalVisible] = useState(false);
   const [floors, setFloors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [filterLoading, setFilterLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentOffset, setCurrentOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -38,25 +46,73 @@ const LocationManagement = () => {
     actif: true
   });
 
-  const fetchData = async () => {
+  const paginationStateRef = useRef({
+    loading: true,
+    refreshing: false,
+    loadingMore: false,
+    hasMore: false,
+    currentOffset: 0,
+    selectedWarehouseId: '',
+    locationsLength: 0,
+  });
+  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 40 });
+
+  paginationStateRef.current = {
+    loading,
+    refreshing,
+    loadingMore,
+    hasMore,
+    currentOffset,
+    selectedWarehouseId,
+    locationsLength: locations.length,
+  };
+
+  const fetchData = async (warehouseIdOverride = null) => {
     try {
       setLoading(true);
-      const activeWhId = await AsyncStorage.getItem('activeWarehouseId');
-      
-      if (!activeWhId) {
-        setLoading(false);
+      const normalizedOverrideId = warehouseIdOverride
+        ? String(warehouseIdOverride).trim().replace(/^"|"$/g, '')
+        : '';
+
+      const whData = await warehouseService.getWarehouses();
+      const safeWarehouses = Array.isArray(whData)
+        ? whData
+            .filter((w) => w && (w.id_entrepot || w.id))
+            .map((w) => ({
+              ...w,
+              id_entrepot: String(w.id_entrepot || w.id).trim(),
+              nom_entrepot: w.nom_entrepot || w.code_entrepot || String(w.id_entrepot || w.id),
+            }))
+        : [];
+      setWarehouses(safeWarehouses);
+
+      const stateWarehouseId = selectedWarehouseId
+        ? String(selectedWarehouseId).trim().replace(/^"|"$/g, '')
+        : '';
+      let effectiveWarehouseId = normalizedOverrideId || stateWarehouseId;
+      const isKnownWarehouse = safeWarehouses.some((w) => String(w.id_entrepot) === String(effectiveWarehouseId));
+      if (!isKnownWarehouse) {
+        effectiveWarehouseId = '';
+      }
+
+      setSelectedWarehouseId(effectiveWarehouseId || '');
+
+      if (!effectiveWarehouseId) {
+        setLocations([]);
+        setFloors([]);
         return;
       }
 
-      const [locsData, whData, stockFloors, pickingFloors] = await Promise.all([
-        warehouseService.getLocations(activeWhId),
-        warehouseService.getWarehouses(),
-        warehouseService.getFloors(activeWhId),
-        warehouseService.getPickingFloors(activeWhId)
+      const [locsResponse, stockFloors, pickingFloors] = await Promise.all([
+        warehouseService.getLocationsPaged(effectiveWarehouseId, { limit: PAGE_SIZE, offset: 0 }),
+        warehouseService.getFloors(effectiveWarehouseId),
+        warehouseService.getPickingFloors(effectiveWarehouseId)
       ]);
-      
-      setLocations(Array.isArray(locsData) ? locsData : []);
-      setWarehouses(Array.isArray(whData) ? whData : []);
+
+      const firstPageLocations = Array.isArray(locsResponse?.results) ? locsResponse.results : [];
+      setLocations(firstPageLocations);
+      setCurrentOffset(firstPageLocations.length);
+      setHasMore(Boolean(locsResponse?.has_more));
       
       const safeStockFloors = Array.isArray(stockFloors) ? stockFloors : [];
       const safePickingFloors = Array.isArray(pickingFloors) ? pickingFloors : [];
@@ -67,6 +123,10 @@ const LocationManagement = () => {
       ];
       
       setFloors(allFloors);
+      setNewLocation((prev) => ({
+        ...prev,
+        id_entrepot_id: prev.id_entrepot_id || effectiveWarehouseId,
+      }));
     } catch (error) {
       console.error('Error fetching data:', error);
       Alert.alert('Error', 'Failed to load locations, warehouses or floors');
@@ -82,7 +142,75 @@ const LocationManagement = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchData();
+    fetchData(selectedWarehouseId);
+  };
+
+  const loadMoreLocations = useCallback(async () => {
+    const state = paginationStateRef.current;
+    if (state.loading || state.refreshing || state.loadingMore || !state.hasMore || !state.selectedWarehouseId) {
+      return;
+    }
+
+    try {
+      setLoadingMore(true);
+      const response = await warehouseService.getLocationsPaged(state.selectedWarehouseId, {
+        limit: PAGE_SIZE,
+        offset: state.currentOffset,
+      });
+
+      const nextLocations = Array.isArray(response?.results) ? response.results : [];
+      if (nextLocations.length > 0) {
+        setLocations((prev) => [...prev, ...nextLocations]);
+        setCurrentOffset((prev) => prev + nextLocations.length);
+      }
+      setHasMore(Boolean(response?.has_more));
+    } catch (error) {
+      console.error('Error loading more locations:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, []);
+
+  const handleViewableItemsChanged = useCallback(({ viewableItems }) => {
+    const state = paginationStateRef.current;
+    if (!viewableItems?.length || !state.hasMore || state.loadingMore) {
+      return;
+    }
+
+    const maxVisibleIndex = viewableItems.reduce((maxIdx, viewableItem) => {
+      if (typeof viewableItem.index === 'number') {
+        return Math.max(maxIdx, viewableItem.index);
+      }
+      return maxIdx;
+    }, -1);
+
+    const preloadTrigger = Math.max(PRELOAD_INDEX, state.locationsLength - (PAGE_SIZE - PRELOAD_INDEX));
+    if (maxVisibleIndex >= preloadTrigger) {
+      loadMoreLocations();
+    }
+  }, [loadMoreLocations]);
+
+  const handleWarehouseFilterChange = async (warehouseId) => {
+    setFilterLoading(true);
+    try {
+      const normalizedWarehouseId = warehouseId ? String(warehouseId).trim() : '';
+      setSelectedWarehouseId(normalizedWarehouseId);
+
+      setNewLocation((prev) => ({
+        ...prev,
+        id_entrepot_id: normalizedWarehouseId,
+        id_niveau_id: '',
+      }));
+
+      setRefreshing(true);
+      await fetchData(normalizedWarehouseId);
+    } catch (error) {
+      console.error('Error changing warehouse filter:', error);
+      setRefreshing(false);
+      Alert.alert('Error', 'Failed to change warehouse filter');
+    } finally {
+      setFilterLoading(false);
+    }
   };
 
   const handleSubmitLocation = async () => {
@@ -169,7 +297,7 @@ const LocationManagement = () => {
   const openAddModal = () => {
     setNewLocation({
       code_emplacement: '',
-      id_entrepot_id: warehouses.length > 0 ? warehouses[0].id_entrepot : '',
+      id_entrepot_id: selectedWarehouseId || (warehouses.length > 0 ? warehouses[0].id_entrepot : ''),
       id_niveau_id: '',
       zone: '',
       type_emplacement: 'STORAGE',
@@ -234,10 +362,14 @@ const LocationManagement = () => {
     </View>
   );
 
-  const filteredFloors = floors.filter(f => 
-    f.id_entrepot?.id_entrepot === newLocation.id_entrepot_id || 
-    f.id_entrepot === newLocation.id_entrepot_id
-  );
+  const filteredFloors = floors.filter((f) => {
+    const floorWarehouseId = f.id_entrepot?.id_entrepot || f.id_entrepot;
+    return String(floorWarehouseId) === String(newLocation.id_entrepot_id);
+  });
+
+  const selectedWarehouseLabel = warehouses.find(
+    (w) => String(w.id_entrepot) === String(selectedWarehouseId)
+  )?.nom_entrepot || 'Select a warehouse';
 
   if (loading && !refreshing) {
     return (
@@ -259,6 +391,29 @@ const LocationManagement = () => {
           <Text style={styles.addButtonText}>+ Add Location</Text>
         </TouchableOpacity>
       </View>
+
+      <View style={styles.filterCard}>
+        <Text style={styles.filterLabel}>Warehouse Filter</Text>
+        <TouchableOpacity
+          style={styles.filterSelector}
+          onPress={() => setWarehouseFilterModalVisible(true)}
+          disabled={warehouses.length === 0 || filterLoading}
+        >
+          <Text style={styles.filterSelectorText}>{selectedWarehouseLabel}</Text>
+          {filterLoading ? (
+            <ActivityIndicator size="small" color="#2196F3" />
+          ) : (
+            <Feather name="chevron-down" size={18} color="#666" />
+          )}
+        </TouchableOpacity>
+      </View>
+
+      {filterLoading ? (
+        <View style={styles.switchLoadingContainer}>
+          <ActivityIndicator size="small" color="#2196F3" />
+          <Text style={styles.switchLoadingText}>Loading locations...</Text>
+        </View>
+      ) : null}
       
       {locations.length === 0 ? (
         <View style={styles.centered}>
@@ -270,10 +425,19 @@ const LocationManagement = () => {
       ) : (
         <FlatList
           data={locations}
-          keyExtractor={(item) => item.id_emplacement}
+          keyExtractor={(item) => String(item.id_emplacement)}
           renderItem={renderLocationItem}
           onRefresh={onRefresh}
           refreshing={refreshing}
+          onViewableItemsChanged={handleViewableItemsChanged}
+          viewabilityConfig={viewabilityConfig.current}
+          ListFooterComponent={
+            loadingMore ? (
+              <View style={styles.footerLoader}>
+                <ActivityIndicator size="small" color="#2196F3" />
+              </View>
+            ) : null
+          }
           contentContainerStyle={styles.listContainer}
         />
       )}
@@ -298,9 +462,10 @@ const LocationManagement = () => {
                   selectedValue={newLocation.id_entrepot_id}
                   onValueChange={(val) => setNewLocation({...newLocation, id_entrepot_id: val, id_niveau_id: ''})}
                   style={styles.picker}
+                  mode="dialog"
                 >
                   {warehouses.map(w => (
-                    <Picker.Item key={w.id_entrepot} label={w.nom_entrepot} value={w.id_entrepot} />
+                    <Picker.Item key={String(w.id_entrepot)} label={w.nom_entrepot || w.code_entrepot || String(w.id_entrepot)} value={String(w.id_entrepot)} />
                   ))}
                 </Picker>
               </View>
@@ -400,6 +565,49 @@ const LocationManagement = () => {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={warehouseFilterModalVisible}
+        onRequestClose={() => setWarehouseFilterModalVisible(false)}
+      >
+        <View style={styles.filterModalOverlay}>
+          <View style={styles.filterModalContent}>
+            <Text style={styles.filterModalTitle}>Select Warehouse</Text>
+            <ScrollView>
+              {warehouses.length > 0 ? (
+                warehouses.map((warehouse) => {
+                  const warehouseId = String(warehouse.id_entrepot);
+                  const isSelected = warehouseId === String(selectedWarehouseId);
+                  return (
+                    <TouchableOpacity
+                      key={warehouseId}
+                      style={[styles.filterOption, isSelected && styles.filterOptionSelected]}
+                      onPress={async () => {
+                        setWarehouseFilterModalVisible(false);
+                        await handleWarehouseFilterChange(warehouseId);
+                      }}
+                    >
+                      <Text style={[styles.filterOptionText, isSelected && styles.filterOptionTextSelected]}>
+                        {warehouse.nom_entrepot || warehouse.code_entrepot || warehouseId}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })
+              ) : (
+                <Text style={styles.filterEmptyText}>No warehouses available</Text>
+              )}
+            </ScrollView>
+            <TouchableOpacity
+              style={styles.filterCloseButton}
+              onPress={() => setWarehouseFilterModalVisible(false)}
+            >
+              <Text style={styles.filterCloseButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -407,7 +615,7 @@ const LocationManagement = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#ffffff',
     padding: 16,
   },
   centered: {
@@ -447,6 +655,104 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 20,
+  },
+  filterCard: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+  },
+  filterLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#555',
+    marginBottom: 6,
+  },
+  filterSelector: {
+    backgroundColor: '#f8f9fa',
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  filterSelectorText: {
+    fontSize: 15,
+    color: '#333',
+    flex: 1,
+    marginRight: 8,
+  },
+  switchLoadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    paddingHorizontal: 4,
+  },
+  switchLoadingText: {
+    marginLeft: 8,
+    color: '#666',
+    fontSize: 13,
+  },
+  filterModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  filterModalContent: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    maxHeight: '70%',
+    padding: 16,
+  },
+  filterModalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 12,
+  },
+  filterOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    marginBottom: 6,
+    backgroundColor: '#f8f9fa',
+  },
+  filterOptionSelected: {
+    backgroundColor: '#E3F2FD',
+  },
+  filterOptionText: {
+    fontSize: 15,
+    color: '#333',
+  },
+  filterOptionTextSelected: {
+    color: '#1565C0',
+    fontWeight: '600',
+  },
+  filterEmptyText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    paddingVertical: 16,
+  },
+  filterCloseButton: {
+    marginTop: 10,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: '#f1f3f5',
+    alignItems: 'center',
+  },
+  filterCloseButtonText: {
+    color: '#495057',
+    fontWeight: '600',
   },
   card: {
     backgroundColor: 'white',
@@ -601,6 +907,9 @@ const styles = StyleSheet.create({
     color: '#495057',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  footerLoader: {
+    paddingVertical: 12,
   },
 });
 

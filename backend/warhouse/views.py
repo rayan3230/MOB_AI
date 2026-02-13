@@ -145,12 +145,27 @@ class EntrepotViewSet(viewsets.ModelViewSet):
             occupied_locations = Emplacement.objects.filter(statut='OCCUPIED', id_entrepot=warehouse_id).count()
             available_locations = Emplacement.objects.filter(statut='AVAILABLE', id_entrepot=warehouse_id).count()
             blocked_locations = Emplacement.objects.filter(statut='BLOCKED', id_entrepot=warehouse_id).count()
-            
-            total_products = Produit.objects.count() # Products are usually global
+
+            stock_product_ids = set(
+                Stock.objects.filter(
+                    id_emplacement__id_entrepot=warehouse_id,
+                    quantite__gt=0
+                ).values_list('id_produit_id', flat=True)
+            )
+            vrack_product_ids = set(
+                Vrack.objects.filter(
+                    id_entrepot=warehouse_id,
+                    quantite__gt=0
+                ).values_list('id_produit_id', flat=True)
+            )
+            total_products = len(stock_product_ids.union(vrack_product_ids))
+
             total_stock_qty = Stock.objects.filter(id_emplacement__id_entrepot=warehouse_id).aggregate(total=Sum('quantite'))['total'] or 0
             total_vrack_qty = Vrack.objects.filter(id_entrepot=warehouse_id).aggregate(total=Sum('quantite'))['total'] or 0
-            
-            total_chariots = Chariot.objects.count() # Chariots could be per warehouse if we add the FK
+
+            total_chariots = Chariot.objects.filter(id_entrepot=warehouse_id).count()
+            available_chariots = Chariot.objects.filter(id_entrepot=warehouse_id, statut='AVAILABLE').count()
+            maintenance_chariots = Chariot.objects.filter(id_entrepot=warehouse_id, statut='MAINTENANCE').count()
             
             # Activity (Last 24h)
             receptions_24h = MouvementStock.objects.filter(type_mouvement='RECEPTION', date_execution__gte=last_24h, id_entrepot=warehouse_id).count()
@@ -167,14 +182,14 @@ class EntrepotViewSet(viewsets.ModelViewSet):
             total_vrack_qty = Vrack.objects.aggregate(total=Sum('quantite'))['total'] or 0
             
             total_chariots = Chariot.objects.count()
+            available_chariots = Chariot.objects.filter(statut='AVAILABLE').count()
+            maintenance_chariots = Chariot.objects.filter(statut='MAINTENANCE').count()
             
             receptions_24h = MouvementStock.objects.filter(type_mouvement='RECEPTION', date_execution__gte=last_24h).count()
             pickings_24h = MouvementStock.objects.filter(type_mouvement='PICKING', date_execution__gte=last_24h).count()
             movements_24h = MouvementStock.objects.filter(date_execution__gte=last_24h).count()
 
         total_warehouses = Entrepot.objects.count()
-        available_chariots = Chariot.objects.filter(statut='AVAILABLE').count()
-        maintenance_chariots = Chariot.objects.filter(statut='MAINTENANCE').count()
 
         return Response({
             'users': {
@@ -315,6 +330,42 @@ class EmplacementViewSet(viewsets.ModelViewSet):
             if not self.request.user.is_superuser:
                 return Emplacement.objects.none()
         return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset().order_by('id_emplacement')
+        limit_param = request.query_params.get('limit')
+        offset_param = request.query_params.get('offset')
+
+        if limit_param is None and offset_param is None:
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+
+        try:
+            limit = int(limit_param) if limit_param is not None else 20
+            offset = int(offset_param) if offset_param is not None else 0
+        except ValueError:
+            return Response(
+                {'error': 'limit and offset must be integers'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if limit <= 0 or offset < 0:
+            return Response(
+                {'error': 'limit must be > 0 and offset must be >= 0'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        total_count = queryset.count()
+        paged_queryset = queryset[offset:offset + limit]
+        serializer = self.get_serializer(paged_queryset, many=True)
+
+        return Response({
+            'count': total_count,
+            'limit': limit,
+            'offset': offset,
+            'has_more': (offset + limit) < total_count,
+            'results': serializer.data,
+        })
 
     @action(detail=False, methods=['get'])
     def search_by_code(self, request):
@@ -639,6 +690,13 @@ class ChariotViewSet(viewsets.ModelViewSet):
     serializer_class = ChariotSerializer
     lookup_field = 'id_chariot'
     permission_classes = [AllowAny] # Changed for development
+
+    def get_queryset(self):
+        queryset = Chariot.objects.all()
+        warehouse_id = self.request.query_params.get('warehouse_id')
+        if warehouse_id:
+            queryset = queryset.filter(id_entrepot=warehouse_id)
+        return queryset
 
     @action(detail=False, methods=['get'])
     def list_available_chariots(self, request):

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -12,15 +12,20 @@ import {
   ScrollView
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { warehouseService } from '../../../services/warehouseService';
 import { productService } from '../../../services/productService';
 import { Picker } from '@react-native-picker/picker';
+
+const PRODUCTS_PAGE_SIZE = 250;
 
 const VrackManagement = () => {
   const [vracks, setVracks] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState('');
+  const [warehouseFilterModalVisible, setWarehouseFilterModalVisible] = useState(false);
+  const [filterLoading, setFilterLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -35,27 +40,120 @@ const VrackManagement = () => {
     quantity: '',
     notes: ''
   });
+  const [newVrack, setNewVrack] = useState({
+    id_entrepot_id: '',
+    id_produit_id: '',
+    quantite: '0'
+  });
+  const productsBgLoadingRef = useRef(false);
 
-  const fetchData = async () => {
+  const mergeProducts = (incomingProducts) => {
+    const seen = new Set();
+    return incomingProducts.filter((item) => {
+      const key = String(item.id_produit);
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+  };
+
+  const loadProductsInBackground = async (initialOffset) => {
+    if (productsBgLoadingRef.current) {
+      return;
+    }
+    productsBgLoadingRef.current = true;
+
+    try {
+      let offset = initialOffset;
+      let hasMore = true;
+
+      while (hasMore) {
+        const response = await productService.getProductsPaged({
+          limit: PRODUCTS_PAGE_SIZE,
+          offset,
+        });
+        const pageItems = Array.isArray(response?.results) ? response.results : [];
+
+        if (pageItems.length > 0) {
+          setProducts((prev) => mergeProducts([...prev, ...pageItems]));
+          offset += pageItems.length;
+        }
+
+        hasMore = Boolean(response?.has_more) && pageItems.length > 0;
+      }
+    } catch (error) {
+      console.error('Background product loading failed:', error);
+    } finally {
+      productsBgLoadingRef.current = false;
+    }
+  };
+
+  const ensureProductsLoaded = async () => {
+    if (products.length > 0 || productsLoading) {
+      return;
+    }
+
+    try {
+      setProductsLoading(true);
+      const response = await productService.getProductsPaged({
+        limit: PRODUCTS_PAGE_SIZE,
+        offset: 0,
+      });
+
+      const firstPage = Array.isArray(response?.results) ? response.results : [];
+      setProducts(firstPage);
+
+      if (firstPage.length > 0) {
+        setNewVrack((prev) => ({
+          ...prev,
+          id_produit_id: prev.id_produit_id || firstPage[0].id_produit,
+        }));
+      }
+
+      if (response?.has_more && firstPage.length > 0) {
+        loadProductsInBackground(firstPage.length);
+      }
+    } catch (error) {
+      console.error('Error loading products for vrack modal:', error);
+      Alert.alert('Erreur', 'Impossible de charger les produits');
+    } finally {
+      setProductsLoading(false);
+    }
+  };
+
+  const fetchData = async (warehouseIdOverride = null) => {
     try {
       setLoading(true);
-      const activeWhId = await AsyncStorage.getItem('activeWarehouseId');
-      const [vrackData, warehouseData, productData, locationData] = await Promise.all([
-        warehouseService.getVracks(activeWhId),
-        warehouseService.getWarehouses(),
-        productService.getProductsPaged({ limit: 20, offset: 0 }).then((res) => res?.results || []),
-        warehouseService.getLocations(activeWhId)
+      const normalizedOverrideId = warehouseIdOverride ? String(warehouseIdOverride).trim() : '';
+      const warehouseData = await warehouseService.getWarehouses();
+
+      const safeWarehouses = Array.isArray(warehouseData)
+        ? warehouseData
+            .filter((w) => w && w.id_entrepot)
+            .map((w) => ({ ...w, id_entrepot: String(w.id_entrepot).trim() }))
+        : [];
+
+      const stateWarehouseId = selectedWarehouseId ? String(selectedWarehouseId).trim() : '';
+      let effectiveWarehouseId = normalizedOverrideId || stateWarehouseId;
+      const isKnownWarehouse = safeWarehouses.some((w) => String(w.id_entrepot) === String(effectiveWarehouseId));
+      if (!isKnownWarehouse) {
+        effectiveWarehouseId = '';
+      }
+
+      const [vrackData, locationData] = await Promise.all([
+        warehouseService.getVracks(effectiveWarehouseId || null),
+        effectiveWarehouseId ? warehouseService.getLocations(effectiveWarehouseId) : Promise.resolve([])
       ]);
+
+      setSelectedWarehouseId(effectiveWarehouseId);
       setVracks(vrackData);
-      setWarehouses(warehouseData);
-      setProducts(productData);
+      setWarehouses(safeWarehouses);
       setLocations(locationData.filter(l => l.statut === 'AVAILABLE'));
       
-      if (warehouseData.length > 0 && !newVrack.id_entrepot_id) {
-        setNewVrack(prev => ({ ...prev, id_entrepot_id: warehouseData[0].id_entrepot }));
-      }
-      if (productData.length > 0 && !newVrack.id_produit_id) {
-        setNewVrack(prev => ({ ...prev, id_produit_id: productData[0].id_produit }));
+      if (safeWarehouses.length > 0 && !newVrack.id_entrepot_id) {
+        setNewVrack(prev => ({ ...prev, id_entrepot_id: effectiveWarehouseId || safeWarehouses[0].id_entrepot }));
       }
       if (locationData.length > 0) {
         setTransferData(prev => ({ ...prev, destination_location_id: locationData[0].id_emplacement }));
@@ -75,7 +173,24 @@ const VrackManagement = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchData();
+    fetchData(selectedWarehouseId);
+  };
+
+  const handleWarehouseFilterChange = async (warehouseId) => {
+    setWarehouseFilterModalVisible(false);
+    setFilterLoading(true);
+    try {
+      const selectedId = warehouseId ? String(warehouseId).trim() : '';
+      setSelectedWarehouseId(selectedId);
+      setRefreshing(true);
+      await fetchData(selectedId);
+    } catch (error) {
+      console.error('Error changing vrack warehouse filter:', error);
+      Alert.alert('Erreur', 'Impossible de changer le filtre entrepôt');
+      setRefreshing(false);
+    } finally {
+      setFilterLoading(false);
+    }
   };
 
   const handleSubmitVrack = async () => {
@@ -128,6 +243,7 @@ const VrackManagement = () => {
   };
 
   const openEditModal = (vrack) => {
+    ensureProductsLoaded();
     setNewVrack({
       id_entrepot_id: vrack.id_entrepot.id_entrepot,
       id_produit_id: vrack.id_produit.id_produit,
@@ -139,8 +255,9 @@ const VrackManagement = () => {
   };
 
   const openAddModal = () => {
+    ensureProductsLoaded();
     setNewVrack({
-      id_entrepot_id: warehouses.length > 0 ? warehouses[0].id_entrepot : '',
+      id_entrepot_id: selectedWarehouseId || (warehouses.length > 0 ? warehouses[0].id_entrepot : ''),
       id_produit_id: products.length > 0 ? products[0].id_produit : '',
       quantite: '0'
     });
@@ -155,13 +272,24 @@ const VrackManagement = () => {
     setTransferModalVisible(false);
   };
 
-  const openTransferModal = (vrack) => {
+  const openTransferModal = async (vrack) => {
     setSelectedVrack(vrack);
-    setTransferData({
-      destination_location_id: locations.length > 0 ? locations[0].id_emplacement : '',
-      quantity: '',
-      notes: ''
-    });
+    try {
+      const vrackWarehouseId = vrack?.id_entrepot?.id_entrepot || vrack?.id_entrepot_id;
+      const locationData = await warehouseService.getLocations(vrackWarehouseId);
+      const availableLocations = Array.isArray(locationData)
+        ? locationData.filter((location) => location.statut === 'AVAILABLE')
+        : [];
+      setLocations(availableLocations);
+      setTransferData({
+        destination_location_id: availableLocations.length > 0 ? availableLocations[0].id_emplacement : '',
+        quantity: '',
+        notes: ''
+      });
+    } catch (error) {
+      console.error('Error loading transfer locations:', error);
+      setTransferData({ destination_location_id: '', quantity: '', notes: '' });
+    }
     setTransferModalVisible(true);
   };
 
@@ -221,6 +349,11 @@ const VrackManagement = () => {
     </View>
   );
 
+  const selectedWarehouseLabel = selectedWarehouseId
+    ? (warehouses.find((warehouse) => String(warehouse.id_entrepot) === String(selectedWarehouseId))?.nom_entrepot || selectedWarehouseId)
+    : 'Tous les entrepôts';
+  const totalVrackQuantity = vracks.reduce((sum, vrack) => sum + Number(vrack.quantite || 0), 0);
+
   if (loading && !refreshing) {
     return (
       <View style={styles.centered}>
@@ -240,6 +373,33 @@ const VrackManagement = () => {
           <Text style={styles.addButtonText}>+ Ajouter Vrack</Text>
         </TouchableOpacity>
       </View>
+
+      <View style={styles.filterCard}>
+        <Text style={styles.filterLabel}>Filtre Entrepôt</Text>
+        <TouchableOpacity
+          style={styles.filterSelector}
+          onPress={() => setWarehouseFilterModalVisible(true)}
+          disabled={warehouses.length === 0 || filterLoading}
+        >
+          <Text style={styles.filterSelectorText}>{selectedWarehouseLabel}</Text>
+          {filterLoading ? (
+            <ActivityIndicator size="small" color="#2196F3" />
+          ) : (
+            <Feather name="chevron-down" size={18} color="#666" />
+          )}
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.kpiRow}>
+        <View style={styles.kpiCard}>
+          <Text style={styles.kpiLabel}>Vracks</Text>
+          <Text style={styles.kpiValue}>{vracks.length}</Text>
+        </View>
+        <View style={styles.kpiCard}>
+          <Text style={styles.kpiLabel}>Quantité Totale</Text>
+          <Text style={styles.kpiValue}>{totalVrackQuantity}</Text>
+        </View>
+      </View>
       
       {vracks.length === 0 ? (
         <View style={styles.centered}>
@@ -255,6 +415,49 @@ const VrackManagement = () => {
           contentContainerStyle={styles.listContainer}
         />
       )}
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={warehouseFilterModalVisible}
+        onRequestClose={() => setWarehouseFilterModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.filterModalContent}>
+            <Text style={styles.modalTitle}>Choisir Entrepôt</Text>
+            <ScrollView>
+              <TouchableOpacity
+                style={[styles.filterOption, !selectedWarehouseId && styles.filterOptionSelected]}
+                onPress={() => handleWarehouseFilterChange('')}
+              >
+                <Text style={[styles.filterOptionText, !selectedWarehouseId && styles.filterOptionTextSelected]}>Tous les entrepôts</Text>
+              </TouchableOpacity>
+
+              {warehouses.map((warehouse) => {
+                const warehouseId = String(warehouse.id_entrepot);
+                const isSelected = warehouseId === String(selectedWarehouseId);
+                return (
+                  <TouchableOpacity
+                    key={warehouseId}
+                    style={[styles.filterOption, isSelected && styles.filterOptionSelected]}
+                    onPress={() => handleWarehouseFilterChange(warehouseId)}
+                  >
+                    <Text style={[styles.filterOptionText, isSelected && styles.filterOptionTextSelected]}>
+                      {warehouse.nom_entrepot || warehouse.code_entrepot || warehouseId}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.cancelButton]}
+              onPress={() => setWarehouseFilterModalVisible(false)}
+            >
+              <Text style={styles.cancelButtonText}>Fermer</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       <Modal
         animationType="slide"
@@ -284,15 +487,25 @@ const VrackManagement = () => {
               </View>
 
               <Text style={styles.label}>Produit *</Text>
+              {productsLoading ? (
+                <View style={styles.productsLoadingRow}>
+                  <ActivityIndicator size="small" color="#2196F3" />
+                  <Text style={styles.productsLoadingText}>Chargement des produits...</Text>
+                </View>
+              ) : null}
               <View style={styles.pickerContainer}>
                 <Picker
                   selectedValue={newVrack.id_produit_id}
                   onValueChange={(val) => setNewVrack({...newVrack, id_produit_id: val})}
                   enabled={!isEditing}
                 >
-                  {products.map(p => (
-                    <Picker.Item key={p.id_produit} label={`${p.nom_produit} (${p.sku})`} value={p.id_produit} />
-                  ))}
+                  {products.length > 0 ? (
+                    products.map(p => (
+                      <Picker.Item key={p.id_produit} label={`${p.nom_produit} (${p.sku})`} value={p.id_produit} />
+                    ))
+                  ) : (
+                    <Picker.Item label={productsLoading ? 'Chargement...' : 'Aucun produit'} value="" />
+                  )}
                 </Picker>
               </View>
 
@@ -442,6 +655,87 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingBottom: 20,
   },
+  filterCard: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 10,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+  },
+  filterLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#555',
+    marginBottom: 6,
+  },
+  filterSelector: {
+    backgroundColor: '#f8f9fa',
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  filterSelectorText: {
+    fontSize: 15,
+    color: '#333',
+    flex: 1,
+    marginRight: 8,
+  },
+  kpiRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 10,
+  },
+  kpiCard: {
+    flex: 1,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#eef2f5',
+  },
+  kpiLabel: {
+    fontSize: 12,
+    color: '#6c757d',
+    marginBottom: 4,
+  },
+  kpiValue: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#2c3e50',
+  },
+  filterModalContent: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    maxHeight: '70%',
+    padding: 16,
+  },
+  filterOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    marginBottom: 6,
+    backgroundColor: '#f8f9fa',
+  },
+  filterOptionSelected: {
+    backgroundColor: '#E3F2FD',
+  },
+  filterOptionText: {
+    fontSize: 15,
+    color: '#333',
+  },
+  filterOptionTextSelected: {
+    color: '#1565C0',
+    fontWeight: '600',
+  },
   card: {
     backgroundColor: 'white',
     borderRadius: 12,
@@ -543,6 +837,16 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 6,
     marginTop: 12,
+  },
+  productsLoadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  productsLoadingText: {
+    marginLeft: 8,
+    color: '#666',
+    fontSize: 13,
   },
   input: {
     backgroundColor: '#f8f9fa',

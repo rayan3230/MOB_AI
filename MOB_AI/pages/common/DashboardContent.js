@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image, ActivityIndicator, RefreshControl, Modal } from 'react-native';
 import { Feather, FontAwesome, Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Svg, { Circle, G } from 'react-native-svg';
 import TopHeader from '../../components/AdminHeader';
 import Logo from '../../components/Logo';
@@ -11,15 +10,16 @@ const { width } = Dimensions.get('window');
 
 const DashboardContent = ({ navigation }) => {
   const [stats, setStats] = useState(null);
+  const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [warehouseId, setWarehouseId] = useState(null);
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState('');
+  const [warehouseFilterModalVisible, setWarehouseFilterModalVisible] = useState(false);
 
-  const fetchStats = async () => {
+  const fetchStats = async (warehouseId = '') => {
     try {
-      const activeWhId = await AsyncStorage.getItem('activeWarehouseId');
-      setWarehouseId(activeWhId);
-      const data = await warehouseService.getDashboardStats(activeWhId);
+      const normalizedWarehouseId = warehouseId ? String(warehouseId).trim() : '';
+      const data = await warehouseService.getDashboardStats(normalizedWarehouseId || null);
       setStats(data);
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
@@ -29,14 +29,53 @@ const DashboardContent = ({ navigation }) => {
     }
   };
 
+  const fetchInitialData = async () => {
+    try {
+      setLoading(true);
+      const whData = await warehouseService.getWarehouses();
+      const safeWarehouses = Array.isArray(whData)
+        ? whData
+            .filter((w) => w && (w.id_entrepot || w.id))
+            .map((w) => ({
+              ...w,
+              id_entrepot: String(w.id_entrepot || w.id).trim(),
+              nom_entrepot: w.nom_entrepot || w.code_entrepot || String(w.id_entrepot || w.id),
+            }))
+        : [];
+      setWarehouses(safeWarehouses);
+      setSelectedWarehouseId('');
+      await fetchStats('');
+    } catch (error) {
+      console.error('Error fetching dashboard initial data:', error);
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
   useEffect(() => {
-    fetchStats();
+    fetchInitialData();
   }, []);
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchStats();
+    fetchStats(selectedWarehouseId);
   };
+
+  const handleWarehouseFilterChange = async (warehouseId) => {
+    const normalizedWarehouseId = warehouseId ? String(warehouseId).trim() : '';
+    setWarehouseFilterModalVisible(false);
+    setSelectedWarehouseId(normalizedWarehouseId);
+    setRefreshing(true);
+    await fetchStats(normalizedWarehouseId);
+  };
+
+  const selectedWarehouseLabel = selectedWarehouseId
+    ? (warehouses.find((w) => String(w.id_entrepot) === String(selectedWarehouseId))?.nom_entrepot || selectedWarehouseId)
+    : 'All Warehouses';
+
+  const productsSubtitle = selectedWarehouseId
+    ? `SKUs in ${selectedWarehouseLabel}`
+    : 'Unique SKUs (all warehouses)';
 
   const chartData = stats ? [
     { name: 'Occupied', value: stats.warehouse.occupied || 0, color: '#0055FF' },
@@ -73,15 +112,26 @@ const DashboardContent = ({ navigation }) => {
         }
       >
         {/* Main Stat Card */}
+        <View style={styles.filterCard}>
+          <Text style={styles.filterLabel}>Dashboard Filter</Text>
+          <TouchableOpacity
+            style={styles.filterSelector}
+            onPress={() => setWarehouseFilterModalVisible(true)}
+          >
+            <Text style={styles.filterSelectorText}>{selectedWarehouseLabel}</Text>
+            <Feather name="chevron-down" size={18} color="#666" />
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.mainCard}>
           <View>
             <Text style={styles.mainCardTitle}>
-              {warehouseId ? `Warehouse: ${warehouseId}` : 'Total Warehouses'}
+              {selectedWarehouseId ? `Warehouse: ${selectedWarehouseId}` : 'Total Warehouses'}
             </Text>
             <Text style={styles.mainCardValue}>
-              {warehouseId ? (stats?.warehouse?.locations || 0) : (stats?.warehouse?.count || 0)}
+              {selectedWarehouseId ? (stats?.warehouse?.locations || 0) : (stats?.warehouse?.count || 0)}
             </Text>
-            {warehouseId && <Text style={styles.mainCardSubtitle}>Locations managed</Text>}
+            {selectedWarehouseId && <Text style={styles.mainCardSubtitle}>Locations managed</Text>}
           </View>
           <View style={styles.mainCardIcon}>
             <Logo width={120} height={120} color="rgba(255,255,255,0.2)" />
@@ -100,7 +150,7 @@ const DashboardContent = ({ navigation }) => {
             <StatBox 
               icon="cubes" 
               title="Products" 
-              subtitle="Unique SKUs" 
+              subtitle={productsSubtitle}
               value={stats?.inventory?.products || 0} 
             />
           </View>
@@ -187,6 +237,50 @@ const DashboardContent = ({ navigation }) => {
         
         <View style={{ height: 40 }} />
       </ScrollView>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={warehouseFilterModalVisible}
+        onRequestClose={() => setWarehouseFilterModalVisible(false)}
+      >
+        <View style={styles.filterModalOverlay}>
+          <View style={styles.filterModalContent}>
+            <Text style={styles.filterModalTitle}>Select Warehouse Filter</Text>
+            <ScrollView>
+              <TouchableOpacity
+                style={[styles.filterOption, !selectedWarehouseId && styles.filterOptionSelected]}
+                onPress={() => handleWarehouseFilterChange('')}
+              >
+                <Text style={[styles.filterOptionText, !selectedWarehouseId && styles.filterOptionTextSelected]}>All Warehouses</Text>
+              </TouchableOpacity>
+
+              {warehouses.map((warehouse) => {
+                const warehouseId = String(warehouse.id_entrepot);
+                const isSelected = warehouseId === String(selectedWarehouseId);
+                return (
+                  <TouchableOpacity
+                    key={warehouseId}
+                    style={[styles.filterOption, isSelected && styles.filterOptionSelected]}
+                    onPress={() => handleWarehouseFilterChange(warehouseId)}
+                  >
+                    <Text style={[styles.filterOptionText, isSelected && styles.filterOptionTextSelected]}>
+                      {warehouse.nom_entrepot || warehouse.code_entrepot || warehouseId}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+
+            <TouchableOpacity
+              style={styles.filterCloseButton}
+              onPress={() => setWarehouseFilterModalVisible(false)}
+            >
+              <Text style={styles.filterCloseButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -213,7 +307,84 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 20,
-    backgroundColor: '#fff', // White background for the actual content
+    backgroundColor: '#fff', // White background for the actual content    
+  },
+  filterCard: {
+    marginBottom: 14,
+  },
+  filterLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#666',
+    marginBottom: 6,
+  },
+  filterSelector: {
+    backgroundColor: '#f8f9fa',
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  filterSelectorText: {
+    fontSize: 15,
+    color: '#333',
+    flex: 1,
+    marginRight: 8,
+  },
+  filterModalOverlay: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  filterModalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    maxHeight: '70%',
+    padding: 16,
+  },
+  filterModalTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 12,
+  },
+  filterOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    marginBottom: 6,
+    backgroundColor: '#f8f9fa',
+  },
+  filterOptionSelected: {
+    backgroundColor: '#E3F2FD',
+  },
+  filterOptionText: {
+    fontSize: 15,
+    color: '#333',
+  },
+  filterOptionTextSelected: {
+    color: '#1565C0',
+    fontWeight: '600',
+  },
+  filterCloseButton: {
+    marginTop: 10,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: '#f1f3f5',
+    alignItems: 'center',
+  },
+  filterCloseButtonText: {
+    color: '#495057',
+    fontWeight: '600',
   },
   mainCard: {
     backgroundColor: '#0055FF',

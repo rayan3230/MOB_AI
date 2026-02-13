@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { productService } from '../../../services/productService';
+import { warehouseService } from '../../../services/warehouseService';
 
 const PAGE_SIZE = 20;
 const PRELOAD_INDEX = 13;
@@ -25,6 +26,11 @@ const StockingUnitManagement = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [currentOffset, setCurrentOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [warehouses, setWarehouses] = useState([]);
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState('');
+  const [warehouseFilterModalVisible, setWarehouseFilterModalVisible] = useState(false);
+  const [filterLoading, setFilterLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -47,6 +53,7 @@ const StockingUnitManagement = () => {
     loadingMore: false,
     hasMore: false,
     currentOffset: 0,
+    selectedWarehouseId: '',
     productsLength: 0,
   });
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 40 });
@@ -57,20 +64,44 @@ const StockingUnitManagement = () => {
     loadingMore,
     hasMore,
     currentOffset,
+    selectedWarehouseId,
     productsLength: products.length,
   };
 
-  const fetchData = async () => {
+  const fetchData = async (warehouseIdOverride = null) => {
     try {
       setLoading(true);
+      const warehousesData = await warehouseService.getWarehouses();
+
+      const safeWarehouses = Array.isArray(warehousesData)
+        ? warehousesData
+            .filter((w) => w && w.id_entrepot)
+            .map((w) => ({ ...w, id_entrepot: String(w.id_entrepot).trim() }))
+        : [];
+
+      const normalizedOverride = warehouseIdOverride !== null && warehouseIdOverride !== undefined
+        ? String(warehouseIdOverride).trim()
+        : null;
+      const currentWarehouseId = selectedWarehouseId ? String(selectedWarehouseId).trim() : '';
+
+      let effectiveWarehouseId = normalizedOverride !== null ? normalizedOverride : currentWarehouseId;
+      if (effectiveWarehouseId && !safeWarehouses.some((w) => w.id_entrepot === effectiveWarehouseId)) {
+        effectiveWarehouseId = '';
+      }
+
       const response = await productService.getProductsPaged({
+        warehouse_id: effectiveWarehouseId || null,
         limit: PAGE_SIZE,
         offset: 0,
       });
       const firstPage = Array.isArray(response?.results) ? response.results : [];
+
       setProducts(firstPage);
+      setTotalProducts(typeof response?.count === 'number' ? response.count : firstPage.length);
       setCurrentOffset(firstPage.length);
       setHasMore(Boolean(response?.has_more));
+      setWarehouses(safeWarehouses);
+      setSelectedWarehouseId(effectiveWarehouseId);
     } catch (error) {
       console.error('Error fetching products:', error);
       Alert.alert('Error', 'Failed to load products');
@@ -86,7 +117,7 @@ const StockingUnitManagement = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchData();
+    fetchData(selectedWarehouseId);
   };
 
   const loadMoreProducts = useCallback(async () => {
@@ -98,6 +129,7 @@ const StockingUnitManagement = () => {
     try {
       setLoadingMore(true);
       const response = await productService.getProductsPaged({
+        warehouse_id: state.selectedWarehouseId || null,
         limit: PAGE_SIZE,
         offset: state.currentOffset,
       });
@@ -134,6 +166,23 @@ const StockingUnitManagement = () => {
     }
   }, [loadMoreProducts]);
 
+  const handleWarehouseFilterChange = async (warehouseId) => {
+    setWarehouseFilterModalVisible(false);
+    setFilterLoading(true);
+    try {
+      const selectedId = warehouseId ? String(warehouseId).trim() : '';
+      setSelectedWarehouseId(selectedId);
+      setRefreshing(true);
+      await fetchData(selectedId);
+    } catch (error) {
+      console.error('Error changing product warehouse filter:', error);
+      Alert.alert('Error', 'Failed to change warehouse filter');
+      setRefreshing(false);
+    } finally {
+      setFilterLoading(false);
+    }
+  };
+
   const handleSubmitProduct = async () => {
     if (!newProduct.sku || !newProduct.nom_produit) {
       Alert.alert('Error', 'Please fill in SKU and Product Name');
@@ -150,7 +199,7 @@ const StockingUnitManagement = () => {
         Alert.alert('Success', 'Product added successfully');
       }
       closeModal();
-      fetchData();
+      fetchData(selectedWarehouseId);
     } catch (error) {
       console.error('Error submitting product:', error);
       Alert.alert('Error', `Failed to ${isEditing ? 'update' : 'add'} product`);
@@ -172,7 +221,7 @@ const StockingUnitManagement = () => {
             try {
               await productService.deleteProduct(id);
               Alert.alert('Success', 'Product deleted successfully');
-              fetchData();
+              fetchData(selectedWarehouseId);
             } catch (error) {
               console.error('Error deleting product:', error);
               Alert.alert('Error', 'Failed to delete product');
@@ -276,17 +325,38 @@ const StockingUnitManagement = () => {
     );
   }
 
+  const selectedWarehouse = warehouses.find((w) => w.id_entrepot === selectedWarehouseId);
+  const selectedWarehouseLabel = selectedWarehouse?.nom_entrepot || 'Tous les entrepôts';
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Produits / Unitées</Text>
-        <TouchableOpacity 
-          style={styles.addButton} 
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Produits / Unitées</Text>
+          <Text style={styles.subtitle}>{totalProducts} produit(s)</Text>
+          <TouchableOpacity
+            style={styles.filterButton}
+            onPress={() => setWarehouseFilterModalVisible(true)}
+            disabled={filterLoading || loading}
+          >
+            <Feather name="filter" size={14} color="#2196F3" />
+            <Text style={styles.filterButtonText}>{selectedWarehouseLabel}</Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity
+          style={styles.addButton}
           onPress={openAddModal}
         >
           <Text style={styles.addButtonText}>+ Ajouter Produit</Text>
         </TouchableOpacity>
       </View>
+
+      {filterLoading && (
+        <View style={styles.filterLoadingRow}>
+          <ActivityIndicator size="small" color="#2196F3" />
+          <Text style={styles.filterLoadingText}>Chargement des produits filtrés...</Text>
+        </View>
+      )}
       
       {products.length === 0 ? (
         <View style={styles.centered}>
@@ -311,6 +381,63 @@ const StockingUnitManagement = () => {
           contentContainerStyle={styles.listContainer}
         />
       )}
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={warehouseFilterModalVisible}
+        onRequestClose={() => setWarehouseFilterModalVisible(false)}
+      >
+        <View style={styles.selectorOverlay}>
+          <View style={styles.selectorCard}>
+            <Text style={styles.selectorTitle}>Filtrer par entrepôt</Text>
+
+            <TouchableOpacity
+              style={[
+                styles.selectorOption,
+                selectedWarehouseId === '' && styles.selectorOptionActive,
+              ]}
+              onPress={() => handleWarehouseFilterChange('')}
+            >
+              <Text
+                style={[
+                  styles.selectorOptionText,
+                  selectedWarehouseId === '' && styles.selectorOptionTextActive,
+                ]}
+              >
+                Tous les entrepôts
+              </Text>
+            </TouchableOpacity>
+
+            <ScrollView style={styles.selectorList}>
+              {warehouses.map((w) => {
+                const id = String(w.id_entrepot).trim();
+                const isSelected = selectedWarehouseId === id;
+
+                return (
+                  <TouchableOpacity
+                    key={id}
+                    style={[styles.selectorOption, isSelected && styles.selectorOptionActive]}
+                    onPress={() => handleWarehouseFilterChange(id)}
+                  >
+                    <Text style={[styles.selectorOptionText, isSelected && styles.selectorOptionTextActive]}>
+                      {w.nom_entrepot || id}
+                    </Text>
+                    <Text style={styles.selectorOptionSub}>{id}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+
+            <TouchableOpacity
+              style={styles.selectorCloseBtn}
+              onPress={() => setWarehouseFilterModalVisible(false)}
+            >
+              <Text style={styles.selectorCloseText}>Fermer</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       <Modal
         animationType="slide"
@@ -435,14 +562,41 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: 16,
     marginTop: 8,
+  },
+  titleContainer: {
+    flex: 1,
+    paddingRight: 8,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#607080',
+    marginTop: 2,
+  },
+  filterButton: {
+    marginTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: '#eef6ff',
+    borderWidth: 1,
+    borderColor: '#d6eaff',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  filterButtonText: {
+    marginLeft: 6,
+    color: '#1f5f9b',
+    fontWeight: '600',
+    maxWidth: 220,
   },
   addButton: {
     backgroundColor: '#4CAF50',
@@ -453,6 +607,23 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  filterLoadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f4f8ff',
+    borderWidth: 1,
+    borderColor: '#dce9ff',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginBottom: 10,
+  },
+  filterLoadingText: {
+    marginLeft: 8,
+    color: '#36577a',
+    fontSize: 13,
+    fontWeight: '500',
   },
   listContainer: {
     paddingBottom: 20,
@@ -612,6 +783,67 @@ const styles = StyleSheet.create({
   },
   footerLoader: {
     paddingVertical: 12,
+  },
+  selectorOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  selectorCard: {
+    width: '100%',
+    maxWidth: 420,
+    maxHeight: '80%',
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    padding: 16,
+  },
+  selectorTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#223245',
+    marginBottom: 12,
+  },
+  selectorList: {
+    maxHeight: 320,
+  },
+  selectorOption: {
+    borderWidth: 1,
+    borderColor: '#e6edf3',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 8,
+    backgroundColor: '#fff',
+  },
+  selectorOptionActive: {
+    borderColor: '#2d74b6',
+    backgroundColor: '#edf6ff',
+  },
+  selectorOptionText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#2d3b49',
+  },
+  selectorOptionTextActive: {
+    color: '#1f5f9b',
+  },
+  selectorOptionSub: {
+    marginTop: 2,
+    fontSize: 12,
+    color: '#7b8894',
+  },
+  selectorCloseBtn: {
+    marginTop: 8,
+    paddingVertical: 10,
+    borderRadius: 8,
+    backgroundColor: '#f1f3f5',
+    alignItems: 'center',
+  },
+  selectorCloseText: {
+    fontWeight: '700',
+    color: '#425466',
   },
 });
 
