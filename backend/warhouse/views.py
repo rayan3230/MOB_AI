@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db.models import Sum, Q
 from django.utils import timezone
 from django.db import transaction as db_transaction
@@ -39,7 +39,7 @@ class EntrepotViewSet(viewsets.ModelViewSet):
     queryset = Entrepot.objects.all()
     serializer_class = EntrepotSerializer
     lookup_field = 'id_entrepot'
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny] # Changed from IsAuthenticated for development
 
     def destroy(self, request, *args, **kwargs):
         """Warehouse deletion with validation"""

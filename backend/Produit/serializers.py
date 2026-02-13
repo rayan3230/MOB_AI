@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Produit, CodeBarresProduit, HistoriqueDemande, DelaisApprovisionnement, PolitiqueReapprovisionnement
+from .models import Produit, CodeBarresProduit, HistoriqueDemande, DelaisApprovisionnement, PolitiqueReapprovisionnement, cmd_achat_ouvertes_opt
 
 
 class ProduitSerializer(serializers.ModelSerializer):
@@ -21,7 +21,7 @@ class CodeBarresProduitSerializer(serializers.ModelSerializer):
         fields = ['code_barres', 'id_produit', 'id_produit_id', 'type_code_barres', 'principal']
 
 
-class HistoriqueDemandSerializer(serializers.ModelSerializer):
+class HistoriqueDemandeSerializer(serializers.ModelSerializer):
     id_produit = ProduitSerializer(read_only=True)
     id_produit_id = serializers.PrimaryKeyRelatedField(
         queryset=Produit.objects.all(),
@@ -58,3 +58,16 @@ class PolitiqueReapprovisionnementSerializer(serializers.ModelSerializer):
     class Meta:
         model = PolitiqueReapprovisionnement
         fields = ['id_produit', 'id_produit_id', 'stock_securite', 'quantite_min_commande', 'taille_lot']
+
+
+class CmdAchatSerializer(serializers.ModelSerializer):
+    id_produit = ProduitSerializer(read_only=True)
+    id_produit_id = serializers.PrimaryKeyRelatedField(
+        queryset=Produit.objects.all(),
+        source='id_produit',
+        write_only=True
+    )
+
+    class Meta:
+        model = cmd_achat_ouvertes_opt
+        fields = ['id_commande_achat', 'id_produit', 'id_produit_id', 'quantite_commandee', 'date_reception_prevue', 'statut']

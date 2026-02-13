@@ -5,6 +5,8 @@ from .models import (
     Operation, PrevisionIA, AssignmentStockageIA, RoutePickingIA,
     Override, JournalAudit, OperationOffline, AnomalieDetection
 )
+from Produit.models import Produit
+from Users.models import Utilisateur
 from Produit.serializers import ProduitSerializer
 from Users.serializers import UtilisateurSerializer
 
@@ -76,7 +78,7 @@ class StockSerializer(serializers.ModelSerializer):
     """Current Stock snapshot serializer"""
     id_produit = ProduitSerializer(read_only=True)
     id_produit_id = serializers.PrimaryKeyRelatedField(
-        queryset=None,
+        queryset=Produit.objects.all(),
         source='id_produit',
         write_only=True
     )
@@ -96,17 +98,12 @@ class StockSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['mise_a_jour_le']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from Produit.models import Produit
-        self.fields['id_produit_id'].queryset = Produit.objects.all()
-
 
 class MouvementStockSerializer(serializers.ModelSerializer):
     """Stock Movement Ledger (IMMUTABLE) serializer"""
     id_produit = ProduitSerializer(read_only=True)
     id_produit_id = serializers.PrimaryKeyRelatedField(
-        queryset=None,
+        queryset=Produit.objects.all(),
         source='id_produit',
         write_only=True,
         required=False
@@ -127,7 +124,7 @@ class MouvementStockSerializer(serializers.ModelSerializer):
     )
     execute_par = UtilisateurSerializer(read_only=True)
     execute_par_id = serializers.PrimaryKeyRelatedField(
-        queryset=None,
+        queryset=Utilisateur.objects.all(),
         source='execute_par',
         write_only=True,
         required=False
@@ -144,13 +141,6 @@ class MouvementStockSerializer(serializers.ModelSerializer):
             'execute_par', 'execute_par_id'
         ]
         read_only_fields = ['date_execution']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from Produit.models import Produit
-        from Users.models import Utilisateur
-        self.fields['id_produit_id'].queryset = Produit.objects.all()
-        self.fields['execute_par_id'].queryset = Utilisateur.objects.all()
 
 
 # ============================================================================
@@ -217,7 +207,7 @@ class CommandeSerializer(serializers.ModelSerializer):
     """Order (Command, Preparation, Picking) serializer"""
     cree_par = UtilisateurSerializer(read_only=True)
     cree_par_id = serializers.PrimaryKeyRelatedField(
-        queryset=None,
+        queryset=Utilisateur.objects.all(),
         source='cree_par',
         write_only=True,
         required=False
@@ -232,11 +222,6 @@ class CommandeSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['creation_le']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from Users.models import Utilisateur
-        self.fields['cree_par_id'].queryset = Utilisateur.objects.all()
-
 
 class LigneCommandeSerializer(serializers.ModelSerializer):
     """Order Line Item serializer"""
@@ -248,7 +233,7 @@ class LigneCommandeSerializer(serializers.ModelSerializer):
     )
     id_produit = ProduitSerializer(read_only=True)
     id_produit_id = serializers.PrimaryKeyRelatedField(
-        queryset=None,
+        queryset=Produit.objects.all(),
         source='id_produit',
         write_only=True,
         required=False
@@ -278,11 +263,6 @@ class LigneCommandeSerializer(serializers.ModelSerializer):
             'id_emplacement_destination', 'id_emplacement_destination_id'
         ]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from Produit.models import Produit
-        self.fields['id_produit_id'].queryset = Produit.objects.all()
-
 
 class ResultatLivraisonSerializer(serializers.ModelSerializer):
     """Delivery Result serializer"""
@@ -294,7 +274,7 @@ class ResultatLivraisonSerializer(serializers.ModelSerializer):
     )
     valide_par = UtilisateurSerializer(read_only=True)
     valide_par_id = serializers.PrimaryKeyRelatedField(
-        queryset=None,
+        queryset=Utilisateur.objects.all(),
         source='valide_par',
         write_only=True,
         required=False
@@ -308,11 +288,6 @@ class ResultatLivraisonSerializer(serializers.ModelSerializer):
             'valide_par', 'valide_par_id'
         ]
         read_only_fields = ['date_validation']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from Users.models import Utilisateur
-        self.fields['valide_par_id'].queryset = Utilisateur.objects.all()
 
 
 # ============================================================================
@@ -330,7 +305,7 @@ class OperationSerializer(serializers.ModelSerializer):
     )
     execute_par = UtilisateurSerializer(read_only=True)
     execute_par_id = serializers.PrimaryKeyRelatedField(
-        queryset=None,
+        queryset=Utilisateur.objects.all(),
         source='execute_par',
         write_only=True,
         required=False
@@ -346,11 +321,6 @@ class OperationSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['date_debut']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from Users.models import Utilisateur
-        self.fields['execute_par_id'].queryset = Utilisateur.objects.all()
-
 
 # ============================================================================
 # AI SYSTEM SERIALIZERS
@@ -360,7 +330,7 @@ class PrevisionIASerializer(serializers.ModelSerializer):
     """AI Forecast serializer"""
     id_produit = ProduitSerializer(read_only=True)
     id_produit_id = serializers.PrimaryKeyRelatedField(
-        queryset=None,
+        queryset=Produit.objects.all(),
         source='id_produit',
         write_only=True
     )
@@ -374,11 +344,6 @@ class PrevisionIASerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['cree_le']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from Produit.models import Produit
-        self.fields['id_produit_id'].queryset = Produit.objects.all()
-
 
 class AssignmentStockageIASerializer(serializers.ModelSerializer):
     """AI Storage Assignment serializer"""
@@ -390,7 +355,7 @@ class AssignmentStockageIASerializer(serializers.ModelSerializer):
     )
     id_produit = ProduitSerializer(read_only=True)
     id_produit_id = serializers.PrimaryKeyRelatedField(
-        queryset=None,
+        queryset=Produit.objects.all(),
         source='id_produit',
         write_only=True,
         required=False
@@ -412,11 +377,6 @@ class AssignmentStockageIASerializer(serializers.ModelSerializer):
             'id_emplacement_assigne', 'id_emplacement_assigne_id'
         ]
         read_only_fields = ['cree_le']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from Produit.models import Produit
-        self.fields['id_produit_id'].queryset = Produit.objects.all()
 
 
 class RoutePickingIASerializer(serializers.ModelSerializer):
@@ -453,7 +413,7 @@ class OverrideSerializer(serializers.ModelSerializer):
     )
     override_par = UtilisateurSerializer(read_only=True)
     override_par_id = serializers.PrimaryKeyRelatedField(
-        queryset=None,
+        queryset=Utilisateur.objects.all(),
         source='override_par',
         write_only=True
     )
@@ -468,17 +428,12 @@ class OverrideSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['cree_le']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from Users.models import Utilisateur
-        self.fields['override_par_id'].queryset = Utilisateur.objects.all()
-
 
 class JournalAuditSerializer(serializers.ModelSerializer):
     """Immutable Audit Log serializer"""
     execute_par = UtilisateurSerializer(read_only=True)
     execute_par_id = serializers.PrimaryKeyRelatedField(
-        queryset=None,
+        queryset=Utilisateur.objects.all(),
         source='execute_par',
         write_only=True,
         required=False
@@ -494,11 +449,6 @@ class JournalAuditSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['timestamp']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from Users.models import Utilisateur
-        self.fields['execute_par_id'].queryset = Utilisateur.objects.all()
-
 
 # ============================================================================
 # OFFLINE & ANOMALY SERIALIZERS
@@ -508,7 +458,7 @@ class OperationOfflineSerializer(serializers.ModelSerializer):
     """Offline Operations Queue serializer"""
     id_utilisateur = UtilisateurSerializer(read_only=True)
     id_utilisateur_id = serializers.PrimaryKeyRelatedField(
-        queryset=None,
+        queryset=Utilisateur.objects.all(),
         source='id_utilisateur',
         write_only=True,
         required=False
@@ -521,11 +471,6 @@ class OperationOfflineSerializer(serializers.ModelSerializer):
             'timestamp_local', 'timestamp_sync', 'erreur_sync', 'tentatives_sync',
             'id_utilisateur', 'id_utilisateur_id'
         ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from Users.models import Utilisateur
-        self.fields['id_utilisateur_id'].queryset = Utilisateur.objects.all()
 
 
 class AnomalieDetectionSerializer(serializers.ModelSerializer):
