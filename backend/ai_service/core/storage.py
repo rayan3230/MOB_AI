@@ -3,6 +3,7 @@ import enum
 import random
 from ..engine.base import DepotB7Map, WarehouseCoordinate, StorageClass
 from .product_manager import ProductStorageManager
+from ..engine.base import AuditTrail, Role
 
 class StorageOptimizationService:
     def __init__(self, floors: Dict[int, DepotB7Map], product_manager: ProductStorageManager):
@@ -147,16 +148,37 @@ class StorageOptimizationService:
         
         return best
 
-    def assign_slot(self, product_id: int, floor_idx: int, coord: WarehouseCoordinate) -> bool:
+    def assign_slot(self, product_id: int, floor_idx: int, coord: WarehouseCoordinate, role: Role = Role.ADMIN) -> bool:
         """
-        STEP 7: Officially mark a slot as occupied in the warehouse map.
-        This prevents the slot from being suggested for future placements.
+        Officially mark a slot as occupied in the warehouse map.
+        Requirement 8.2: Audit trail logged.
         """
         if floor_idx in self.floors:
             self.floors[floor_idx].occupied_slots.add((int(coord.x), int(coord.y)))
             self.slot_to_product[(floor_idx, int(coord.x), int(coord.y))] = product_id
+            
+            # Log action
+            AuditTrail.log(role, f"Assigned SKU {product_id} to {self.floors[floor_idx].get_slot_name(coord)}")
             return True
         return False
+
+    def manual_placement_override(self, product_id: int, floor_idx: int, coord: WarehouseCoordinate, supervisor_id: str, justification: str) -> bool:
+        """
+        Requirement 8.2: Manual override supported.
+        Allows a supervisor to force a placement, still checking basic physical validity.
+        """
+        if floor_idx not in self.floors:
+            return False
+            
+        target_map = self.floors[floor_idx]
+        # Basic constraint: No pillars, no walls
+        if target_map.pillar_matrix[int(coord.x)][int(coord.y)]:
+            return False
+            
+        # Execute override
+        self.assign_slot(product_id, floor_idx, coord, role=Role.SUPERVISOR)
+        AuditTrail.log(Role.SUPERVISOR, f"Manual Override by {supervisor_id} for SKU {product_id}", justification)
+        return True
 
     def record_picking_event(self, floor_idx: int, coord: WarehouseCoordinate):
         """

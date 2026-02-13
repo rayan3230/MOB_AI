@@ -33,6 +33,12 @@ The storage service has been hardened to respect high-fidelity warehouse constra
     - **ABC Analysis (Frequency)**: FAST movers are assigned a 0.5x cost multiplier (pulling them to exit docks), while SLOW movers receive a 1.2x penalty (pushing them to deeper areas).
     - **Hard Constraint Safety**: `is_slot_available` filters (Pillars, Walls, Racks) bypass the scoring engine entirely to ensure suggestions are always valid.
     - **Deterministic Execution**: Scoring is computed through a deterministic pipeline (Distance * Freq + WeightPenalty), ensuring stable behavior for WMS integration.
+- **Enhanced Output & Auditability**:
+    - **Precise Spatial Data**: Returns exact `(x, y, z)` coordinates for AGV or manual picker navigation.
+    - **WMS-Compatible Formatting**: Slot IDs are standardized as `B7-LX-XX-YY`.
+    - **Real-Time Occupancy Tracking**: Maps are updated atomically upon assignment to prevent double-booking.
+    - **Supervisor Overrides**: Support for manual placement with required justification.
+    - **Full Audit Trail**: Every storage decision, whether AI-driven or manual, is timestamped and logged with user role context.
 - **Pillar/Wall Exclusion**: High-resolution `pillar_matrix` prevents slot suggestions on physical obstructions.
 - **Rack-Only Logic**: `storage_matrix` restricts inventory to valid Storage zones, excluding aisles, dock areas (Expédition), and offices.
 - **Reserved Zones**: Zones marked as "Reserved" or "Obstacle" are automatically pruned from the storage pool.
