@@ -20,9 +20,29 @@ const formatDateTime = (value) => {
 const TaskItemCard = ({ task, onDone, loading }) => {
   const statusColor = statusColorMap[task.status] || lightTheme.textSecondary;
   const canBeCompleted = task.status !== 'COMPLETED' && task.status !== 'CANCELLED';
+  
+  // Priority logic (can be from backend or calculated)
+  const priority = task.priority || 'NORMAL'; // HIGH, NORMAL, LOW
+  const isUrgent = priority === 'HIGH' || priority === 'URGENT';
+  
+  // Calculate if task is due soon (within 2 hours)
+  const isDueSoon = task.dueDate && (new Date(task.dueDate).getTime() - Date.now()) < 2 * 60 * 60 * 1000;
 
   return (
-    <View style={styles.card}>
+    <View style={[
+      styles.card,
+      isUrgent && styles.urgentCard,
+      isDueSoon && styles.dueSoonCard
+    ]}>
+      {(isUrgent || isDueSoon) && (
+        <View style={[styles.priorityBanner, isUrgent ? styles.urgentBanner : styles.dueSoonBanner]}>
+          <Feather name="alert-circle" size={12} color={lightTheme.white} />
+          <Text style={styles.priorityText}>
+            {isUrgent ? 'URGENT' : 'DUE SOON'}
+          </Text>
+        </View>
+      )}
+      
       <View style={styles.headerRow}>
         <Text style={styles.title}>{task.title}</Text>
         <View style={[styles.statusChip, { backgroundColor: statusColor }]}>
@@ -66,12 +86,46 @@ const styles = StyleSheet.create({
     backgroundColor: lightTheme.white,
     padding: 14,
     marginBottom: 10,
+    overflow: 'hidden',
+  },
+  urgentCard: {
+    borderColor: '#DC2626',
+    borderWidth: 2,
+  },
+  dueSoonCard: {
+    borderColor: '#F59E0B',
+    borderWidth: 2,
+  },
+  priorityBanner: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 4,
+    gap: 4,
+    zIndex: 10,
+  },
+  urgentBanner: {
+    backgroundColor: '#DC2626',
+  },
+  dueSoonBanner: {
+    backgroundColor: '#F59E0B',
+  },
+  priorityText: {
+    color: lightTheme.white,
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 10,
+    marginTop: 20,
   },
   title: {
     flex: 1,

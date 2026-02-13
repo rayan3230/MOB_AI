@@ -5,10 +5,11 @@ import Svg, { Circle, G } from 'react-native-svg';
 import TopHeader from '../../components/AdminHeader';
 import Logo from '../../components/Logo';
 import { warehouseService } from '../../services/warehouseService';
+import { lightTheme } from '../../constants/theme';
 
 const { width } = Dimensions.get('window');
 
-const DashboardContent = ({ navigation }) => {
+const DashboardContent = ({ navigation, onNavigate }) => {
   const [stats, setStats] = useState(null);
   const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -167,6 +168,41 @@ const DashboardContent = ({ navigation }) => {
               subtitle="Available trolleys" 
               value={`${stats?.chariots?.available || 0}/${stats?.chariots?.total || 0}`} 
             />
+          </View>
+        </View>
+
+        {/* Quick Management Links */}
+        <View style={styles.quickLinksCard}>
+          <Text style={styles.quickLinksTitle}>Quick Management</Text>
+          <View style={styles.quickLinksGrid}>
+            <TouchableOpacity 
+              style={styles.quickLinkItem} 
+              activeOpacity={0.7}
+              onPress={() => onNavigate && onNavigate('User_managment')}
+            >
+              <Feather name="users" size={20} color={lightTheme.primary} />
+              <Text style={styles.quickLinkText}>Manage Users</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.quickLinkItem} 
+              activeOpacity={0.7}
+              onPress={() => onNavigate && onNavigate('StockingUnit_management')}
+            >
+              <Feather name="box" size={20} color={lightTheme.thirdary} />
+              <Text style={styles.quickLinkText}>Add Product</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.quickLinkItem} 
+              activeOpacity={0.7}
+              onPress={() => onNavigate && onNavigate('Location_managment')}
+            >
+              <Feather name="map-pin" size={20} color="#F59E0B" />
+              <Text style={styles.quickLinkText}>Locations</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.quickLinkItem} activeOpacity={0.7}>
+              <Feather name="zap" size={20} color="#8B5CF6" />
+              <Text style={styles.quickLinkText}>AI Actions</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -462,6 +498,48 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#4CAF50',
     fontWeight: '600',
+  },
+  quickLinksCard: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: '#f0f0f0',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  quickLinksTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 14,
+  },
+  quickLinksGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  quickLinkItem: {
+    flex: 1,
+    minWidth: '47%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+  },
+  quickLinkText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#333',
   },
   analyticsCard: {
     backgroundColor: '#fff',

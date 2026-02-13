@@ -15,21 +15,29 @@ class UserLoginSerializer(serializers.Serializer):
         print(f"Validating login for: {username}")
         if username and password:
             try:
-                user = Utilisateur.objects.get(id_utilisateur=username)
+                # Try to find user by nom_complet first as requested, then by id_utilisateur
+                user = Utilisateur.objects.filter(nom_complet=username).first()
+                if not user:
+                    user = Utilisateur.objects.filter(id_utilisateur=username).first()
+                
+                if not user:
+                    print(f"User {username} not found")
+                    raise serializers.ValidationError("Invalid username or password")
+
                 if user.is_banned:
                     print(f"User {username} is banned")
                     raise serializers.ValidationError({"banned": "Your account has been banned. Please contact the administrator."})
                 
-                print(f"User found: {user.id_utilisateur}, checking password...")
-                print(f"Provided password: '{password}'")
-                print(f"Stored hash: '{user.password}'")
+                print(f"User found: {user.id_utilisateur} ({user.nom_complet}), checking password...")
                 if not user.check_password(password):
                     print("Password check failed")
                     raise serializers.ValidationError("Invalid username or password")
                 print("Password check passed")
-            except Utilisateur.DoesNotExist:
-                print(f"User {username} not found")
-                raise serializers.ValidationError("Invalid username or password")
+            except Exception as e:
+                print(f"Login error: {str(e)}")
+                if isinstance(e, serializers.ValidationError):
+                    raise e
+                raise serializers.ValidationError("An error occurred during login")
         else:
             raise serializers.ValidationError("Must include 'username' and 'password'")
             

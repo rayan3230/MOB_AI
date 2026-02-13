@@ -46,6 +46,8 @@ const AIActions = ({ user, onOpenDrawer }) => {
           currentValue: '150 units',
           status: 'AI Predicted',
           justification: '',
+          confidence: 92,
+          reasoning: 'Based on 14-day moving average and upcoming promotional campaign. Historical data shows 23% increase during similar events.',
         },
         {
           id: '2',
@@ -55,6 +57,8 @@ const AIActions = ({ user, onOpenDrawer }) => {
           currentValue: '420 units',
           status: 'AI Predicted',
           justification: '',
+          confidence: 87,
+          reasoning: 'Seasonal trend analysis + order backlog pattern. Peak production period detected with 15% variance.',
         },
         {
           id: '3',
@@ -64,6 +68,8 @@ const AIActions = ({ user, onOpenDrawer }) => {
           currentValue: 'Zone B (20% free)',
           status: 'AI Predicted',
           justification: '',
+          confidence: 78,
+          reasoning: 'Zone B optimal due to proximity to shipping dock and current inventory turnover rate. Reduces pick time by 18%.',
         },
       ];
       setPredictions(mockData);

@@ -17,7 +17,7 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db.models import Count, Q
 from django.utils import timezone
 from datetime import timedelta
@@ -71,7 +71,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     """
     queryset = Transaction.objects.all()
     lookup_field = 'id_transaction'
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Changed from IsAuthenticated for development
 
     def get_serializer_class(self):
         """Use different serializers based on action"""
@@ -312,7 +312,7 @@ class LigneTransactionViewSet(viewsets.ModelViewSet):
     - GET    /transaction-line-items/filter_by_lot_number/?lot_serie=LOT123
     """
     queryset = LigneTransaction.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Changed from IsAuthenticated for development
 
     def get_serializer_class(self):
         """Use different serializers based on action"""

@@ -3934,3 +3934,4 @@ HYBRID 309.40 386.45    36.18    -25.46
    REG 261.01 328.00    30.52      6.63
 HYBRID 285.11 367.62    33.34     -0.35
 2026-02-13 20:11:04,744 - ForecastingService - INFO - ========================================
+2026-02-13 21:58:54,196 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\Users\serializers.py changed, reloading.
