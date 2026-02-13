@@ -1,25 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import ProfileContent from '../../common/ProfileContent';
 
-const AdminProfile = () => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Admin Profile Screen</Text>
-    </View>
-  );
+const AdminProfile = ({ navigation, user, onOpenDrawer }) => {
+  return <ProfileContent role="admin" user={user} navigation={navigation} onOpenDrawer={onOpenDrawer} />;
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  text: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-});
 
 export default AdminProfile;

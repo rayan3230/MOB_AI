@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -11,9 +11,12 @@ import {
   Animated, 
   TouchableOpacity,
   TouchableWithoutFeedback,
-  StyleSheet
+  StyleSheet,
+  ActivityIndicator
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import lightTheme from '../constants/theme.js';
+import { authService } from '../services/authService';
 
 // Import Components
 import Sidebar from '../components/Sidebar';
@@ -46,8 +49,8 @@ import EmployeeListActions from '../pages/employee/List_Actions';
 import EmployeeProfile from '../pages/employee/Profile';
 
 // Common Pages
+import Intro from '../pages/common/Intro/Intro';
 import ForgetPassword from '../pages/common/Forget_Password';
-import SignUp from '../pages/common/SignUp';
 import WelcomePage from '../pages/common/welcome_Page';
 
 const Stack = createStackNavigator();
@@ -56,7 +59,8 @@ const { width } = Dimensions.get('window');
 const DRAWER_WIDTH = width * 0.75;
 
 // --- EMPLOYEE VIEW (Bottom Tabs) ---
-const EmployeeTabs = () => {
+const EmployeeTabs = ({ route }) => {
+  const user = route.params?.user;
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -73,15 +77,16 @@ const EmployeeTabs = () => {
         tabBarStyle: { height: 60, paddingBottom: 10 },
       })}
     >
-      <Tab.Screen name="Dashboard" component={EmployeeDashboard} />
-      <Tab.Screen name="Tasks" component={EmployeeListActions} />
-      <Tab.Screen name="Profile" component={EmployeeProfile} />
+      <Tab.Screen name="Dashboard" component={EmployeeDashboard} initialParams={{ user }} />
+      <Tab.Screen name="Tasks" component={EmployeeListActions} initialParams={{ user }} />
+      <Tab.Screen name="Profile" component={EmployeeProfile} initialParams={{ user }} />
     </Tab.Navigator>
   );
 };
 
 // --- ADMIN / SUPERVISOR LAYOUT (Sidebar) ---
-const RoleDashboardLayout = ({ role, navigation }) => {
+const RoleDashboardLayout = ({ role, navigation, route }) => {
+  const user = route.params?.user;
   const [isOpen, setIsOpen] = useState(false);
   const [activePage, setActivePage] = useState('Dashboard');
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
@@ -121,27 +126,27 @@ const RoleDashboardLayout = ({ role, navigation }) => {
   const renderContent = () => {
     if (role === 'admin') {
       switch (activePage) {
-        case 'Dashboard': return <AdminDashboard />;
-        case 'AI_Actions': return <AIActions />;
-        case 'User_managment': return <UserManagement />;
-        case 'Warhouse_management': return <WarehouseManagement />;
-        case 'Location_managment': return <LocationManagement />;
-        case 'Floor_managment': return <FloorManagement />;
-        case 'StockingUnit_management': return <StockingUnitManagement />;
-        case 'Chariot_management': return <ChariotManagement />;
-        case 'Visual_Warhouse': return <VisualWarehouse />;
-        case 'Profile': return <AdminProfile />;
-        case 'List_Actions': return <ListActions />;
+        case 'Dashboard': return <AdminDashboard user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'AI_Actions': return <AIActions user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'User_managment': return <UserManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Warhouse_management': return <WarehouseManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Location_managment': return <LocationManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Floor_managment': return <FloorManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'StockingUnit_management': return <StockingUnitManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Chariot_management': return <ChariotManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Visual_Warhouse': return <VisualWarehouse user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Profile': return <AdminProfile user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'List_Actions': return <ListActions user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         default: return <PlaceholderScreen title={`Admin - ${activePage}`} />;
       }
     } else if (role === 'supervisor') {
       switch (activePage) {
-        case 'Dashboard': return <SupervisorDashboard />;
-        case 'AI_Actions': return <SupervisorAIActions />;
-        case 'List_Actions': return <SupervisorListActions />;
-        case 'Profile': return <SupervisorProfile />;
-        case 'Floor_managment': return <FloorManagement />;
-        case 'Visual_Warhouse': return <VisualWarehouse />;
+        case 'Dashboard': return <SupervisorDashboard user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'AI_Actions': return <SupervisorAIActions user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'List_Actions': return <SupervisorListActions user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Profile': return <SupervisorProfile user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Floor_managment': return <FloorManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Visual_Warhouse': return <VisualWarehouse user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         default: return <PlaceholderScreen title={`Supervisor - ${activePage}`} />;
       }
     }
@@ -160,11 +165,13 @@ const RoleDashboardLayout = ({ role, navigation }) => {
             </View>
         </SafeAreaView>
 
-        <TopHeader 
-            onMenuPress={() => toggleDrawer(true)}
-            onSettingsPress={() => console.log('Settings')}
-            onNotificationPress={() => console.log('Notifications')}
-        />
+        {activePage !== 'Profile' && (
+          <TopHeader 
+              onMenuPress={() => toggleDrawer(true)}
+              onSettingsPress={() => console.log('Settings')}
+              onNotificationPress={() => console.log('Notifications')}
+          />
+        )}
 
         <View style={styles.whiteSheet}>
             {renderContent()}
@@ -183,6 +190,7 @@ const RoleDashboardLayout = ({ role, navigation }) => {
       ]}>
         <Sidebar 
           role={role} 
+          user={user}
           activePage={activePage}
           onClose={() => toggleDrawer(false)}
           onNavigate={(page) => {
@@ -200,26 +208,62 @@ const RoleDashboardLayout = ({ role, navigation }) => {
 };
 
 const Router = () => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [initialRoute, setInitialRoute] = useState('Intro');
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const checkUser = async () => {
+            try {
+                const storedUser = await authService.getUser();
+                if (storedUser) {
+                    setUser(storedUser);
+                    const role = (storedUser.user_role || '').toLowerCase();
+                    if (role === 'admin' || role === 'administrator') {
+                        setInitialRoute('AdminHome');
+                    } else if (role === 'manager' || role === 'supervisor') {
+                        setInitialRoute('SupervisorHome');
+                    } else if (role === 'employee') {
+                        setInitialRoute('EmployeeHome');
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        checkUser();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#04324C' }}>
+                <ActivityIndicator size="large" color="#fff" />
+            </View>
+        );
+    }
+
     return (
         <NavigationContainer>
             <Stack.Navigator 
-                initialRouteName="Login"
+                initialRouteName={initialRoute}
                 screenOptions={{
                     headerShown: false,
                     gestureEnabled: false
                 }}
             >
+                <Stack.Screen name="Intro" component={Intro} />
                 <Stack.Screen name="Welcome" component={WelcomePage} />
                 <Stack.Screen name="Login" component={Login} />
-                <Stack.Screen name="SignUp" component={SignUp} />
                 <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
-                <Stack.Screen name="AdminHome">
+                <Stack.Screen name="AdminHome" initialParams={user && initialRoute === 'AdminHome' ? { user } : undefined}>
                   {(props) => <RoleDashboardLayout {...props} role="admin" />}
                 </Stack.Screen>
-                <Stack.Screen name="SupervisorHome">
+                <Stack.Screen name="SupervisorHome" initialParams={user && initialRoute === 'SupervisorHome' ? { user } : undefined}>
                   {(props) => <RoleDashboardLayout {...props} role="supervisor" />}
                 </Stack.Screen>
-                <Stack.Screen name="EmployeeHome" component={EmployeeTabs} />
+                <Stack.Screen name="EmployeeHome" component={EmployeeTabs} initialParams={user && initialRoute === 'EmployeeHome' ? { user } : undefined} />
             </Stack.Navigator>
         </NavigationContainer>
     );
@@ -228,13 +272,13 @@ const Router = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#4d4d4d',
+    backgroundColor: '#04324C',
   },
   mainContent: {
     flex: 1,
   },
   topSection: {
-    backgroundColor: '#4d4d4d',
+    backgroundColor: '#04324C',
   },
   roleLabel: {
     color: '#aaa',

@@ -9,13 +9,14 @@ import {
   Platform,
   Animated,
   ActivityIndicator,
+  Image,
+  StatusBar,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './style';
 import {
-  FontAwesome
+  Feather,
+  Ionicons
 } from '@expo/vector-icons';
-import { COLORS } from '../../../constants/theme.js';
 import { authService } from '../../../services/authService';
 import Logo from '../../../components/Logo';
 import { useNavigation } from '@react-navigation/native';
@@ -24,6 +25,7 @@ const Signin = () => {
   const navigation = useNavigation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberPassword, setRememberPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -50,15 +52,17 @@ const Signin = () => {
       const response = await authService.login(username, password);
       console.log('Login Success:', response);
       
-      // Normalize role to lowercase for comparison
-      const role = (response.user?.user_role || '').toLowerCase();
+      const user = response.user;
+      const role = (user?.user_role || '').toLowerCase();
       
       if (role === 'admin' || role === 'administrator') {
-        navigation.replace('AdminHome');
+        navigation.replace('AdminHome', { user });
       } else if (role === 'manager' || role === 'supervisor') {
-        navigation.replace('SupervisorHome');
+        navigation.replace('SupervisorHome', { user });
+      } else if (role === 'employee') {
+        navigation.replace('EmployeeHome', { user });
       } else {
-        navigation.replace('EmployeeHome');
+        setError('Unknown user role: ' + role);
       }
       
     } catch (err) {
@@ -71,7 +75,17 @@ const Signin = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={{ flex: 1, backgroundColor: '#FFF' }}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+      
+      {/* Background Image Container */}
+      <View style={styles.backgroundContainer}>
+        <Image 
+          source={require('../../../assets/background.png')} 
+          style={styles.backgroundImage}
+        />
+      </View>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -79,76 +93,85 @@ const Signin = () => {
         <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
           <ScrollView
             style={styles.container}
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={{ flexGrow: 1 }}
             showsVerticalScrollIndicator={false}
+            bounces={false}
           >
-
-            <View style={styles.logoContainer}>
-              <View style={styles.logoIcon}>
-                <Logo width={45} height={45} color="#1E13FE" />
+            {/* Top Logo Section */}
+            <View style={styles.topSection}>
+              <View style={styles.logoContainer}>
+                <View style={styles.logoIcon}>
+                  <Logo width={60} height={60} color="#FFF" />
+                </View>
+                <Text style={styles.logoText}>FLOWLOGIX</Text>
               </View>
-              <Text style={styles.logoText}>FLOWLOGIX</Text>
             </View>
 
-            <Text style={styles.title}>Log in to continue</Text>
+            {/* Form Section */}
+            <View style={styles.formContainer}>
+              <Text style={styles.title}>Log in</Text>
 
-            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              placeholderTextColor="#adb5bd"
-              value={username}
-              onChangeText={setUsername}
-              autoCapitalize="none"
-              keyboardType="email-address"
-            />
+              <View style={styles.inputWrapper}>
+                <Feather name="mail" size={20} color="#adb5bd" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  placeholderTextColor="#adb5bd"
+                  value={username}
+                  onChangeText={setUsername}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                />
+              </View>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              placeholderTextColor="#adb5bd"
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
+              <View style={styles.inputWrapper}>
+                <Feather name="lock" size={20} color="#adb5bd" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password"
+                  placeholderTextColor="#adb5bd"
+                  secureTextEntry
+                  value={password}
+                  onChangeText={setPassword}
+                />
+              </View>
 
-            <TouchableOpacity
-              style={styles.continueButton}
-              onPress={handleContinue}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.continueButtonText}>Continue</Text>
-              )}
-            </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.rememberContainer}
+                onPress={() => setRememberPassword(!rememberPassword)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.checkbox, rememberPassword && styles.checkboxChecked]}>
+                  {rememberPassword && <Ionicons name="checkmark" size={14} color="#FFF" />}
+                </View>
+                <Text style={styles.rememberText}>Remember Password</Text>
+              </TouchableOpacity>
 
-            <View style={styles.dividerContainer}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>or</Text>
-              <View style={styles.dividerLine} />
+              <TouchableOpacity
+                style={styles.continueButton}
+                onPress={handleContinue}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.continueButtonText}>Continue</Text>
+                )}
+              </TouchableOpacity>
+
+              <View style={styles.footer}>
+                <Text style={styles.footerText}>Dont have an account? </Text>
+                <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                  <Text style={styles.footerLink}>Sign up</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-
-            <TouchableOpacity style={styles.socialButton}>
-              <View style={styles.socialIcon}>
-                <FontAwesome name="envelope-o" size={18} color="#333" />
-              </View>
-              <Text style={styles.socialButtonText}>Continue with Email address</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.socialButton}>
-              <View style={styles.socialIcon}>
-                <FontAwesome name="google" size={20} color="#EA4335" />
-              </View>
-              <Text style={styles.socialButtonText}>Continue with Google</Text>
-            </TouchableOpacity>
-
           </ScrollView>
         </Animated.View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -7,15 +7,15 @@ const TopHeader = ({ onMenuPress, onSettingsPress, onNotificationPress }) => {
     <View style={styles.outerContainer}>
       <View style={styles.innerContainer}>
         <TouchableOpacity onPress={onMenuPress}>
-          <Feather name="menu" size={28} color="#1a1a1a" />
+          <Feather name="menu" size={24} color="#333" />
         </TouchableOpacity>
         
         <View style={styles.rightIcons}>
           <TouchableOpacity onPress={onNotificationPress} style={styles.iconButton}>
-            <Feather name="bell" size={26} color="#1a1a1a" />
+            <Feather name="bell" size={24} color="#333" />
           </TouchableOpacity>
           <TouchableOpacity onPress={onSettingsPress}>
-            <Feather name="settings" size={26} color="#1a1a1a" />
+            <Feather name="settings" size={24} color="#333" />
           </TouchableOpacity>
         </View>
       </View>
@@ -25,7 +25,7 @@ const TopHeader = ({ onMenuPress, onSettingsPress, onNotificationPress }) => {
 
 const styles = StyleSheet.create({
   outerContainer: {
-    backgroundColor: '#4d4d4d', // Dark background like the image
+    backgroundColor: '#04324C', // Original dark background
     paddingTop: 10,
   },
   innerContainer: {
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: -5 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
-    elevation: 5,
+    elevation: 8,
   },
   rightIcons: {
     flexDirection: 'row',

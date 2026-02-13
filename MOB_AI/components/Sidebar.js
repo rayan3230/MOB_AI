@@ -1,31 +1,51 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import Logo from './Logo';
+import { authService } from '../services/authService';
 
-const Sidebar = ({ role, activePage = 'User_managment', onNavigate, onClose }) => {
+const Sidebar = ({ role, user, activePage = 'User_managment', onNavigate, onClose }) => {
   const adminLinks = [
-    { name: 'Dashboard', id: 'Dashboard' },
-    { name: 'AI Action', id: 'AI_Actions' },
-    { name: 'Users management', id: 'User_managment' },
-    { name: 'Warehouse management', id: 'Warhouse_management' },
-    { name: 'Location management', id: 'Location_managment' },
-    { name: 'Floor management', id: 'Floor_managment' },
-    { name: 'Stocking units management', id: 'StockingUnit_management' },
-    { name: 'Chariot management', id: 'Chariot_management' },
-    { name: 'Visual representation of warehousre', id: 'Visual_Warhouse' },
+    { name: 'Dashboard', id: 'Dashboard', icon: 'dashboard' },
+    { name: 'AI Action', id: 'AI_Actions', icon: 'magic' },
+    { name: 'Users management', id: 'User_managment', icon: 'users' },
+    { name: 'Warehouse management', id: 'Warhouse_management', icon: 'building' },
+    { name: 'Location management', id: 'Location_managment', icon: 'map-marker' },
+    { name: 'Floor management', id: 'Floor_managment', icon: 'th' },
+    { name: 'Stocking units management', id: 'StockingUnit_management', icon: 'archive' },
+    { name: 'Chariot management', id: 'Chariot_management', icon: 'truck' },
+    { name: 'Visual representation', id: 'Visual_Warhouse', icon: 'eye' },
   ];
 
   const supervisorLinks = [
-    { name: 'Dashboard', id: 'Dashboard' },
-    { name: 'Floor management', id: 'Floor_managment' },
-    { name: 'Visual representation', id: 'Visual_Warhouse' },
+    { name: 'Dashboard', id: 'Dashboard', icon: 'dashboard' },
+    { name: 'Floor management', id: 'Floor_managment', icon: 'th' },
+    { name: 'Visual representation', id: 'Visual_Warhouse', icon: 'eye' },
   ];
 
   const employeeLinks = [
-    { name: 'Home', id: 'Dashboard' },
-    { name: 'Tasks', id: 'List_Actions' },
+    { name: 'Home', id: 'Dashboard', icon: 'home' },
+    { name: 'Tasks', id: 'List_Actions', icon: 'tasks' },
   ];
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to log out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Logout', 
+          onPress: async () => {
+             await authService.logout();
+             onNavigate('Logout');
+          }, 
+          style: 'destructive' 
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   const getLinks = () => {
     if (role === 'admin') return adminLinks;
@@ -52,6 +72,12 @@ const Sidebar = ({ role, activePage = 'User_managment', onNavigate, onClose }) =
             style={styles.navLink}
             onPress={() => onNavigate(link.id)}
           >
+            <FontAwesome 
+              name={link.icon} 
+              size={18} 
+              color={activePage === link.id ? '#00a3ff' : '#666'} 
+              style={styles.navIcon} 
+            />
             <Text style={[
               styles.navText,
               activePage === link.id && styles.activeNavText
@@ -63,16 +89,30 @@ const Sidebar = ({ role, activePage = 'User_managment', onNavigate, onClose }) =
       </ScrollView>
 
       <View style={styles.footer}>
-        <View style={styles.profileSection}>
+        <TouchableOpacity 
+          style={styles.profileSection} 
+          onPress={() => onNavigate('Profile')}
+        >
           <Image 
-            source={{ uri: 'https://i.pravatar.cc/150?u=wassim' }} // Placeholder for the avatar
+            source={{ uri: `https://ui-avatars.com/api/?name=${user?.user_name || 'User'}&background=random` }} 
             style={styles.avatar} 
           />
           <View style={styles.profileInfo}>
-            <Text style={styles.userName}>Wassim Mouhouce</Text>
-            <Text style={styles.userRole}>{role === 'admin' ? 'Admin' : 'Staff'}</Text>
+            <Text style={[
+              styles.userName,
+              activePage === 'Profile' && styles.activeNavText
+            ]}>
+              {user?.user_name || 'User'}
+            </Text>
+            <Text style={styles.userRole}>{role === 'admin' ? 'Administrator' : role === 'supervisor' ? 'Supervisor' : 'Staff'}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <FontAwesome name="sign-out" size={20} color="#ff4d4d" />
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
+
         <Text style={styles.versionText}>Flow Logix version 1.0</Text>
       </View>
     </View>
@@ -112,8 +152,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
   },
   navLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 12,
     marginBottom: 5,
+  },
+  navIcon: {
+    width: 25,
+    marginRight: 12,
+    textAlign: 'center',
   },
   navText: {
     color: '#333',
@@ -154,6 +201,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#888',
     marginTop: 2,
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+    marginTop: 10,
+  },
+  logoutText: {
+    color: '#ff4d4d',
+    fontSize: 15,
+    fontWeight: '600',
+    marginLeft: 12,
   },
   versionText: {
     fontSize: 11,
