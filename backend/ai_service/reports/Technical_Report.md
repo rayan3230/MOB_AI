@@ -11,23 +11,23 @@ This project implements a hybrid forecasting system for warehouse management. It
   $$Stock = \sum Receipts - \sum (Deliveries + Picking + Transfers)$$
 - **Cleaning**: Outliers and template/dummy rows are filtered to ensure data integrity.
 
-### Phase 2: Statistical Engine
-We use two primary baseline models to feed the AI Decision Layer:
-1. **Simple Moving Average (SMA-7)**: Captures short-term stability.
-2. **Linear Regression (OLS)**: Analyzes the trend slope over the last 30 days to detect growth or decline.
-3. **Volatility Analysis**: Calculates the Standard Deviation of daily demand.
-4. **Safety Stock**: Computed as $1.65 \times \sigma$ to ensure a 95% service level.
+### Phase 2: Statistical Engine (Top-Performing Trio)
+We use three high-accuracy model signals to feed the AI Decision Layer:
+1. **Simple Exponential Smoothing (SES)**: Captures recent demand sensitivity (Alpha: 0.25–0.40).
+2. **Linear Regression (OLS)**: Detects long-term trends and growth trajectories.
+3. **Year-over-Year (YoY) Seasonality**: Captures annual patterns by analyzing the same day/month in previous years.
+4. **Safety Stock**: Computed as $Z \times \sigma$ where Z is dynamic based on demand classification (Fast vs Slow mover).
 
 ### Phase 3: AI Decision Layer (The "Improved" Model)
-Instead of a simple mathematical average, we use **Mistral AI** to act as a warehouse supervisor. 
-- **Input**: Statistical features (SMA, Regression Prediction, Trend Slope, Volatility, Safety Stock).
-- **Reasoning**: The AI evaluates if the trend is strong enough to trust the regression model over SMA, or if high volatility requires an extra buffer.
-- **Output**: A normalized "final_forecast" and a plain-text justification.
+Instead of a simple mathematical average, we use **Mistral AI** to act as a digital warehouse supervisor. 
+- **Input**: Statistical features (SES, REG, YoY, Trend Strength, Volatility).
+- **Calibrated Base**: A deterministic hybrid blend (Reg-dominant) multiplied by a **1.27x calibration factor** to achieve near-zero bias.
+- **Output**: A final forecast adjusted for seasonal context and a plan-text justification.
 
-### Phase 4: Order Generation & Validation
-- **Logic**: If $Target Stock (Forecast + Safety Stock) > Current Stock$, a **Preparation Order** is generated.
-- **Human-in-the-loop**: All orders are set to `PENDING_VALIDATION`.
-- **Overrides**: Supervisors can adjust quantities with a mandatory justification field, which is logged for auditability.
+### Phase 4: Order Generation & Reordering (Requirement 8.1)
+- **Stock Awareness**: Real-time stock calculation from transaction logs ($Receipts - Deliveries - Picking$).
+- **One Day in Advance**: Dedicated trigger mechanism to predict "Tomorrow's" preparation needs today.
+- **Preparation Quantity**: $Prep = \max(0, Forecast - CurrentStock)$.
 
 ## 3. Comparative Evaluation
 

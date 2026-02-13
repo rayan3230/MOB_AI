@@ -17,6 +17,8 @@ import { lightTheme } from '../../../constants/theme.js';
 import TopHeader from '../../../components/AdminHeader';
 import PredictionCard from '../../../components/PredictionCard';
 
+import ManagementModal from '../../../components/ManagementModal';
+
 const AIActions = ({ user, onOpenDrawer }) => {
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +26,7 @@ const AIActions = ({ user, onOpenDrawer }) => {
   const [selectedPrediction, setSelectedPrediction] = useState(null);
   const [overrideValue, setOverrideValue] = useState('');
   const [justification, setJustification] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   // Normalize role check for flexibility (api returns user_role)
   const userRole = (user?.user_role || user?.role || '').toUpperCase();
@@ -183,70 +186,48 @@ const AIActions = ({ user, onOpenDrawer }) => {
         />
       )}
 
-      <Modal
+      <ManagementModal
         visible={modalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setModalVisible(false)}
+        onClose={() => setModalVisible(false)}
+        onSave={handleSaveOverride}
+        title="Override Forecast"
+        submitting={submitting}
+        saveLabel="Confirm Changes"
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Override Forecast</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeBtn}>
-                <Feather name="x" size={24} color="#4A5568" />
-              </TouchableOpacity>
-            </View>
+        <View style={styles.predictionSummary}>
+          <Text style={styles.summaryLabel}>Category</Text>
+          <Text style={styles.summaryValue}>{selectedPrediction?.type}</Text>
+          
+          <Text style={styles.summaryLabel}>Scheduled Date</Text>
+          <Text style={styles.summaryValue}>{selectedPrediction?.date}</Text>
 
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <View style={styles.predictionSummary}>
-                <Text style={styles.summaryLabel}>Category</Text>
-                <Text style={styles.summaryValue}>{selectedPrediction?.type}</Text>
-                
-                <Text style={styles.summaryLabel}>Scheduled Date</Text>
-                <Text style={styles.summaryValue}>{selectedPrediction?.date}</Text>
-
-                <View style={styles.aiForecastBox}>
-                  <Text style={styles.aiForecastLabel}>Initial AI Prediction</Text>
-                  <Text style={styles.aiForecastValue}>{selectedPrediction?.predictedValue}</Text>
-                </View>
-              </View>
-
-              <Text style={styles.formLabel}>New Effective Value</Text>
-              <TextInput
-                style={styles.textInput}
-                value={overrideValue}
-                onChangeText={setOverrideValue}
-                placeholder="e.g. 180 units"
-                placeholderTextColor="#A0AEC0"
-              />
-
-              <Text style={styles.formLabel}>Reason for Override</Text>
-              <TextInput
-                style={[styles.textInput, styles.textArea]}
-                value={justification}
-                onChangeText={setJustification}
-                placeholder="Please explain why the AI prediction is being changed..."
-                placeholderTextColor="#A0AEC0"
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-              />
-
-              <TouchableOpacity style={styles.confirmBtn} onPress={handleSaveOverride}>
-                <Text style={styles.confirmBtnText}>Confirm Changes</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={styles.cancelBtn} 
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.cancelBtnText}>Back to List</Text>
-              </TouchableOpacity>
-            </ScrollView>
+          <View style={styles.aiForecastBox}>
+            <Text style={styles.aiForecastLabel}>Initial AI Prediction</Text>
+            <Text style={styles.aiForecastValue}>{selectedPrediction?.predictedValue}</Text>
           </View>
         </View>
-      </Modal>
+
+        <Text style={styles.formLabel}>New Effective Value</Text>
+        <TextInput
+          style={styles.textInput}
+          value={overrideValue}
+          onChangeText={setOverrideValue}
+          placeholder="e.g. 180 units"
+          placeholderTextColor="#A0AEC0"
+        />
+
+        <Text style={styles.formLabel}>Reason for Override</Text>
+        <TextInput
+          style={[styles.textInput, styles.textArea]}
+          value={justification}
+          onChangeText={setJustification}
+          placeholder="Please explain why the AI prediction is being changed..."
+          placeholderTextColor="#A0AEC0"
+          multiline
+          numberOfLines={4}
+          textAlignVertical="top"
+        />
+      </ManagementModal>
     </SafeAreaView>
   );
 };
@@ -291,30 +272,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 16,
     color: '#A0AEC0',
-  },
-  // Modal Styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    padding: 25,
-    maxHeight: '85%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#04324C',
   },
   predictionSummary: {
     marginBottom: 25,
@@ -367,27 +324,6 @@ const styles = StyleSheet.create({
   },
   textArea: {
     height: 100,
-  },
-  confirmBtn: {
-    backgroundColor: '#00a3ff',
-    padding: 18,
-    borderRadius: 15,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  confirmBtnText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  cancelBtn: {
-    padding: 15,
-    alignItems: 'center',
-    marginTop: 5,
-  },
-  cancelBtnText: {
-    color: '#718096',
-    fontWeight: '600',
   },
 });
 
