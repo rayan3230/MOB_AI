@@ -8,13 +8,12 @@ import {
   TextInput, 
   ActivityIndicator,
   Alert,
-  Modal,
-  ScrollView,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { lightTheme } from '../../../constants/theme.js';
 import { apiCall } from '../../../services/api';
-import UserCard from '../../../components/UserCard';
+import CollapsibleManagementCard from '../../../components/CollapsibleManagementCard';
+import ManagementModal from '../../../components/ManagementModal';
 
 const UserManagement = ({ user: currentUser }) => {
   const [users, setUsers] = useState([]);
@@ -169,13 +168,12 @@ const UserManagement = ({ user: currentUser }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header with Search and Add Button */}
       <View style={styles.header}>
         <View style={styles.searchContainer}>
           <Feather name="search" size={20} color="#7D7D7D" style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search Users..."
+            placeholder="Rechercher..."
             value={searchQuery}
             onChangeText={handleSearch}
           />
@@ -187,283 +185,223 @@ const UserManagement = ({ user: currentUser }) => {
 
       {loading ? (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#00a3ff" />
+          <ActivityIndicator size="large" color="#2196F3" />
         </View>
       ) : (
         <FlatList
           data={filteredUsers}
           keyExtractor={(item) => item.id_utilisateur}
           renderItem={({ item }) => (
-            <UserCard 
-              user={item} 
-              currentUserRole={currentUser?.user_role}
-              onToggleStatus={handleToggleStatus} 
-              onEdit={openEditModal} 
-              onDelete={handleDeleteUser}
+            <CollapsibleManagementCard
+              title={item.nom_complet || 'Sans nom'}
+              subtitle={item.role}
+              iconName="user"
+              iconColor={item.role === 'ADMIN' ? '#E91E63' : item.role === 'SUPERVISOR' ? '#FF9800' : '#2196F3'}
+              status={item.is_banned ? "Banni" : "Actif"}
+              statusColor={item.is_banned ? "#F44336" : "#4CAF50"}
+              onEdit={() => openEditModal(item)}
+              onDelete={() => handleDeleteUser(item)}
+              details={[
+                { label: 'ID', value: item.id_utilisateur },
+                { label: 'Email', value: item.email || 'N/A' },
+                { label: 'Tél', value: item.telephone || 'N/A' },
+                { label: 'Adresse', value: item.adresse || 'N/A' },
+              ]}
+              customActions={[
+                {
+                  icon: item.is_banned ? 'unlock' : 'lock',
+                  color: item.is_banned ? '#4CAF50' : '#F44336',
+                  onPress: () => handleToggleStatus(item),
+                  label: item.is_banned ? 'Débloquer' : 'Bloquer'
+                }
+              ]}
             />
           )}
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
             <View style={styles.centered}>
-              <Text style={styles.emptyText}>No users found</Text>
+              <Text style={styles.emptyText}>Aucun utilisateur trouvé</Text>
             </View>
           }
         />
       )}
 
       {/* Add/Edit Modal */}
-      <Modal
+      <ManagementModal
         visible={modalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setModalVisible(false)}
+        onClose={() => setModalVisible(false)}
+        onSubmit={handleSave}
+        title={editingUser ? 'Modifier Utilisateur' : 'Ajouter Utilisateur'}
+        submitting={false}
+        submitLabel={editingUser ? 'Enregistrer' : 'Ajouter'}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{editingUser ? 'Edit User' : 'Add New User'}</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Feather name="x" size={24} color="#333" />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView style={styles.modalForm}>
-              {editingUser && (
-                <>
-                  <Text style={styles.inputLabel}>User ID (Fixed)</Text>
-                  <TextInput
-                    style={[styles.input, styles.disabledInput]}
-                    value={formData.id_utilisateur}
-                    editable={false}
-                  />
-                </>
-              )}
-
-              <Text style={styles.inputLabel}>Full Name</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="John Doe"
-                value={formData.nom_complet}
-                onChangeText={(text) => setFormData({...formData, nom_complet: text})}
-              />
-
-              <Text style={styles.inputLabel}>Role</Text>
-              <View style={styles.roleButtonsContainer}>
-                {['EMPLOYEE', 'SUPERVISOR', 'ADMIN'].map((role) => (
-                  <TouchableOpacity
-                    key={role}
-                    style={[
-                      styles.roleOption,
-                      formData.role === role && styles.roleOptionSelected
-                    ]}
-                    onPress={() => setFormData({...formData, role: role})}
-                  >
-                    <Text style={[
-                      styles.roleOptionText,
-                      formData.role === role && styles.roleOptionTextSelected
-                    ]}>{role}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              <Text style={styles.inputLabel}>Email</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="john@example.com"
-                keyboardType="email-address"
-                value={formData.email}
-                onChangeText={(text) => setFormData({...formData, email: text})}
-              />
-
-              <Text style={styles.inputLabel}>Phone</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="+123456789"
-                keyboardType="phone-pad"
-                value={formData.telephone}
-                onChangeText={(text) => setFormData({...formData, telephone: text})}
-              />
-
-              <Text style={styles.inputLabel}>Address</Text>
-              <TextInput
-                style={[styles.input, { height: 80 }]}
-                placeholder="123 Street, City"
-                multiline
-                value={formData.adresse}
-                onChangeText={(text) => setFormData({...formData, adresse: text})}
-              />
-
-              <Text style={styles.inputLabel}>Password {editingUser && '(Leave blank to keep current)'}</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="********"
-                secureTextEntry
-                value={formData.password}
-                onChangeText={(text) => setFormData({...formData, password: text})}
-              />
-
-              <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                <Text style={styles.saveButtonText}>Save User</Text>
-              </TouchableOpacity>
-              <View style={{ height: 40 }} />
-            </ScrollView>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Nom Complet *</Text>
+          <View style={styles.inputContainer}>
+            <Feather name="user" size={18} color="#94A3B8" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Jean Dupont"
+              value={formData.nom_complet}
+              onChangeText={(text) => setFormData({...formData, nom_complet: text})}
+              placeholderTextColor="#94A3B8"
+            />
           </View>
         </View>
-      </Modal>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Role</Text>
+          <View style={styles.roleButtonsContainer}>
+            {['EMPLOYEE', 'SUPERVISOR', 'ADMIN'].map((role) => (
+              <TouchableOpacity
+                key={role}
+                style={[
+                  styles.roleOption,
+                  formData.role === role && styles.roleOptionSelected
+                ]}
+                onPress={() => setFormData({...formData, role: role})}
+              >
+                <Text style={[
+                  styles.roleOptionText,
+                  formData.role === role && styles.roleOptionTextSelected
+                ]}>{role}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Email</Text>
+          <View style={styles.inputContainer}>
+            <Feather name="mail" size={18} color="#94A3B8" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="jean@example.com"
+              keyboardType="email-address"
+              value={formData.email}
+              onChangeText={(text) => setFormData({...formData, email: text})}
+              placeholderTextColor="#94A3B8"
+            />
+          </View>
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Télephone</Text>
+          <View style={styles.inputContainer}>
+            <Feather name="phone" size={18} color="#94A3B8" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="+212 600000000"
+              keyboardType="phone-pad"
+              value={formData.telephone}
+              onChangeText={(text) => setFormData({...formData, telephone: text})}
+              placeholderTextColor="#94A3B8"
+            />
+          </View>
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Adresse</Text>
+          <View style={[styles.inputContainer, { height: 100, alignItems: 'flex-start', paddingTop: 12 }]}>
+            <Feather name="map-pin" size={18} color="#94A3B8" style={[styles.inputIcon, { marginTop: 4 }]} />
+            <TextInput
+              style={[styles.input, { height: 80, textAlignVertical: 'top' }]}
+              placeholder="Casablanca, Maroc"
+              multiline
+              value={formData.adresse}
+              onChangeText={(text) => setFormData({...formData, adresse: text})}
+              placeholderTextColor="#94A3B8"
+            />
+          </View>
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Mot de passe {editingUser && '(Laisser vide pour garder l\'actuel)'}</Text>
+          <View style={styles.inputContainer}>
+            <Feather name="lock" size={18} color="#94A3B8" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="********"
+              secureTextEntry
+              value={formData.password}
+              onChangeText={(text) => setFormData({...formData, password: text})}
+              placeholderTextColor="#94A3B8"
+            />
+          </View>
+        </View>
+      </ManagementModal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
+  container: { flex: 1, backgroundColor: '#F8F9FA' },
   header: {
-    padding: 20,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    backgroundColor: '#FFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   searchContainer: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#F1F5F9',
     borderRadius: 12,
     paddingHorizontal: 15,
     height: 50,
-    marginRight: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3.84,
-    elevation: 5,
+    marginRight: 12,
   },
-  searchIcon: {
-    marginRight: 10,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    color: '#333',
-  },
+  searchIcon: { marginRight: 10 },
+  searchInput: { flex: 1, fontSize: 16, color: '#1E293B' },
   addButton: {
-    backgroundColor: '#00a3ff',
-    width: 50,
-    height: 50,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: "#00a3ff",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
+    width: 48, height: 48, borderRadius: 14, backgroundColor: '#2196F3',
+    justifyContent: 'center', alignItems: 'center',
+    elevation: 4, shadowColor: '#2196F3', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3, shadowRadius: 8
   },
-  listContent: {
-    paddingHorizontal: 12,
-    paddingBottom: 20,
-    paddingTop: 0,
+  listContent: { paddingVertical: 12, paddingBottom: 100 },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyText: { color: '#94A3B8', marginTop: 20, fontSize: 16 },
+  label: { fontSize: 14, fontWeight: '700', marginBottom: 8, color: '#475569' },
+  formGroup: { marginBottom: 20 },
+  inputContainer: {
+    backgroundColor: '#F8FAFC', borderRadius: 12, paddingHorizontal: 12,
+    borderWidth: 1, borderColor: '#E2E8F0', flexDirection: 'row', alignItems: 'center',
+    height: 54
   },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#7D7D7D',
-  },
-  // Modal styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    padding: 25,
-    maxHeight: '90%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#04324C',
-  },
-  modalForm: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#4A4A4A',
-    marginBottom: 8,
-    marginTop: 15,
-  },
-  input: {
-    backgroundColor: '#F5F5F5',
-    borderRadius: 12,
-    padding: 15,
-    fontSize: 16,
-    color: '#333',
-    borderWidth: 1,
-    borderColor: '#EEE',
-  },
-  disabledInput: {
-    opacity: 0.6,
-    backgroundColor: '#EEE',
-  },
+  inputIcon: { marginRight: 10 },
+  input: { flex: 1, height: 54, fontSize: 16, color: '#1E293B' },
   roleButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 5,
+    gap: 8
   },
   roleOption: {
     flex: 1,
-    paddingVertical: 10,
+    height: 48,
     alignItems: 'center',
-    borderRadius: 10,
+    justifyContent: 'center',
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#DDD',
-    marginHorizontal: 4,
+    borderColor: '#E2E8F0',
+    backgroundColor: '#FFF',
   },
   roleOptionSelected: {
-    backgroundColor: '#00a3ff',
-    borderColor: '#00a3ff',
+    backgroundColor: '#2196F3',
+    borderColor: '#2196F3',
   },
   roleOptionText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#7D7D7D',
+    color: '#64748B',
   },
   roleOptionTextSelected: {
-    color: '#fff',
-  },
-  saveButton: {
-    backgroundColor: '#00a3ff',
-    borderRadius: 15,
-    padding: 18,
-    alignItems: 'center',
-    marginTop: 30,
-    shadowColor: "#00a3ff",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '700',
+    color: '#FFF',
   },
 });
 

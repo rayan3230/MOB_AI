@@ -7,13 +7,14 @@ import {
   ActivityIndicator, 
   TouchableOpacity, 
   Alert, 
-  Modal, 
   TextInput,
-  ScrollView
+  StatusBar
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { warehouseService } from '../../../services/warehouseService';
+import CollapsibleManagementCard from '../../../components/CollapsibleManagementCard';
+import ManagementModal from '../../../components/ManagementModal';
 
 const WarehouseManagement = () => {
   const [warehouses, setWarehouses] = useState([]);
@@ -38,7 +39,7 @@ const WarehouseManagement = () => {
       setWarehouses(data);
       const activeId = await AsyncStorage.getItem('activeWarehouseId');
       if (activeId) {
-        setActiveWarehouse(activeId);
+        setActiveWarehouse(Number(activeId));
       }
     } catch (error) {
       console.error('Error fetching warehouses:', error);
@@ -51,11 +52,11 @@ const WarehouseManagement = () => {
 
   const handleSelectWarehouse = async (id) => {
     try {
-      await AsyncStorage.setItem('activeWarehouseId', id);
+      await AsyncStorage.setItem('activeWarehouseId', String(id));
       setActiveWarehouse(id);
-      Alert.alert('Success', `Warehouse ${id} selected as active`);
+      Alert.alert('Success', `Warehouse ${id} is now set as active`);
     } catch (error) {
-      Alert.alert('Error', 'Failed to save active warehouse');
+      Alert.alert('Error', 'Failed to set active warehouse');
     }
   };
 
@@ -143,89 +144,68 @@ const WarehouseManagement = () => {
 
   const closeModal = () => {
     setModalVisible(false);
-    setNewWarehouse({
-      code_entrepot: '',
-      nom_entrepot: '',
-      ville: '',
-      adresse: ''
-    });
-    setIsEditing(false);
-    setEditingId(null);
   };
 
-  const renderWarehouseItem = ({ item }) => (
-    <View style={[styles.warehouseCard, activeWarehouse === item.id_entrepot && styles.activeCard]}>
-      <View style={styles.warehouseInfo}>
-        <Text style={styles.warehouseName}>{item.nom_entrepot}</Text>
-        <Text style={styles.warehouseCode}>{item.code_entrepot}</Text>
-        <Text style={styles.warehouseDetails}>
-          {item.ville}{item.adresse ? ` - ${item.adresse}` : ''}
-        </Text>
-        <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 8}}>
-          <View style={[styles.statusBadge, { backgroundColor: item.actif ? '#4CAF50' : '#F44336' }]}>
-            <Text style={styles.statusText}>{item.actif ? 'Active' : 'Inactive'}</Text>
-          </View>
-          {activeWarehouse === item.id_entrepot && (
-            <View style={[styles.statusBadge, { backgroundColor: '#2196F3', marginLeft: 8 }]}>
-              <Text style={styles.statusText}>Selected</Text>
-            </View>
-          )}
-        </View>
-      </View>
-      
-      <View style={styles.actionButtons}>
-        <TouchableOpacity 
-          style={[styles.actionButton, {backgroundColor: '#e3f2fd'}]} 
-          onPress={() => handleSelectWarehouse(item.id_entrepot)}
-        >
-          <Feather name="check-circle" size={18} color="#2196F3" />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.actionButton, styles.editButton]} 
-          onPress={() => openEditModal(item)}
-        >
-          <Feather name="edit-2" size={18} color="#2196F3" />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.actionButton, styles.deleteButton]} 
-          onPress={() => handleDeleteWarehouse(item.id_entrepot)}
-        >
-          <Feather name="trash-2" size={18} color="#F44336" />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-
-  if (loading && !refreshing) {
+  const renderWarehouseItem = ({ item }) => {
+    const isActive = activeWarehouse === item.id_entrepot;
+    
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#2196F3" />
-      </View>
+      <CollapsibleManagementCard
+        title={item.nom_entrepot}
+        subtitle={item.code_entrepot}
+        status={item.actif ? 'Active' : 'Inactive'}
+        icon="home"
+        iconColor={isActive ? "#007AFF" : "#666"}
+        details={[
+          { label: 'City', value: item.ville },
+          { label: 'Address', value: item.adresse },
+          { label: 'ID', value: String(item.id_entrepot) },
+          { label: 'Status', value: item.actif ? 'Active' : 'Inactive' }
+        ]}
+        onEdit={() => openEditModal(item)}
+        onDelete={() => handleDeleteWarehouse(item.id_entrepot)}
+        extraActions={[
+          {
+            label: isActive ? 'Selected' : 'Select',
+            icon: isActive ? 'check-circle' : 'circle',
+            color: isActive ? '#4CAF50' : '#007AFF',
+            onPress: () => handleSelectWarehouse(item.id_entrepot)
+          }
+        ]}
+      />
     );
-  }
+  };
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
-        <Text style={styles.title}>Warehouses</Text>
-        <View style={styles.headerButtons}>
-          <TouchableOpacity 
-            style={[styles.headerButton, styles.addButton]} 
-            onPress={openAddModal}
-          >
-            <Text style={styles.buttonText}>+ Add</Text>
-          </TouchableOpacity>
+        <View>
+          <Text style={styles.title}>Warehouses</Text>
+          <Text style={styles.subtitle}>Manage your storage facilities</Text>
         </View>
+        <TouchableOpacity style={styles.addButton} onPress={openAddModal}>
+          <Feather name="plus" size={24} color="#FFF" />
+        </TouchableOpacity>
       </View>
       
-      {warehouses.length === 0 ? (
+      {loading && !refreshing ? (
         <View style={styles.centered}>
-          <Text style={styles.text}>No warehouses found</Text>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>Loading warehouses...</Text>
+        </View>
+      ) : warehouses.length === 0 ? (
+        <View style={styles.centered}>
+          <Feather name="box" size={50} color="#DDD" />
+          <Text style={styles.noDataText}>No warehouses found</Text>
+          <TouchableOpacity style={styles.refreshButton} onPress={onRefresh}>
+            <Text style={styles.refreshButtonText}>Refresh</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
           data={warehouses}
-          keyExtractor={(item) => item.id_entrepot}
+          keyExtractor={(item) => String(item.id_entrepot)}
           renderItem={renderWarehouseItem}
           contentContainerStyle={styles.listContent}
           onRefresh={onRefresh}
@@ -233,261 +213,114 @@ const WarehouseManagement = () => {
         />
       )}
 
-      <Modal
-        animationType="slide"
-        transparent={true}
+      <ManagementModal
         visible={modalVisible}
-        onRequestClose={closeModal}
+        onClose={closeModal}
+        title={isEditing ? 'Update Warehouse' : 'New Warehouse'}
+        onSubmit={handleSubmitWarehouse}
+        submitting={submitting}
+        submitLabel={isEditing ? 'Update' : 'Create'}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>{isEditing ? 'Edit Warehouse' : 'Add New Warehouse'}</Text>
-            <ScrollView style={styles.modalForm}>
-              <Text style={styles.label}>Warehouse Code *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g., MAIN_ST_WH"
-                value={newWarehouse.code_entrepot}
-                onChangeText={(text) => setNewWarehouse({...newWarehouse, code_entrepot: text})}
-              />
-
-              <Text style={styles.label}>Warehouse Name *</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g., Central Warehouse"
-                value={newWarehouse.nom_entrepot}
-                onChangeText={(text) => setNewWarehouse({...newWarehouse, nom_entrepot: text})}
-              />
-
-              <Text style={styles.label}>City</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g., Paris"
-                value={newWarehouse.ville}
-                onChangeText={(text) => setNewWarehouse({...newWarehouse, ville: text})}
-              />
-
-              <Text style={styles.label}>Address</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g., 123 Rue de Rivoli"
-                value={newWarehouse.adresse}
-                onChangeText={(text) => setNewWarehouse({...newWarehouse, adresse: text})}
-              />
-            </ScrollView>
-
-            <View style={styles.modalButtons}>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.cancelButton]} 
-                onPress={closeModal}
-                disabled={submitting}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.saveButton]} 
-                onPress={handleSubmitWarehouse}
-                disabled={submitting}
-              >
-                {submitting ? (
-                  <ActivityIndicator size="small" color="white" />
-                ) : (
-                  <Text style={styles.saveButtonText}>{isEditing ? 'Update Warehouse' : 'Add Warehouse'}</Text>
-                )}
-              </TouchableOpacity>
-            </View>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Warehouse Code *</Text>
+          <View style={styles.inputContainer}>
+            <Feather name="hash" size={18} color="#94A3B8" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="e.g., MAIN_WH_01"
+              value={newWarehouse.code_entrepot}
+              onChangeText={(text) => setNewWarehouse({...newWarehouse, code_entrepot: text})}
+              placeholderTextColor="#94A3B8"
+            />
           </View>
         </View>
-      </Modal>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Warehouse Name *</Text>
+          <View style={styles.inputContainer}>
+            <Feather name="tag" size={18} color="#94A3B8" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="e.g., Central Logistics"
+              value={newWarehouse.nom_entrepot}
+              onChangeText={(text) => setNewWarehouse({...newWarehouse, nom_entrepot: text})}
+              placeholderTextColor="#94A3B8"
+            />
+          </View>
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>City</Text>
+          <View style={styles.inputContainer}>
+            <Feather name="map-pin" size={18} color="#94A3B8" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="City name"
+              value={newWarehouse.ville}
+              onChangeText={(text) => setNewWarehouse({...newWarehouse, ville: text})}
+              placeholderTextColor="#94A3B8"
+            />
+          </View>
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Address</Text>
+          <View style={[styles.inputContainer, { height: 100, alignItems: 'flex-start', paddingTop: 12 }]}>
+            <Feather name="map" size={18} color="#94A3B8" style={[styles.inputIcon, { marginTop: 4 }]} />
+            <TextInput
+              style={[styles.input, { height: 80, textAlignVertical: 'top' }]}
+              placeholder="Full address"
+              multiline
+              numberOfLines={3}
+              value={newWarehouse.adresse}
+              onChangeText={(text) => setNewWarehouse({...newWarehouse, adresse: text})}
+              placeholderTextColor="#94A3B8"
+            />
+          </View>
+        </View>
+      </ManagementModal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 16,
-  },
+  container: { flex: 1, backgroundColor: '#F8F9FA' },
   header: {
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    backgroundColor: '#FFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-    marginTop: 10,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  headerButtons: {
-    flexDirection: 'row',
-  },
-  headerButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 6,
-    marginLeft: 8,
-    elevation: 2,
-  },
+  title: { fontSize: 28, fontWeight: '800', color: '#0F172A' },
+  subtitle: { fontSize: 14, color: '#64748B', marginTop: 2 },
   addButton: {
-    backgroundColor: '#4CAF50',
+    width: 48, height: 48, borderRadius: 14, backgroundColor: '#2196F3',
+    justifyContent: 'center', alignItems: 'center', marginLeft: 12,
+    elevation: 4, shadowColor: '#2196F3', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3, shadowRadius: 8
   },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
+  listContent: { paddingVertical: 12, paddingBottom: 100 },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loadingText: { marginTop: 12, color: '#64748B', fontSize: 16 },
+  noDataText: { marginTop: 12, color: '#94A3B8', fontSize: 18, fontWeight: '600' },
+  refreshButton: {
+    marginTop: 20, paddingHorizontal: 24, paddingVertical: 12,
+    borderRadius: 12, backgroundColor: '#F1F5F9'
   },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  refreshButtonText: { color: '#2196F3', fontWeight: '700' },
+  label: { fontSize: 14, fontWeight: '700', marginBottom: 8, color: '#475569' },
+  formGroup: { marginBottom: 20 },
+  inputContainer: {
+    backgroundColor: '#F8FAFC', borderRadius: 12, paddingHorizontal: 12,
+    borderWidth: 1, borderColor: '#E2E8F0', flexDirection: 'row', alignItems: 'center',
+    height: 54
   },
-  listContent: {
-    paddingBottom: 20,
-  },
-  warehouseCard: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-  },
-  warehouseInfo: {
-    flex: 1,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  actionButton: {
-    padding: 8,
-    marginLeft: 4,
-    borderRadius: 8,
-    backgroundColor: '#F5F5F5',
-  },
-  editButton: {
-    // Custom edit styles if needed
-  },
-  deleteButton: {
-    // Custom delete styles if needed
-  },
-  warehouseName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 2,
-  },
-  warehouseCode: {
-    fontSize: 14,
-    color: '#2196F3',
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  warehouseDetails: {
-    fontSize: 14,
-    color: '#666',
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  text: {
-    fontSize: 16,
-    color: '#666',
-  },
-  // Modal Styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 24,
-    width: '100%',
-    maxHeight: '85%',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  modalHandle: {
-    width: 40,
-    height: 5,
-    backgroundColor: '#dbdbdb',
-    borderRadius: 2.5,
-    alignSelf: 'center',
-    marginBottom: 15,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333',
-  },
-  modalForm: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-    marginBottom: 4,
-    marginTop: 12,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 6,
-    padding: 10,
-    fontSize: 16,
-    color: '#333',
-    backgroundColor: '#f9f9f9',
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  modalButton: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 6,
-    alignItems: 'center',
-    marginHorizontal: 4,
-  },
-  saveButton: {
-    backgroundColor: '#4CAF50',
-  },
-  cancelButton: {
-    backgroundColor: '#f1f1f1',
-  },
-  saveButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  cancelButtonText: {
-    color: '#666',
-    fontWeight: 'bold',
-  },
+  inputIcon: { marginRight: 10 },
+  input: { flex: 1, height: 54, fontSize: 16, color: '#1E293B' },
 });
 
 export default WarehouseManagement;

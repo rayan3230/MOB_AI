@@ -5214,6 +5214,3 @@ Final Items Sent to Warehouse:
 =======
 2026-02-13 21:58:54,196 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\Users\serializers.py changed, reloading.
 >>>>>>> 4eb8c305d7fb64037f8f6408632c3861add80b29
-2026-02-13 23:49:54,965 - ForecastingService - INFO - Loading data from folder_data/csv_export (is_csv=True)
-2026-02-13 23:49:55,755 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
-2026-02-13 23:49:56,098 - ForecastingService - INFO - Data loaded and cleaned successfully.

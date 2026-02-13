@@ -41,8 +41,17 @@ const Signin = () => {
   }, []);
 
   const handleContinue = async () => {
-    if (!username || !password) {
-        setError('Please enter both username and password');
+    // Validation with specific feedback
+    if (!username && !password) {
+        setError('⚠️ Please enter your username and password');
+        return;
+    }
+    if (!username) {
+        setError('⚠️ Username is required');
+        return;
+    }
+    if (!password) {
+        setError('🔒 Password is required');
         return;
     }
 
@@ -63,20 +72,26 @@ const Signin = () => {
       } else if (role === 'employee') {
         navigation.replace('EmployeeHome', { user });
       } else {
-        setError('Unknown user role: ' + role);
+        setError('❌ Unknown user role. Please contact support.');
       }
       
     } catch (err) {
       console.error('Auth error:', err);
       if (err.banned) {
         Alert.alert(
-          "Access Denied",
+          "🚫 Access Denied",
           err.banned,
-          [{ text: "OK" }]
+          [{ text: "Contact Support", style: "default" }, { text: "OK", style: "cancel" }]
         );
+        setError('Your account has been suspended');
+      } else if (err.detail && err.detail.includes('credentials')) {
+        setError('❌ Invalid username or password. Please try again.');
+      } else if (err.non_field_errors) {
+        setError('❌ ' + err.non_field_errors[0]);
+      } else if (err.message === 'Network request failed' || err.message?.includes('network')) {
+        setError('🌐 Network error. Check your internet connection.');
       } else {
-        const errorMsg = err.non_field_errors?.[0] || err.detail || 'Authentication failed';
-        setError(errorMsg);
+        setError('❌ Login failed. Please check your credentials and try again.');
       }
     } finally {
       setLoading(false);

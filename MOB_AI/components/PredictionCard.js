@@ -34,6 +34,30 @@ const PredictionCard = ({ item, canOverride, onAccept, onOverride, onReset }) =>
 
       <Text style={styles.predictionType}>{item.type}</Text>
 
+      {/* AI Confidence & Reasoning */}
+      {item.status === 'AI Predicted' && (
+        <View style={styles.aiInsightsContainer}>
+          <View style={styles.confidenceRow}>
+            <Feather name="activity" size={14} color="#667EEA" />
+            <Text style={styles.confidenceLabel}>AI Confidence:</Text>
+            <View style={styles.confidenceBarContainer}>
+              <View style={[styles.confidenceBarFill, { width: `${item.confidence || 85}%` }]} />
+            </View>
+            <Text style={styles.confidenceValue}>{item.confidence || 85}%</Text>
+          </View>
+          
+          {item.reasoning && (
+            <View style={styles.reasoningBox}>
+              <View style={styles.reasoningHeader}>
+                <Feather name="lightbulb" size={13} color="#F59E0B" />
+                <Text style={styles.reasoningTitle}>Why this prediction?</Text>
+              </View>
+              <Text style={styles.reasoningText}>{item.reasoning}</Text>
+            </View>
+          )}
+        </View>
+      )}
+
       <View style={styles.valuesRow}>
         <View style={styles.valueItem}>
           <Text style={styles.valueLabel}>AI Forecast</Text>
@@ -171,6 +195,66 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#2D3748',
     marginBottom: 15,
+  },
+  aiInsightsContainer: {
+    marginBottom: 15,
+    gap: 10,
+  },
+  confidenceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#F7FAFC',
+    borderRadius: 10,
+  },
+  confidenceLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#4A5568',
+  },
+  confidenceBarContainer: {
+    flex: 1,
+    height: 6,
+    backgroundColor: '#E2E8F0',
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  confidenceBarFill: {
+    height: '100%',
+    backgroundColor: '#667EEA',
+    borderRadius: 3,
+  },
+  confidenceValue: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#667EEA',
+    minWidth: 38,
+    textAlign: 'right',
+  },
+  reasoningBox: {
+    backgroundColor: '#FFFBEB',
+    borderRadius: 10,
+    padding: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: '#F59E0B',
+  },
+  reasoningHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+    gap: 5,
+  },
+  reasoningTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#92400E',
+  },
+  reasoningText: {
+    fontSize: 12,
+    color: '#78350F',
+    lineHeight: 18,
   },
   valuesRow: {
     flexDirection: 'row',

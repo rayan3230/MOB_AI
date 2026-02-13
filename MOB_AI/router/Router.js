@@ -118,7 +118,7 @@ const RoleDashboardLayout = ({ role, navigation, route }) => {
   const renderContent = () => {
     if (role === 'admin') {
       switch (activePage) {
-        case 'Dashboard': return <AdminDashboard user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Dashboard': return <AdminDashboard user={user} onOpenDrawer={() => toggleDrawer(true)} onNavigate={(page) => setActivePage(page)} />;
         case 'AI_Actions': return <AIActions user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         case 'User_managment': return <UserManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         case 'Warhouse_management': return <WarehouseManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
@@ -136,7 +136,7 @@ const RoleDashboardLayout = ({ role, navigation, route }) => {
       }
     } else if (role === 'supervisor') {
       switch (activePage) {
-        case 'Dashboard': return <SupervisorDashboard user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Dashboard': return <SupervisorDashboard user={user} onOpenDrawer={() => toggleDrawer(true)} onNavigate={(page) => setActivePage(page)} />;
         case 'AI_Actions': return <SupervisorAIActions user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         case 'List_Actions': return <SupervisorListActions user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         case 'Profile': return <SupervisorProfile user={user} onOpenDrawer={() => toggleDrawer(true)} />;

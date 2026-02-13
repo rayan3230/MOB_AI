@@ -7,16 +7,17 @@ import {
   ActivityIndicator, 
   TouchableOpacity, 
   Alert, 
-  Modal, 
   TextInput,
-  ScrollView
+  StatusBar
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import OptionSelector from '../../../components/OptionSelector';
 import { warehouseService } from '../../../services/warehouseService';
 import { productService } from '../../../services/productService';
-import { Picker } from '@react-native-picker/picker';
+import CollapsibleManagementCard from '../../../components/CollapsibleManagementCard';
+import ManagementModal from '../../../components/ManagementModal';
 
-const PRODUCTS_PAGE_SIZE = 250;
+const PRODUCTS_PAGE_SIZE = 1000;
 
 const VrackManagement = () => {
   const [vracks, setVracks] = useState([]);
@@ -314,39 +315,28 @@ const VrackManagement = () => {
   };
 
   const renderVrackItem = ({ item }) => (
-    <View style={styles.card}>
-      <View style={styles.infoContainer}>
-        <View style={styles.row}>
-          <Text style={styles.warehouseText}>{item.id_entrepot.nom_entrepot}</Text>
-        </View>
-        <Text style={styles.productName}>{item.id_produit.nom_produit}</Text>
-        <Text style={styles.skuText}>SKU: {item.id_produit.sku}</Text>
-        <View style={styles.quantityBadge}>
-          <Text style={styles.quantityText}>Quantité: {item.quantite}</Text>
-        </View>
-      </View>
-      
-      <View style={styles.actionButtons}>
-        <TouchableOpacity 
-          style={[styles.actionButton, { backgroundColor: '#E3F2FD' }]} 
-          onPress={() => openTransferModal(item)}
-        >
-          <Feather name="log-out" size={18} color="#2196F3" />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.actionButton} 
-          onPress={() => openEditModal(item)}
-        >
-          <Feather name="edit-2" size={18} color="#2196F3" />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.actionButton} 
-          onPress={() => handleDeleteVrack(item.id_vrack)}
-        >
-          <Feather name="trash-2" size={18} color="#F44336" />
-        </TouchableOpacity>
-      </View>
-    </View>
+    <CollapsibleManagementCard
+      title={item.id_produit.nom_produit}
+      subtitle={`SKU: ${item.id_produit.sku}`}
+      iconName="archive"
+      iconColor="#673AB7"
+      status={item.quantite > 0 ? "In Stock" : "Empty"}
+      statusColor={item.quantite > 0 ? "#4CAF50" : "#F44336"}
+      onEdit={() => openEditModal(item)}
+      onDelete={() => handleDeleteVrack(item.id_vrack)}
+      details={[
+        { label: 'Entrepôt', value: item.id_entrepot.nom_entrepot },
+        { label: 'Quantité', value: item.quantite.toString() },
+      ]}
+      customActions={[
+        {
+          icon: 'log-out',
+          color: '#2196F3',
+          onPress: () => openTransferModal(item),
+          label: 'Transférer'
+        }
+      ]}
+    />
   );
 
   const selectedWarehouseLabel = selectedWarehouseId
@@ -366,11 +356,9 @@ const VrackManagement = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Gestion Vrack</Text>
-        <TouchableOpacity 
-          style={styles.addButton} 
-          onPress={openAddModal}
-        >
-          <Text style={styles.addButtonText}>+ Ajouter Vrack</Text>
+        <TouchableOpacity style={styles.addButton} onPress={openAddModal}>
+          <Feather name="plus" size={20} color="white" />
+          <Text style={styles.addButtonText}>Ajouter</Text>
         </TouchableOpacity>
       </View>
 
@@ -401,493 +389,282 @@ const VrackManagement = () => {
         </View>
       </View>
       
-      {vracks.length === 0 ? (
-        <View style={styles.centered}>
-          <Text>Aucun enregistrement Vrack trouvé</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={vracks}
-          keyExtractor={(item) => item.id_vrack}
-          renderItem={renderVrackItem}
-          onRefresh={onRefresh}
-          refreshing={refreshing}
-          contentContainerStyle={styles.listContainer}
-        />
-      )}
+      <FlatList
+        data={vracks}
+        keyExtractor={(item) => item.id_vrack.toString()}
+        renderItem={renderVrackItem}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+        contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={
+          <View style={styles.centered}>
+            <Text style={styles.emptyText}>Aucun enregistrement Vrack trouvé</Text>
+          </View>
+        }
+      />
 
-      <Modal
-        animationType="fade"
-        transparent={true}
+      {/* Warehouse Filter Modal */}
+      <ManagementModal
         visible={warehouseFilterModalVisible}
-        onRequestClose={() => setWarehouseFilterModalVisible(false)}
+        onClose={() => setWarehouseFilterModalVisible(false)}
+        title="Choisir Entrepôt"
+        submitLabel="Appliquer"
+        onSubmit={() => handleWarehouseFilterChange(selectedWarehouseId)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.filterModalContent}>
-            <Text style={styles.modalTitle}>Choisir Entrepôt</Text>
-            <ScrollView>
-              <TouchableOpacity
-                style={[styles.filterOption, !selectedWarehouseId && styles.filterOptionSelected]}
-                onPress={() => handleWarehouseFilterChange('')}
-              >
-                <Text style={[styles.filterOptionText, !selectedWarehouseId && styles.filterOptionTextSelected]}>Tous les entrepôts</Text>
-              </TouchableOpacity>
+        <OptionSelector
+          label="Entrepôt"
+          options={[
+            { label: "Tous les entrepôts", value: "" },
+            ...warehouses.map(w => ({ 
+              label: w.nom_entrepot || w.code_entrepot || String(w.id_entrepot), 
+              value: String(w.id_entrepot) 
+            }))
+          ]}
+          selectedValue={selectedWarehouseId}
+          onValueChange={(val) => setSelectedWarehouseId(val)}
+          icon="home"
+        />
+      </ManagementModal>
 
-              {warehouses.map((warehouse) => {
-                const warehouseId = String(warehouse.id_entrepot);
-                const isSelected = warehouseId === String(selectedWarehouseId);
-                return (
-                  <TouchableOpacity
-                    key={warehouseId}
-                    style={[styles.filterOption, isSelected && styles.filterOptionSelected]}
-                    onPress={() => handleWarehouseFilterChange(warehouseId)}
-                  >
-                    <Text style={[styles.filterOptionText, isSelected && styles.filterOptionTextSelected]}>
-                      {warehouse.nom_entrepot || warehouse.code_entrepot || warehouseId}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-            <TouchableOpacity
-              style={[styles.modalButton, styles.cancelButton]}
-              onPress={() => setWarehouseFilterModalVisible(false)}
-            >
-              <Text style={styles.cancelButtonText}>Fermer</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
+      {/* Add/Edit Modal */}
+      <ManagementModal
         visible={modalVisible}
-        onRequestClose={closeModal}
+        onClose={closeModal}
+        onSubmit={handleSubmitVrack}
+        title={isEditing ? 'Modifier Vrack' : 'Ajouter Vrack'}
+        submitting={submitting}
+        submitLabel={isEditing ? 'Enregistrer' : 'Ajouter'}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>
-              {isEditing ? 'Modifier Vrack' : 'Ajouter Nouveau Vrack'}
-            </Text>
-            
-            <ScrollView style={styles.form}>
-              <Text style={styles.label}>Entrepôt *</Text>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={newVrack.id_entrepot_id}
-                  onValueChange={(val) => setNewVrack({...newVrack, id_entrepot_id: val})}
-                  enabled={!isEditing}
-                >
-                  {warehouses.map(w => (
-                    <Picker.Item key={w.id_entrepot} label={w.nom_entrepot} value={w.id_entrepot} />
-                  ))}
-                </Picker>
-              </View>
+        <View style={styles.formGroup}>
+          <OptionSelector
+            label="Entrepôt *"
+            options={warehouses.map(w => ({ label: w.nom_entrepot, value: w.id_entrepot }))}
+            selectedValue={newVrack.id_entrepot_id}
+            onValueChange={(val) => setNewVrack({...newVrack, id_entrepot_id: val})}
+            disabled={isEditing}
+            icon="home"
+          />
+        </View>
 
-              <Text style={styles.label}>Produit *</Text>
-              {productsLoading ? (
-                <View style={styles.productsLoadingRow}>
-                  <ActivityIndicator size="small" color="#2196F3" />
-                  <Text style={styles.productsLoadingText}>Chargement des produits...</Text>
-                </View>
-              ) : null}
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={newVrack.id_produit_id}
-                  onValueChange={(val) => setNewVrack({...newVrack, id_produit_id: val})}
-                  enabled={!isEditing}
-                >
-                  {products.length > 0 ? (
-                    products.map(p => (
-                      <Picker.Item key={p.id_produit} label={`${p.nom_produit} (${p.sku})`} value={p.id_produit} />
-                    ))
-                  ) : (
-                    <Picker.Item label={productsLoading ? 'Chargement...' : 'Aucun produit'} value="" />
-                  )}
-                </Picker>
-              </View>
+        <View style={styles.formGroup}>
+          <OptionSelector
+            label="Produit *"
+            options={products.map(p => ({ label: `${p.nom_produit} (${p.sku})`, value: p.id_produit }))}
+            selectedValue={newVrack.id_produit_id}
+            onValueChange={(val) => setNewVrack({...newVrack, id_produit_id: val})}
+            disabled={isEditing || productsLoading}
+            loading={productsLoading}
+            icon="package"
+            placeholder={products.length === 0 ? "Aucun produit disponible" : "Sélectionner un produit"}
+          />
+        </View>
 
-              <Text style={styles.label}>Quantité</Text>
-              <TextInput
-                style={styles.input}
-                value={newVrack.quantite}
-                onChangeText={(t) => setNewVrack({...newVrack, quantite: t})}
-                placeholder="0.00"
-                keyboardType="numeric"
-              />
-            </ScrollView>
-
-            <View style={styles.modalButtons}>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.cancelButton]} 
-                onPress={closeModal}
-                disabled={submitting}
-              >
-                <Text style={styles.cancelButtonText}>Annuler</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.saveButton]} 
-                onPress={handleSubmitVrack}
-                disabled={submitting}
-              >
-                {submitting ? (
-                  <ActivityIndicator color="white" size="small" />
-                ) : (
-                  <Text style={styles.saveButtonText}>{isEditing ? 'Mettre à jour' : 'Enregistrer'}</Text>
-                )}
-              </TouchableOpacity>
-            </View>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Quantité</Text>
+          <View style={styles.inputContainer}>
+            <Feather name="plus-circle" size={18} color="#94A3B8" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              value={newVrack.quantite}
+              onChangeText={(t) => setNewVrack({...newVrack, quantite: t})}
+              placeholder="0.00"
+              keyboardType="numeric"
+              placeholderTextColor="#94A3B8"
+            />
           </View>
         </View>
-      </Modal>
+      </ManagementModal>
 
       {/* Transfer Modal */}
-      <Modal
-        animationType="fade"
-        transparent={true}
+      <ManagementModal
         visible={transferModalVisible}
-        onRequestClose={closeModal}
+        onClose={closeModal}
+        onSubmit={handleTransfer}
+        title="Sortie de Vrack"
+        submitting={submitting}
+        submitLabel="Transférer"
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Sortie de Vrack</Text>
-            <Text style={styles.subtitle}>
-              {selectedVrack?.id_produit?.nom_produit} ({selectedVrack?.quantite} dispos)
-            </Text>
-            
-            <ScrollView style={styles.form}>
-              <Text style={styles.label}>Emplacement Destination *</Text>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={transferData.destination_location_id}
-                  onValueChange={(val) => setTransferData({...transferData, destination_location_id: val})}
-                >
-                  {locations.map(l => (
-                    <Picker.Item 
-                      key={l.id_emplacement} 
-                      label={`${l.code_emplacement} (${l.id_niveau})`} 
-                      value={l.id_emplacement} 
-                    />
-                  ))}
-                </Picker>
-              </View>
+        <Text style={styles.formSubtitle}>
+          {selectedVrack?.id_produit?.nom_produit} ({selectedVrack?.quantite} dispos)
+        </Text>
+        
+        <View style={styles.formGroup}>
+          <OptionSelector
+            label="Emplacement Destination *"
+            options={locations.map(l => ({ 
+              label: `${l.code_emplacement} (${l.id_niveau})`, 
+              value: l.id_emplacement 
+            }))
+            }
+            selectedValue={transferData.destination_location_id}
+            onValueChange={(val) => setTransferData({...transferData, destination_location_id: val})}
+            icon="map-pin"
+            placeholder={locations.length === 0 ? "Aucun emplacement disponible" : "Sélectionner un emplacement"}
+          />
+        </View>
 
-              <Text style={styles.label}>Quantité à déplacer *</Text>
-              <TextInput
-                style={styles.input}
-                value={transferData.quantity}
-                onChangeText={(t) => setTransferData({...transferData, quantity: t})}
-                placeholder="0.00"
-                keyboardType="numeric"
-              />
-
-              <Text style={styles.label}>Notes</Text>
-              <TextInput
-                style={[styles.input, { height: 60 }]}
-                value={transferData.notes}
-                onChangeText={(t) => setTransferData({...transferData, notes: t})}
-                placeholder="Raison du transfert..."
-                multiline
-              />
-            </ScrollView>
-
-            <View style={styles.modalButtons}>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.cancelButton]} 
-                onPress={closeModal}
-              >
-                <Text style={styles.cancelButtonText}>Annuler</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.saveButton]} 
-                onPress={handleTransfer}
-                disabled={submitting}
-              >
-                {submitting ? (
-                  <ActivityIndicator color="white" size="small" />
-                ) : (
-                  <Text style={styles.saveButtonText}>Confirmer Transfert</Text>
-                )}
-              </TouchableOpacity>
-            </View>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Quantité à déplacer *</Text>
+          <View style={styles.inputContainer}>
+            <Feather name="move" size={18} color="#94A3B8" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              value={transferData.quantity}
+              onChangeText={(t) => setTransferData({...transferData, quantity: t})}
+              placeholder="0.00"
+              keyboardType="numeric"
+              placeholderTextColor="#94A3B8"
+            />
           </View>
         </View>
-      </Modal>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Notes</Text>
+          <View style={[styles.inputContainer, { height: 100, alignItems: 'flex-start', paddingTop: 12 }]}>
+            <Feather name="edit-3" size={18} color="#94A3B8" style={[styles.inputIcon, { marginTop: 4 }]} />
+            <TextInput
+              style={[styles.input, { height: 80, textAlignVertical: 'top' }]}
+              value={transferData.notes}
+              onChangeText={(t) => setTransferData({...transferData, notes: t})}
+              placeholder="Raison du transfert..."
+              multiline
+              placeholderTextColor="#94A3B8"
+            />
+          </View>
+        </View>
+      </ManagementModal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-    padding: 16,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  container: { flex: 1, backgroundColor: '#F8F9FA' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyText: { color: '#94A3B8', marginTop: 20, fontSize: 16 },
   header: {
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    backgroundColor: '#FFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
-    marginTop: 8,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
+  headerActions: { flexDirection: 'row', alignItems: 'center' },
+  title: { fontSize: 28, fontWeight: '800', color: '#0F172A' },
+  subtitle: { fontSize: 14, color: '#64748B', marginTop: 2 },
   addButton: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
+    width: 100, height: 48, borderRadius: 14, backgroundColor: '#2196F3',
+    justifyContent: 'center', alignItems: 'center', marginLeft: 12,
+    flexDirection: 'row',
+    elevation: 4, shadowColor: '#2196F3', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3, shadowRadius: 8
   },
-  addButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  listContainer: {
-    paddingBottom: 20,
-  },
+  addButtonText: { color: '#FFF', fontWeight: '700', marginLeft: 8 },
+  listContainer: { paddingVertical: 12, paddingBottom: 100 },
   filterCard: {
     backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 10,
-    elevation: 1,
+    borderRadius: 16,
+    padding: 16,
+    marginHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 16,
+    elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
   },
   filterLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#555',
-    marginBottom: 6,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#475569',
+    marginBottom: 8,
   },
   filterSelector: {
-    backgroundColor: '#f8f9fa',
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    height: 48,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    height: 52,
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   filterSelectorText: {
-    fontSize: 15,
-    color: '#333',
+    fontSize: 16,
+    color: '#1E293B',
+    fontWeight: '600',
     flex: 1,
-    marginRight: 8,
   },
   kpiRow: {
     flexDirection: 'row',
-    gap: 10,
-    marginBottom: 10,
+    gap: 12,
+    paddingHorizontal: 16,
+    marginBottom: 20,
   },
   kpiCard: {
     flex: 1,
     backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 12,
+    borderRadius: 16,
+    padding: 16,
     borderWidth: 1,
-    borderColor: '#eef2f5',
+    borderColor: '#F1F5F9',
+    elevation: 1,
   },
   kpiLabel: {
-    fontSize: 12,
-    color: '#6c757d',
+    fontSize: 13,
+    color: '#64748B',
     marginBottom: 4,
+    fontWeight: '600',
   },
   kpiValue: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#2c3e50',
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#0F172A',
   },
-  filterModalContent: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    maxHeight: '70%',
-    padding: 16,
-  },
-  filterOption: {
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    marginBottom: 6,
-    backgroundColor: '#f8f9fa',
-  },
-  filterOptionSelected: {
-    backgroundColor: '#E3F2FD',
-  },
-  filterOptionText: {
+  label: { fontSize: 14, fontWeight: '700', marginBottom: 8, color: '#475569' },
+  formGroup: { marginBottom: 20 },
+  formSubtitle: {
     fontSize: 15,
-    color: '#333',
+    color: '#64748B',
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 22,
+    fontWeight: '500'
   },
-  filterOptionTextSelected: {
-    color: '#1565C0',
-    fontWeight: '600',
+  inputContainer: {
+    backgroundColor: '#F8FAFC', borderRadius: 12, paddingHorizontal: 12,
+    borderWidth: 1, borderColor: '#E2E8F0', flexDirection: 'row', alignItems: 'center',
+    height: 54
   },
-  card: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+  inputIcon: { marginRight: 10 },
+  pickerContainer: {
+    backgroundColor: '#F8FAFC', borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', 
+    overflow: 'hidden', height: 54, justifyContent: 'center'
   },
-  infoContainer: {
-    flex: 1,
-  },
-  row: {
+  pickerWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    paddingHorizontal: 12,
   },
-  warehouseText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#3498db',
-    marginBottom: 4,
-  },
-  productName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#2c3e50',
-    marginBottom: 2,
-  },
-  skuText: {
-    fontSize: 12,
-    color: '#7f8c8d',
-    marginBottom: 8,
-  },
-  quantityBadge: {
-    backgroundColor: '#e8f5e9',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    alignSelf: 'flex-start',
-  },
-  quantityText: {
-    color: '#2e7d32',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  actionButton: {
-    padding: 8,
-    marginLeft: 4,
-    borderRadius: 8,
-    backgroundColor: '#f1f3f5',
-  },
-  modalOverlay: {
+  picker: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
+    height: 54,
+    marginLeft: -8, // Compensate for picker internal padding
   },
-  modalContent: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 24,
-    maxHeight: '90%',
-  },
-  modalHandle: {
-    width: 40,
-    height: 5,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 3,
-    alignSelf: 'center',
-    marginBottom: 16,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  form: {
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-    marginBottom: 6,
-    marginTop: 12,
-  },
+  input: { flex: 1, height: 54, fontSize: 16, color: '#1E293B' },
   productsLoadingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
-  },
-  productsLoadingText: {
-    marginLeft: 8,
-    color: '#666',
-    fontSize: 13,
-  },
-  input: {
-    backgroundColor: '#f8f9fa',
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-  },
-  pickerContainer: {
-    backgroundColor: '#f8f9fa',
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-    borderRadius: 8,
     marginBottom: 8,
   },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom: 20,
-  },
-  modalButton: {
-    flex: 1,
-    padding: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginHorizontal: 6,
-  },
-  saveButton: {
-    backgroundColor: '#4CAF50',
-  },
-  cancelButton: {
-    backgroundColor: '#f1f3f5',
-  },
-  saveButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  cancelButtonText: {
-    color: '#495057',
-    fontWeight: 'bold',
+  productsLoadingText: {
+    marginLeft: 10,
+    color: '#94A3B8',
+    fontSize: 14,
   },
 });
 

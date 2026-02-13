@@ -1,6 +1,6 @@
 // Using 127.0.0.1 instead of localhost for better iOS compatibility
 //const BASE_URL = 'http://127.0.0.1:8000';
-const BASE_URL = 'http://192.168.100.66:8000'; // Computer IP (for physical devices)
+const BASE_URL = 'http://192.168.100.85:8000'; // Computer IP (for physical devices)
 // const BASE_URL = 'http://10.0.2.2:8000'; // Android Emulator
 
 export const apiCall = async (endpoint, method = 'POST', body = null, token = null) => {

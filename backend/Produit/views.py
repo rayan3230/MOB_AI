@@ -414,7 +414,7 @@ class CodeBarresProduitViewSet(viewsets.ModelViewSet):
     queryset = CodeBarresProduit.objects.all()
     serializer_class = CodeBarresProduitSerializer
     lookup_field = 'code_barres'
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Changed from IsAuthenticated for development
 
     @action(detail=True, methods=['post'])
     def set_primary(self, request, code_barres=None):
@@ -464,7 +464,7 @@ class CmdAchatViewSet(viewsets.ModelViewSet):
     queryset = cmd_achat_ouvertes_opt.objects.all()
     serializer_class = CmdAchatSerializer
     lookup_field = 'id_commande_achat'
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Changed from IsAuthenticated for development
 
     def create(self, request, *args, **kwargs):
         """
@@ -549,7 +549,7 @@ class HistoriqueDemandeViewSet(viewsets.ModelViewSet):
 
     queryset = HistoriqueDemande.objects.all()
     serializer_class = HistoriqueDemandeSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Changed from IsAuthenticated for development
 
     @action(detail=False, methods=['get'])
     def by_product(self, request):
@@ -678,7 +678,7 @@ class DelaisApprovisionnementViewSet(viewsets.ModelViewSet):
     queryset = DelaisApprovisionnement.objects.all()
     serializer_class = DelaisApprovisionnementSerializer
     lookup_field = 'id_produit'
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Changed from IsAuthenticated for development
 
     @action(detail=False, methods=['get'])
     def by_product(self, request):
@@ -768,7 +768,7 @@ class PolitiqueReapprovisionnementViewSet(viewsets.ModelViewSet):
     queryset = PolitiqueReapprovisionnement.objects.all()
     serializer_class = PolitiqueReapprovisionnementSerializer
     lookup_field = 'id_produit'
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Changed from IsAuthenticated for development
 
     @action(detail=False, methods=['get'])
     def by_product(self, request):

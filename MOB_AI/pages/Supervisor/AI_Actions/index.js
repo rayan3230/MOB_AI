@@ -17,6 +17,8 @@ import { lightTheme } from '../../../constants/theme.js';
 import TopHeader from '../../../components/AdminHeader';
 import PredictionCard from '../../../components/PredictionCard';
 
+import ManagementModal from '../../../components/ManagementModal';
+
 const SupervisorAIActions = ({ user, onOpenDrawer }) => {
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +26,7 @@ const SupervisorAIActions = ({ user, onOpenDrawer }) => {
   const [selectedPrediction, setSelectedPrediction] = useState(null);
   const [overrideValue, setOverrideValue] = useState('');
   const [justification, setJustification] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   // Normalize role check (api returns user_role)
   const userRole = (user?.user_role || user?.role || '').toUpperCase();
@@ -45,6 +48,8 @@ const SupervisorAIActions = ({ user, onOpenDrawer }) => {
           currentValue: '150 units',
           status: 'AI Predicted',
           justification: '',
+          confidence: 92,
+          reasoning: 'Based on 14-day moving average and upcoming promotional campaign. Historical data shows 23% increase during similar events.',
         },
         {
           id: '2',
@@ -54,6 +59,8 @@ const SupervisorAIActions = ({ user, onOpenDrawer }) => {
           currentValue: '420 units',
           status: 'AI Predicted',
           justification: '',
+          confidence: 87,
+          reasoning: 'Seasonal trend analysis + order backlog pattern. Peak production period detected with 15% variance.',
         },
         {
           id: '3',
@@ -63,6 +70,8 @@ const SupervisorAIActions = ({ user, onOpenDrawer }) => {
           currentValue: 'Zone B (20% free)',
           status: 'AI Predicted',
           justification: '',
+          confidence: 78,
+          reasoning: 'Zone B optimal due to proximity to shipping dock and current inventory turnover rate. Reduces pick time by 18%.',
         },
       ];
       setPredictions(mockData);
@@ -178,70 +187,48 @@ const SupervisorAIActions = ({ user, onOpenDrawer }) => {
       )}
 
       {/* Override Modal */}
-      <Modal
+      <ManagementModal
         visible={modalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setModalVisible(false)}
+        onClose={() => setModalVisible(false)}
+        onSave={handleSaveOverride}
+        title="Override Forecast"
+        submitting={submitting}
+        saveLabel="Confirm Changes"
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Override Forecast</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeBtn}>
-                <Feather name="x" size={24} color="#4A5568" />
-              </TouchableOpacity>
-            </View>
+        <View style={styles.predictionSummary}>
+          <Text style={styles.summaryLabel}>Category</Text>
+          <Text style={styles.summaryValue}>{selectedPrediction?.type}</Text>
+          
+          <Text style={styles.summaryLabel}>Scheduled Date</Text>
+          <Text style={styles.summaryValue}>{selectedPrediction?.date}</Text>
 
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <View style={styles.predictionSummary}>
-                <Text style={styles.summaryLabel}>Category</Text>
-                <Text style={styles.summaryValue}>{selectedPrediction?.type}</Text>
-                
-                <Text style={styles.summaryLabel}>Scheduled Date</Text>
-                <Text style={styles.summaryValue}>{selectedPrediction?.date}</Text>
-
-                <View style={styles.aiForecastBox}>
-                  <Text style={styles.aiForecastLabel}>Initial AI Prediction</Text>
-                  <Text style={styles.aiForecastValue}>{selectedPrediction?.predictedValue}</Text>
-                </View>
-              </View>
-
-              <Text style={styles.formLabel}>New Effective Value</Text>
-              <TextInput
-                style={styles.textInput}
-                value={overrideValue}
-                onChangeText={setOverrideValue}
-                placeholder="e.g. 180 units"
-                placeholderTextColor="#A0AEC0"
-              />
-
-              <Text style={styles.formLabel}>Reason for Override</Text>
-              <TextInput
-                style={[styles.textInput, styles.textArea]}
-                value={justification}
-                onChangeText={setJustification}
-                placeholder="Please explain why the AI prediction is being changed..."
-                placeholderTextColor="#A0AEC0"
-                multiline
-                numberOfLines={4}
-                textAlignVertical="top"
-              />
-
-              <TouchableOpacity style={styles.confirmBtn} onPress={handleSaveOverride}>
-                <Text style={styles.confirmBtnText}>Confirm Changes</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={styles.cancelBtn} 
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.cancelBtnText}>Back to List</Text>
-              </TouchableOpacity>
-            </ScrollView>
+          <View style={styles.aiForecastBox}>
+            <Text style={styles.aiForecastLabel}>Initial AI Prediction</Text>
+            <Text style={styles.aiForecastValue}>{selectedPrediction?.predictedValue}</Text>
           </View>
         </View>
-      </Modal>
+
+        <Text style={styles.formLabel}>New Effective Value</Text>
+        <TextInput
+          style={styles.textInput}
+          value={overrideValue}
+          onChangeText={setOverrideValue}
+          placeholder="e.g. 180 units"
+          placeholderTextColor="#A0AEC0"
+        />
+
+        <Text style={styles.formLabel}>Reason for Override</Text>
+        <TextInput
+          style={[styles.textInput, styles.textArea]}
+          value={justification}
+          onChangeText={setJustification}
+          placeholder="Please explain why the AI prediction is being changed..."
+          placeholderTextColor="#A0AEC0"
+          multiline
+          numberOfLines={4}
+          textAlignVertical="top"
+        />
+      </ManagementModal>
     </SafeAreaView>
   );
 };
@@ -361,27 +348,6 @@ const styles = StyleSheet.create({
   },
   textArea: {
     height: 100,
-  },
-  confirmBtn: {
-    backgroundColor: '#00a3ff',
-    padding: 18,
-    borderRadius: 15,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  confirmBtnText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  cancelBtn: {
-    padding: 15,
-    alignItems: 'center',
-    marginTop: 5,
-  },
-  cancelBtnText: {
-    color: '#718096',
-    fontWeight: '600',
   },
 });
 

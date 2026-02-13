@@ -7,21 +7,21 @@ import {
   ActivityIndicator, 
   TouchableOpacity, 
   Alert, 
-  Modal, 
   TextInput,
-  ScrollView
+  StatusBar
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker';
+import OptionSelector from '../../../components/OptionSelector';
 import { warehouseService } from '../../../services/warehouseService';
 import { chariotService } from '../../../services/chariotService';
+import CollapsibleManagementCard from '../../../components/CollapsibleManagementCard';
+import ManagementModal from '../../../components/ManagementModal';
 
 const ChariotManagement = () => {
   const [chariots, setChariots] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [selectedWarehouseId, setSelectedWarehouseId] = useState('');
   const [warehouseFilterModalVisible, setWarehouseFilterModalVisible] = useState(false);
-  const [filterLoading, setFilterLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -39,67 +39,33 @@ const ChariotManagement = () => {
   const fetchData = async (warehouseIdOverride = null) => {
     try {
       setLoading(true);
-      const normalizedOverrideId = warehouseIdOverride ? String(warehouseIdOverride).trim() : '';
-      const [warehousesData] = await Promise.all([
-        warehouseService.getWarehouses()
-      ]);
-
-      const safeWarehouses = Array.isArray(warehousesData)
-        ? warehousesData
-            .filter((w) => w && w.id_entrepot)
-            .map((w) => ({ ...w, id_entrepot: String(w.id_entrepot).trim() }))
-        : [];
-
-      const stateWarehouseId = selectedWarehouseId ? String(selectedWarehouseId).trim() : '';
-      let effectiveWarehouseId = normalizedOverrideId || stateWarehouseId;
-      const isKnownWarehouse = safeWarehouses.some((w) => String(w.id_entrepot) === String(effectiveWarehouseId));
-      if (!isKnownWarehouse) {
-        effectiveWarehouseId = '';
-      }
-
-      const chariotsData = await chariotService.getChariots(effectiveWarehouseId || null);
-
-      setSelectedWarehouseId(effectiveWarehouseId);
-      setChariots(chariotsData);
+      const warehousesData = await warehouseService.getWarehouses();
+      const safeWarehouses = Array.isArray(warehousesData) ? warehousesData : [];
       setWarehouses(safeWarehouses);
+
+      const effectiveWhId = (warehouseIdOverride || selectedWarehouseId || '').toString().trim();
+      const chariotsData = await chariotService.getChariots(effectiveWhId || null);
+      
+      setChariots(chariotsData);
+      setSelectedWarehouseId(effectiveWhId);
     } catch (error) {
       console.error('Error fetching data:', error);
-      Alert.alert('Error', 'Failed to load chariots or warehouses');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
   const onRefresh = () => {
     setRefreshing(true);
     fetchData(selectedWarehouseId);
   };
 
-  const handleWarehouseFilterChange = async (warehouseId) => {
-    setWarehouseFilterModalVisible(false);
-    setFilterLoading(true);
-    try {
-      const selectedId = warehouseId ? String(warehouseId).trim() : '';
-      setSelectedWarehouseId(selectedId);
-      setRefreshing(true);
-      await fetchData(selectedId);
-    } catch (error) {
-      console.error('Error changing chariot warehouse filter:', error);
-      Alert.alert('Error', 'Failed to change warehouse filter');
-      setRefreshing(false);
-    } finally {
-      setFilterLoading(false);
-    }
-  };
-
   const handleSubmitChariot = async () => {
     if (!newChariot.code_chariot || !newChariot.id_entrepot_id) {
-      Alert.alert('Error', 'Please fill in required fields (Code and Warehouse)');
+      Alert.alert('Erreur', 'Veuillez remplir les champs obligatoires');
       return;
     }
 
@@ -107,16 +73,14 @@ const ChariotManagement = () => {
       setSubmitting(true);
       if (isEditing) {
         await chariotService.updateChariot(editingId, newChariot);
-        Alert.alert('Success', 'Chariot updated successfully');
       } else {
         await chariotService.createChariot(newChariot);
-        Alert.alert('Success', 'Chariot added successfully');
       }
-      closeModal();
+      setModalVisible(false);
       fetchData(selectedWarehouseId);
+      Alert.alert('Succès', `Chariot ${isEditing ? 'mis à jour' : 'ajouté'} avec succès`);
     } catch (error) {
-      console.error('Error submitting chariot:', error);
-      Alert.alert('Error', `Failed to ${isEditing ? 'update' : 'add'} chariot`);
+      Alert.alert('Erreur', 'Échec de l\'opération');
     } finally {
       setSubmitting(false);
     }
@@ -125,51 +89,42 @@ const ChariotManagement = () => {
   const handleMaintenance = async (id) => {
     try {
       await chariotService.setMaintenance(id);
-      Alert.alert('Success', 'Chariot set to maintenance');
       fetchData(selectedWarehouseId);
     } catch (error) {
-      Alert.alert('Error', 'Failed to update status');
+      Alert.alert('Erreur', 'Impossible de mettre en maintenance');
     }
   };
 
   const handleRelease = async (id) => {
     try {
       await chariotService.releaseChariot(id);
-      Alert.alert('Success', 'Chariot released');
       fetchData(selectedWarehouseId);
     } catch (error) {
-      Alert.alert('Error', 'Failed to release chariot');
+      Alert.alert('Erreur', 'Impossible de libérer le chariot');
     }
   };
 
   const handleDeleteChariot = (id) => {
-    Alert.alert(
-      'Delete Chariot',
-      'Are you sure you want to delete this chariot?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Delete', 
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await chariotService.deleteChariot(id);
-              Alert.alert('Success', 'Chariot deleted successfully');
-              fetchData(selectedWarehouseId);
-            } catch (error) {
-              console.error('Error deleting chariot:', error);
-              Alert.alert('Error', 'Failed to delete chariot');
-            }
+    Alert.alert('Supprimer Chariot', 'Êtes-vous sûr ?', [
+      { text: 'Annuler', style: 'cancel' },
+      { 
+        text: 'Supprimer', style: 'destructive',
+        onPress: async () => {
+          try {
+            await chariotService.deleteChariot(id);
+            fetchData(selectedWarehouseId);
+          } catch (error) {
+            Alert.alert('Erreur', 'Échec de la suppression');
           }
         }
-      ]
-    );
+      }
+    ]);
   };
 
   const openEditModal = (chariot) => {
     setNewChariot({
       code_chariot: chariot.code_chariot,
-      id_entrepot_id: chariot.id_entrepot?.id_entrepot || chariot.id_entrepot,
+      id_entrepot_id: String(chariot.id_entrepot?.id_entrepot || chariot.id_entrepot),
       statut: chariot.statut,
       capacite: chariot.capacite ? chariot.capacite.toString() : ''
     });
@@ -178,522 +133,251 @@ const ChariotManagement = () => {
     setModalVisible(true);
   };
 
-  const openAddModal = () => {
-    setNewChariot({
-      code_chariot: '',
-      id_entrepot_id: warehouses.length > 0 ? warehouses[0].id_entrepot : '',
-      statut: 'AVAILABLE',
-      capacite: ''
-    });
-    setIsEditing(false);
-    setEditingId(null);
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
-    setIsEditing(false);
-  };
-
   const getStatusColor = (status) => {
     switch (status) {
       case 'AVAILABLE': return '#4CAF50';
       case 'IN_USE': return '#2196F3';
       case 'MAINTENANCE': return '#FF9800';
-      case 'INACTIVE': return '#F44336';
-      default: return '#757575';
+      default: return '#8E8E93';
     }
   };
 
   const renderChariotItem = ({ item }) => (
-    <View style={[styles.card, { borderLeftColor: getStatusColor(item.statut) }]}>
-      <View style={styles.infoContainer}>
-        <View style={styles.row}>
-          <Text style={styles.codeText}>{item.code_chariot}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.statut) }]}>
-            <Text style={styles.statusText}>{item.statut}</Text>
-          </View>
-        </View>
-        <View style={styles.metaRow}>
-          <View style={styles.metaChip}>
-            <Feather name="home" size={12} color="#5f6b77" />
-            <Text style={styles.metaText}>{item.id_entrepot?.nom_entrepot || 'N/A'}</Text>
-          </View>
-          {item.capacite ? (
-            <View style={styles.metaChip}>
-              <Feather name="package" size={12} color="#5f6b77" />
-              <Text style={styles.metaText}>{item.capacite} kg</Text>
-            </View>
-          ) : null}
-        </View>
-      </View>
-      
-      <View style={styles.actionButtons}>
+    <CollapsibleManagementCard
+      title={item.code_chariot}
+      subtitle={item.id_entrepot?.nom_entrepot || 'Entrepôt Inconnu'}
+      status={item.statut}
+      iconName="truck"
+      iconColor={getStatusColor(item.statut)}
+      details={[
+        { label: 'Statut', value: item.statut },
+        { label: 'Capacité', value: item.capacite ? `${item.capacite} kg` : 'N/A' },
+        { label: 'Entrepôt', value: item.id_entrepot?.nom_entrepot },
+      ]}
+      onEdit={() => openEditModal(item)}
+      onDelete={() => handleDeleteChariot(item.id_chariot)}
+    >
+      <View style={styles.cardActions}>
         {item.statut === 'IN_USE' && (
-          <TouchableOpacity 
-            style={styles.actionButton} 
-            onPress={() => handleRelease(item.id_chariot)}
-          >
-            <Feather name="unlock" size={18} color="#4CAF50" />
+          <TouchableOpacity style={[styles.contextButton, { backgroundColor: '#E3F2FD' }]} onPress={() => handleRelease(item.id_chariot)}>
+            <Feather name="unlock" size={14} color="#2196F3" />
+            <Text style={[styles.contextButtonText, { color: '#2196F3' }]}>Libérer</Text>
           </TouchableOpacity>
         )}
         {item.statut === 'AVAILABLE' && (
-          <TouchableOpacity 
-            style={styles.actionButton} 
-            onPress={() => handleMaintenance(item.id_chariot)}
-          >
-            <Feather name="tool" size={18} color="#FF9800" />
+          <TouchableOpacity style={[styles.contextButton, { backgroundColor: '#FFF3E0' }]} onPress={() => handleMaintenance(item.id_chariot)}>
+            <Feather name="tool" size={14} color="#FF9800" />
+            <Text style={[styles.contextButtonText, { color: '#FF9800' }]}>Maintenance</Text>
           </TouchableOpacity>
         )}
-        <TouchableOpacity 
-          style={styles.actionButton} 
-          onPress={() => openEditModal(item)}
-        >
-          <Feather name="edit-2" size={18} color="#2196F3" />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.actionButton} 
-          onPress={() => handleDeleteChariot(item.id_chariot)}
-        >
-          <Feather name="trash-2" size={18} color="#F44336" />
-        </TouchableOpacity>
       </View>
-    </View>
+    </CollapsibleManagementCard>
   );
-
-  const selectedWarehouseLabel = selectedWarehouseId
-    ? (warehouses.find((warehouse) => String(warehouse.id_entrepot) === String(selectedWarehouseId))?.nom_entrepot || selectedWarehouseId)
-    : 'All Warehouses';
-
-  if (loading && !refreshing) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#2196F3" />
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <View style={styles.header}>
-        <Text style={styles.title}>Chariots</Text>
-        <TouchableOpacity 
-          style={styles.addButton} 
-          onPress={openAddModal}
-        >
-          <Text style={styles.addButtonText}>+ Add Chariot</Text>
-        </TouchableOpacity>
+        <View>
+          <Text style={styles.title}>Chariots</Text>
+          <Text style={styles.subtitle}>{selectedWarehouseId ? warehouses.find(w => String(w.id_entrepot) === selectedWarehouseId)?.nom_entrepot : 'Tous les entrepôts'}</Text>
+        </View>
+        <View style={styles.headerActions}>
+          <TouchableOpacity style={styles.filterButton} onPress={() => setWarehouseFilterModalVisible(true)}>
+            <Feather name="filter" size={20} color="#2196F3" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.addButton} onPress={() => {
+            setNewChariot({
+              code_chariot: '',
+              id_entrepot_id: selectedWarehouseId || (warehouses[0]?.id_entrepot?.toString() || ''),
+              statut: 'AVAILABLE',
+              capacite: ''
+            });
+            setIsEditing(false);
+            setModalVisible(true);
+          }}>
+            <Feather name="plus" size={24} color="#FFF" />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      <View style={styles.filterCard}>
-        <Text style={styles.filterLabel}>Warehouse Filter</Text>
-        <TouchableOpacity
-          style={styles.filterSelector}
-          onPress={() => setWarehouseFilterModalVisible(true)}
-          disabled={warehouses.length === 0 || filterLoading}
-        >
-          <Text style={styles.filterSelectorText}>{selectedWarehouseLabel}</Text>
-          {filterLoading ? (
-            <ActivityIndicator size="small" color="#2196F3" />
-          ) : (
-            <Feather name="chevron-down" size={18} color="#666" />
-          )}
-        </TouchableOpacity>
-      </View>
-      
-      {chariots.length === 0 ? (
-        <View style={styles.centered}>
-          <Text>No chariots found</Text>
-        </View>
+      {loading && !refreshing ? (
+        <View style={styles.centered}><ActivityIndicator size="large" color="#2196F3" /></View>
       ) : (
         <FlatList
           data={chariots}
-          keyExtractor={(item) => item.id_chariot}
+          keyExtractor={(item) => String(item.id_chariot)}
           renderItem={renderChariotItem}
+          contentContainerStyle={styles.listContent}
           onRefresh={onRefresh}
           refreshing={refreshing}
-          contentContainerStyle={styles.listContainer}
+          ListEmptyComponent={
+            <View style={styles.centered}>
+                <Text style={styles.emptyText}>Aucun chariot trouvé</Text>
+            </View>
+          }
         />
       )}
 
-      <Modal
-        animationType="fade"
-        transparent={true}
+      <ManagementModal
         visible={warehouseFilterModalVisible}
-        onRequestClose={() => setWarehouseFilterModalVisible(false)}
+        onClose={() => setWarehouseFilterModalVisible(false)}
+        title="Filtrer par Entrepôt"
+        submitLabel="Appliquer"
+        onSubmit={() => {
+          setWarehouseFilterModalVisible(false);
+          fetchData(selectedWarehouseId);
+        }}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.filterModalContent}>
-            <Text style={styles.modalTitle}>Select Warehouse</Text>
-            <ScrollView>
-              <TouchableOpacity
-                style={[styles.filterOption, !selectedWarehouseId && styles.filterOptionSelected]}
-                onPress={() => handleWarehouseFilterChange('')}
-              >
-                <Text style={[styles.filterOptionText, !selectedWarehouseId && styles.filterOptionTextSelected]}>All Warehouses</Text>
-              </TouchableOpacity>
+        <OptionSelector
+          label="Entrepôt"
+          options={[
+            { label: "Tous les entrepôts", value: "" },
+            ...warehouses.map(w => ({ label: w.nom_entrepot, value: String(w.id_entrepot) }))
+          ]}
+          selectedValue={selectedWarehouseId}
+          onValueChange={(val) => setSelectedWarehouseId(val)}
+          icon="home"
+        />
+      </ManagementModal>
 
-              {warehouses.map((warehouse) => {
-                const warehouseId = String(warehouse.id_entrepot);
-                const isSelected = warehouseId === String(selectedWarehouseId);
-                return (
-                  <TouchableOpacity
-                    key={warehouseId}
-                    style={[styles.filterOption, isSelected && styles.filterOptionSelected]}
-                    onPress={() => handleWarehouseFilterChange(warehouseId)}
-                  >
-                    <Text style={[styles.filterOptionText, isSelected && styles.filterOptionTextSelected]}>
-                      {warehouse.nom_entrepot || warehouse.code_entrepot || warehouseId}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-            <TouchableOpacity
-              style={[styles.modalButton, styles.cancelButton]}
-              onPress={() => setWarehouseFilterModalVisible(false)}
-            >
-              <Text style={styles.cancelButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
+      <ManagementModal
         visible={modalVisible}
-        onRequestClose={closeModal}
+        onClose={() => setModalVisible(false)}
+        title={isEditing ? 'Modifier Chariot' : 'Nouveau Chariot'}
+        onSubmit={handleSubmitChariot}
+        submitting={submitting}
+        submitLabel={isEditing ? 'Mettre à jour' : 'Créer'}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>
-              {isEditing ? 'Edit Chariot' : 'Add New Chariot'}
-            </Text>
-            
-            <ScrollView style={styles.form}>
-              <Text style={styles.label}>Warehouse *</Text>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={newChariot.id_entrepot_id}
-                  onValueChange={(val) => setNewChariot({...newChariot, id_entrepot_id: val})}
-                  style={styles.picker}
-                >
-                  {warehouses.map(w => (
-                    <Picker.Item key={w.id_entrepot} label={w.nom_entrepot} value={w.id_entrepot} />
-                  ))}
-                </Picker>
-              </View>
-
-              <Text style={styles.label}>Chariot Code * (e.g., C-01, CHAR-01)</Text>
-              <TextInput
-                style={styles.input}
-                value={newChariot.code_chariot}
-                onChangeText={(t) => setNewChariot({...newChariot, code_chariot: t})}
-                placeholder="Enter unique code"
-              />
-
-              <Text style={styles.label}>Capacity (optional)</Text>
-              <TextInput
-                style={styles.input}
-                value={newChariot.capacite}
-                onChangeText={(t) => setNewChariot({...newChariot, capacite: t})}
-                placeholder="Capacity in kg"
-                keyboardType="numeric"
-              />
-
-              <Text style={styles.label}>Status</Text>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={newChariot.statut}
-                  onValueChange={(val) => setNewChariot({...newChariot, statut: val})}
-                  style={styles.picker}
-                >
-                  <Picker.Item label="Available" value="AVAILABLE" />
-                  <Picker.Item label="In Use" value="IN_USE" />
-                  <Picker.Item label="Maintenance" value="MAINTENANCE" />
-                  <Picker.Item label="Inactive" value="INACTIVE" />
-                </Picker>
-              </View>
-            </ScrollView>
-
-            <View style={styles.modalButtons}>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.cancelButton]} 
-                onPress={closeModal}
-                disabled={submitting}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.modalButton, styles.saveButton]} 
-                onPress={handleSubmitChariot}
-                disabled={submitting}
-              >
-                {submitting ? (
-                  <ActivityIndicator color="white" size="small" />
-                ) : (
-                  <Text style={styles.saveButtonText}>{isEditing ? 'Update' : 'Save'}</Text>
-                )}
-              </TouchableOpacity>
-            </View>
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Code Chariot *</Text>
+          <View style={styles.inputContainer}>
+            <Feather name="hash" size={18} color="#94A3B8" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="e.g., CH-001"
+              value={newChariot.code_chariot}
+              onChangeText={(text) => setNewChariot({...newChariot, code_chariot: text})}
+              placeholderTextColor="#94A3B8"
+            />
           </View>
         </View>
-      </Modal>
+
+        <View style={styles.formGroup}>
+          <OptionSelector
+            label="Entrepôt *"
+            options={warehouses.map(w => ({ label: w.nom_entrepot, value: String(w.id_entrepot) }))}
+            selectedValue={newChariot.id_entrepot_id}
+            onValueChange={(val) => setNewChariot({...newChariot, id_entrepot_id: val})}
+            icon="home"
+          />
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Capacité (kg)</Text>
+          <View style={styles.inputContainer}>
+            <Feather name="box" size={18} color="#94A3B8" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="e.g., 500"
+              keyboardType="numeric"
+              value={newChariot.capacite}
+              onChangeText={(text) => setNewChariot({...newChariot, capacite: text})}
+              placeholderTextColor="#94A3B8"
+            />
+          </View>
+        </View>
+
+        <View style={styles.formGroup}>
+          <OptionSelector
+            label="Statut"
+            options={[
+              { label: "Disponible", value: "AVAILABLE" },
+              { label: "Maintenance", value: "MAINTENANCE" },
+              { label: "En Cours", value: "IN_USE" },
+              { label: "Inactif", value: "INACTIVE" },
+            ]}
+            selectedValue={newChariot.statut}
+            onValueChange={(val) => setNewChariot({...newChariot, statut: val})}
+            icon="info"
+          />
+        </View>
+      </ManagementModal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-    padding: 16,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  container: { flex: 1, backgroundColor: '#F8F9FA' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyText: { color: '#94A3B8', marginTop: 20, fontSize: 16 },
   header: {
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    backgroundColor: '#FFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
-    marginTop: 8,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
+  headerActions: { flexDirection: 'row', alignItems: 'center' },
+  title: { fontSize: 28, fontWeight: '800', color: '#0F172A' },
+  subtitle: { fontSize: 14, color: '#64748B', marginTop: 2 },
   addButton: {
-    backgroundColor: '#4CAF50',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
+    width: 48, height: 48, borderRadius: 14, backgroundColor: '#2196F3',
+    justifyContent: 'center', alignItems: 'center', marginLeft: 12,
+    elevation: 4, shadowColor: '#2196F3', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3, shadowRadius: 8
   },
-  addButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+  filterButton: {
+    width: 48, height: 48, borderRadius: 14, backgroundColor: '#F1F5F9',
+    justifyContent: 'center', alignItems: 'center'
   },
-  listContainer: {
-    paddingBottom: 20,
+  listContent: { paddingVertical: 12, paddingBottom: 100 },
+  label: { fontSize: 14, fontWeight: '700', marginBottom: 8, color: '#475569' },
+  formGroup: { marginBottom: 20 },
+  inputContainer: {
+    backgroundColor: '#F8FAFC', borderRadius: 12, paddingHorizontal: 12,
+    borderWidth: 1, borderColor: '#E2E8F0', flexDirection: 'row', alignItems: 'center',
+    height: 54
   },
-  filterCard: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 12,
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 2,
-  },
-  filterLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#555',
-    marginBottom: 6,
-  },
-  filterSelector: {
-    backgroundColor: '#f8f9fa',
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    height: 48,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-  },
-  filterSelectorText: {
-    fontSize: 15,
-    color: '#333',
-    flex: 1,
-    marginRight: 8,
-  },
-  filterModalContent: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    maxHeight: '70%',
-    padding: 16,
-  },
-  filterOption: {
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    marginBottom: 6,
-    backgroundColor: '#f8f9fa',
-  },
-  filterOptionSelected: {
-    backgroundColor: '#E3F2FD',
-  },
-  filterOptionText: {
-    fontSize: 15,
-    color: '#333',
-  },
-  filterOptionTextSelected: {
-    color: '#1565C0',
-    fontWeight: '600',
-  },
-  card: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#4CAF50',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  infoContainer: {
-    flex: 1,
-    paddingRight: 8,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-    flexWrap: 'wrap',
-  },
-  codeText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginRight: 10,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  statusText: {
-    color: 'white',
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  metaRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-  },
-  metaChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f1f3f5',
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  metaText: {
-    fontSize: 12,
-    color: '#4f5b66',
-    marginLeft: 4,
-    fontWeight: '500',
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
-  actionButton: {
-    width: 34,
-    height: 34,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 4,
-    borderRadius: 8,
-    backgroundColor: '#f1f3f5',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 24,
-    maxHeight: '80%',
-  },
-  modalHandle: {
-    width: 40,
-    height: 5,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 3,
-    alignSelf: 'center',
-    marginBottom: 16,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  form: {
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-    marginBottom: 6,
-    marginTop: 12,
-  },
-  input: {
-    backgroundColor: '#f8f9fa',
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-  },
+  inputIcon: { marginRight: 10 },
   pickerContainer: {
-    backgroundColor: '#f8f9fa',
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-    borderRadius: 8,
-    overflow: 'hidden',
+    backgroundColor: '#F8FAFC', borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', 
+    overflow: 'hidden', height: 54, justifyContent: 'center'
+  },
+  pickerWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
   },
   picker: {
-    height: 50,
-    width: '100%',
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom: 20,
-  },
-  modalButton: {
     flex: 1,
-    padding: 14,
-    borderRadius: 10,
+    height: 54,
+    marginLeft: -8, // Compensate for picker internal padding
+  },
+  input: { flex: 1, height: 54, fontSize: 16, color: '#1E293B' },
+  cardActions: {
+    flexDirection: 'row',
+    marginTop: 12,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F0F2F5'
+  },
+  contextButton: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 10,
+    marginRight: 10
   },
-  saveButton: {
-    backgroundColor: '#4CAF50',
-  },
-  cancelButton: {
-    backgroundColor: '#f1f3f5',
-  },
-  saveButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  cancelButtonText: {
-    color: '#495057',
-    fontWeight: 'bold',
-  },
+  contextButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginLeft: 6
+  }
 });
 
 export default ChariotManagement;
