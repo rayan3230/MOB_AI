@@ -49,8 +49,8 @@ import EmployeeListActions from '../pages/employee/List_Actions';
 import EmployeeProfile from '../pages/employee/Profile';
 
 // Common Pages
+import Intro from '../pages/common/Intro/Intro';
 import ForgetPassword from '../pages/common/Forget_Password';
-import SignUp from '../pages/common/SignUp';
 import WelcomePage from '../pages/common/welcome_Page';
 
 const Stack = createStackNavigator();
@@ -209,7 +209,7 @@ const RoleDashboardLayout = ({ role, navigation, route }) => {
 
 const Router = () => {
     const [isLoading, setIsLoading] = useState(true);
-    const [initialRoute, setInitialRoute] = useState('Login');
+    const [initialRoute, setInitialRoute] = useState('Intro');
     const [user, setUser] = useState(null);
 
     useEffect(() => {
@@ -253,9 +253,9 @@ const Router = () => {
                     gestureEnabled: false
                 }}
             >
+                <Stack.Screen name="Intro" component={Intro} />
                 <Stack.Screen name="Welcome" component={WelcomePage} />
                 <Stack.Screen name="Login" component={Login} />
-                <Stack.Screen name="SignUp" component={SignUp} />
                 <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
                 <Stack.Screen name="AdminHome" initialParams={user && initialRoute === 'AdminHome' ? { user } : undefined}>
                   {(props) => <RoleDashboardLayout {...props} role="admin" />}
