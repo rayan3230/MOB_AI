@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'Produit',
     'Users',
     'warhouse',
-    'Transaction'
+    'Transaction',
+    'ai_service.api',
 ]
 
 MIDDLEWARE = [
