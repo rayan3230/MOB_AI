@@ -10,20 +10,31 @@ class Role(enum.Enum):
     EMPLOYEE = "EMPLOYEE"
 
 class WarehouseCoordinate:
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: int, y: int, z: int = 0):
         self.x = x
         self.y = y
+        self.z = z
 
     def __repr__(self):
-        return f"({self.x}, {self.y})"
+        return f"({self.x}, {self.y}, {self.z})"
 
     def to_tuple(self) -> Tuple[int, int]:
         return (self.x, self.y)
 
+    def to_3d_tuple(self) -> Tuple[int, int, int]:
+        return (self.x, self.y, self.z)
+
 class DepotB7Map:
-    def __init__(self, width: int = 42, height: int = 27):
-        self.width = width
-        self.height = height
+    def __init__(self, width: int = 44, height: int = 29, floor_index: int = 0):
+        self.floor_index = floor_index
+        # Floor 0 is 42x27 (legacy/original)
+        # Floors 1 and 2 are 44x29
+        if floor_index == 0:
+            self.width = 42
+            self.height = 27
+        else:
+            self.width = 44
+            self.height = 29
         
         # Rectangular Zones (e.g., Racks/Storage Blocks): (name, x_min, y_min, x_max, y_max)
         self.zones = {
@@ -103,24 +114,112 @@ class DepotB7Map:
         # Track occupied slots (for items/stock)
         self.occupied_slots: set[Tuple[int, int]] = set()
 
+        # STEP 10: Performance Optimization - Precompute Matrices
+        self._precompute_matrices()
+        
+        # Step 8.3: Build Walkable Grid Graph G(V, E)
+        self.walkable_graph = self.build_walkable_graph()
+
+    def _precompute_matrices(self):
+        """
+        Step 10: Precomputes boolean matrices for O(1) lookups of 
+        walls, pillars, and walkable zones.
+        """
+        self.pillar_matrix = [[False for _ in range(self.height)] for _ in range(self.width)]
+        for p in self.pillars:
+            if 0 <= p.x < self.width and 0 <= p.y < self.height:
+                self.pillar_matrix[p.x][p.y] = True
+
+        self.walkable_matrix = [[False for _ in range(self.height)] for _ in range(self.width)]
+        for x in range(self.width):
+            for y in range(self.height):
+                self.walkable_matrix[x][y] = self._calculate_walkable(WarehouseCoordinate(x, y))
+
     def is_slot_available(self, coord: WarehouseCoordinate) -> bool:
         """Check if a coordinate is neither a pillar nor occupied by stock."""
-        # 1. Check if it's a pillar
-        if any(p.x == coord.x and p.y == coord.y for p in self.pillars):
+        if not (0 <= coord.x < self.width and 0 <= coord.y < self.height):
             return False
-        # 2. Check if it's occupied by stock
+            
+        # 1. Check pillar matrix (O(1))
+        if self.pillar_matrix[coord.x][coord.y]:
+            return False
+        # 2. Check if it's occupied by stock (O(1) in set)
         if coord.to_tuple() in self.occupied_slots:
             return False
         return True
+
+    def _calculate_walkable(self, coord: WarehouseCoordinate) -> bool:
+        """Original logic for is_walkable, used for precomputation."""
+        if not (0 <= coord.x < self.width and 0 <= coord.y < self.height):
+            return False
+            
+        if self.pillar_matrix[coord.x][coord.y]:
+            return False
+            
+        blocked_keywords = ["Rack", "Bureau", "Black object", "Monte Charge", "Assenseur"]
+        for name, coords in self.zones.items():
+            is_blocked_zone = (len(name) == 1) or any(k in name for k in blocked_keywords)
+            
+            if is_blocked_zone:
+                segments = coords if isinstance(coords, list) else [coords]
+                for (x1, y1, x2, y2) in segments:
+                    if x1 <= coord.x < x2 and y1 <= coord.y < y2:
+                        return False
+        return True
+
+    def is_walkable(self, coord: WarehouseCoordinate) -> bool:
+        """
+        Step 10: Optimized O(1) check using precomputed matrix.
+        """
+        if not (0 <= coord.x < self.width and 0 <= coord.y < self.height):
+            return False
+        return self.walkable_matrix[coord.x][coord.y]
+
+    def build_walkable_graph(self) -> Dict[Tuple[int, int], List[Tuple[int, int]]]:
+        """
+        Converts Floor to Walkable Grid Graph G(V, E) (Step 8.3).
+        Edges = valid 4-direction moves between walkable nodes.
+        """
+        graph = {}
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.is_walkable(WarehouseCoordinate(x, y)):
+                    node = (x, y)
+                    graph[node] = []
+                    # 4-direction moves (Up, Down, Left, Right)
+                    for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                        nx, ny = x + dx, y + dy
+                        if self.is_walkable(WarehouseCoordinate(nx, ny)):
+                            graph[node].append((nx, ny))
+        return graph
 
     def get_slot_name(self, coord: WarehouseCoordinate) -> str:
         return f"B7-L0-{coord.x:02d}-{coord.y:02d}"
 
     def calculate_distance(self, start: WarehouseCoordinate, end: WarehouseCoordinate) -> float:
         """
-        Calculate shortest distance using Manhattan distance for 2D floor-level travel.
+        Calculates Manhattan distance (Heuristic).
+        For Step 8.3 Step 2, use AdvancedPickingService for True Shortest Path.
         """
-        return abs(start.x - end.x) + abs(start.y - end.y)
+        return float(abs(start.x - end.x) + abs(start.y - end.y))
+
+    def get_path_cost(self, start: Tuple[int, int], end: Tuple[int, int]) -> float:
+        """
+        Uses BFS to find shortest path cost in a uniform grid as a fallback or 
+        helper for A*.
+        """
+        if start == end: return 0.0
+        queue = [(start, 0)]
+        visited = {start}
+        while queue:
+            (curr_x, curr_y), dist = queue.pop(0)
+            if (curr_x, curr_y) == end:
+                return float(dist)
+            for nx, ny in self.walkable_graph.get((curr_x, curr_y), []):
+                if (nx, ny) not in visited:
+                    visited.add((nx, ny))
+                    queue.append(((nx, ny), dist + 1))
+        return float('inf')
 
     def visualize(self):
         """
@@ -197,7 +296,8 @@ class DepotB7Map:
         ax.set_xlim(-2, self.width + 5)
         ax.set_ylim(-2, self.height + 5)
         ax.set_aspect('equal')
-        ax.set_title("Depot B7 - Digital Twin Layout (2D)")
+        floor_name = "RDC" if self.floor_index == 0 else f"Etage {self.floor_index}"
+        ax.set_title(f"Depot B7 - Digital Twin Layout ({floor_name}) - {self.width}x{self.height}")
         ax.set_xlabel("X (meters)")
         ax.set_ylabel("Y (meters)")
         
