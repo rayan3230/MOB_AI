@@ -44,6 +44,15 @@ The system includes enterprise-grade optimizations for dynamic flow:
 - **Dynamic Workload Congestion**: Real-time integration of pending pick tasks. Slots in high-activity zones receive a +8.0 cost penalty per task to steer incoming inventory towards quieter aisles, preventing forklift bottlenecks.
 - **Forecast-Aware Positioning**: Prioritizes SKUs identified as "High Demand" by the Forecasting Service (8.1), shifting them into a "Super-Fast" category (0.3x cost multiplier) even if their historical movement was slow.
 - **Automated Zone Balancing**: A background engine monitors the picking heatmap. If a zone exceeds a traffic threshold (e.g., 20 picks/day), the system automatically triggers relocation suggestions to move products into 20% more efficient, low-traffic areas.
+
+## 8.4 Picking & Navigation Optimization
+The system now features a high-performance navigation engine for picking fulfillment:
+- **A* Pathfinding Implementation**: A deterministic A* algorithm ensures the shortest legal path between any two warehouse coordinates, respecting all physical constraints.
+- **Graph-Based Walkable Grid**: The engine precomputes a connectivity graph of the entire warehouse, strictly excluding racks, pillars, walls, and restricted zones.
+- **Obstacle & Rack Integrity**: Vertical and horizontal racks are treated as impenetrable obstacles. The system automatically finds the nearest "walkable edge" for any pick located inside a storage zone.
+- **Multi-Stop Route Optimization**: Uses a Nearest Neighbor heuristic to sequence multiple picks in a single trip, minimizing total travel distance.
+- **Fault Tolerance**: If a target coordinate is physically blocked or out of bounds, the engine logs a system warning and continues the route calculation for reachable items.
+
 - **Pillar/Wall Exclusion**: High-resolution `pillar_matrix` prevents slot suggestions on physical obstructions.
 - **Rack-Only Logic**: `storage_matrix` restricts inventory to valid Storage zones, excluding aisles, dock areas (Expédition), and offices.
 - **Reserved Zones**: Zones marked as "Reserved" or "Obstacle" are automatically pruned from the storage pool.

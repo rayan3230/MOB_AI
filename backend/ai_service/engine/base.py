@@ -8,6 +8,7 @@ class Role(enum.Enum):
     ADMIN = "ADMIN"
     SUPERVISOR = "SUPERVISOR"
     EMPLOYEE = "EMPLOYEE"
+    SYSTEM = "SYSTEM"
 
 class ZoneType(enum.Enum):
     STORAGE = "STORAGE"
@@ -163,6 +164,65 @@ class DepotB7Map:
                     queue.append(neighbor)
         
         return dist_map
+
+    def find_path_astar(self, start: WarehouseCoordinate, end: WarehouseCoordinate) -> Optional[List[Tuple[int, int]]]:
+        """
+        Requirement 8.3: A* Pathfinding Algorithm.
+        Guarantees shortest path while respecting obstacles (Is_walkable).
+        """
+        import heapq
+
+        def heuristic(a, b):
+            return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+        start_node = (int(start.x), int(start.y))
+        end_node = (int(end.x), int(end.y))
+
+        # Check if end is reachable (might be inside a rack)
+        if not self.is_walkable(end):
+            # Find nearest walkable neighbor to the rack (Search up to 5m)
+            neighbors = []
+            for radius in range(1, 6):
+                for dx in range(-radius, radius + 1):
+                    for dy in range(-radius, radius + 1):
+                        if dx == 0 and dy == 0: continue
+                        nx, ny = end_node[0] + dx, end_node[1] + dy
+                        if self.is_walkable(WarehouseCoordinate(nx, ny)):
+                            neighbors.append((nx, ny))
+                if neighbors: break
+            
+            if not neighbors:
+                return None # Truly blocked
+            # Pick neighbor closest to start
+            end_node = min(neighbors, key=lambda n: heuristic(n, start_node))
+
+        open_set = []
+        heapq.heappush(open_set, (0, start_node))
+        came_from = {}
+        g_score = {start_node: 0}
+        f_score = {start_node: heuristic(start_node, end_node)}
+
+        while open_set:
+            current = heapq.heappop(open_set)[1]
+
+            if current == end_node:
+                path = []
+                while current in came_from:
+                    path.append(current)
+                    current = came_from[current]
+                path.append(start_node)
+                return path[::-1]
+
+            for neighbor in self.walkable_graph.get(current, []):
+                tentative_g_score = g_score[current] + 1
+                if tentative_g_score < g_score.get(neighbor, float('inf')):
+                    came_from[neighbor] = current
+                    g_score[neighbor] = tentative_g_score
+                    f_score[neighbor] = tentative_g_score + heuristic(neighbor, end_node)
+                    if neighbor not in [i[1] for i in open_set]:
+                        heapq.heappush(open_set, (f_score[neighbor], neighbor))
+
+        return None # No path found
 
     def visualize(self):
         fig, ax = plt.subplots(figsize=(12, 8))
