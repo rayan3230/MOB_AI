@@ -15,8 +15,7 @@ import TaskNotificationPanel from '../../../components/employee/TaskNotification
 const EmployeeListActions = ({ route }) => {
   const employeeName = route?.params?.user?.user_name || route?.params?.user?.username;
   const [tasks, setTasks] = useState([]);
-  const [warehouses, setWarehouses] = useState([]);
-  const [products, setProducts] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updatingTaskId, setUpdatingTaskId] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -24,18 +23,13 @@ const EmployeeListActions = ({ route }) => {
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [warehouseRes, productRes, taskRes] = await Promise.allSettled([
-        warehouseService.getWarehouses(),
-        apiCall('/api/produit/produits/', 'GET'),
+      const [statsRes, taskRes] = await Promise.allSettled([
+        warehouseService.getDashboardStats(),
         taskService.getTasks(),
       ]);
 
-      if (warehouseRes.status === 'fulfilled' && Array.isArray(warehouseRes.value)) {
-        setWarehouses(warehouseRes.value);
-      }
-
-      if (productRes.status === 'fulfilled' && Array.isArray(productRes.value)) {
-        setProducts(productRes.value);
+      if (statsRes.status === 'fulfilled') {
+        setStats(statsRes.value);
       }
 
       if (taskRes.status === 'fulfilled') {
@@ -54,8 +48,8 @@ const EmployeeListActions = ({ route }) => {
   }, [loadData]);
 
   const activeWarehouseCount = useMemo(
-    () => warehouses.filter((item) => item.actif !== false).length,
-    [warehouses]
+    () => stats?.warehouse?.count || 0,
+    [stats]
   );
 
   const donutStats = useMemo(() => {
@@ -133,11 +127,11 @@ const EmployeeListActions = ({ route }) => {
           <TaskNotificationPanel notifications={notifications} />
         )}
 
-        <HeroMetricCard title="Number of warehouse" value={warehouses.length} />
+        <HeroMetricCard title="Total Warehouses" value={stats?.warehouse?.count || 0} />
 
         <View style={styles.metricsRow}>
-          <MetricCard title="Active Warehouse" value={activeWarehouseCount} icon="home" />
-          <MetricCard title="Products" value={products.length} icon="box" />
+          <MetricCard title="Active Locations" value={stats?.warehouse?.locations || 0} icon="home" />
+          <MetricCard title="Products" value={stats?.inventory?.products || 0} icon="box" />
         </View>
 
         <TaskDonutCard stats={donutStats} />

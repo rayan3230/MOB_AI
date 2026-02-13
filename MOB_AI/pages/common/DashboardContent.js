@@ -1,17 +1,45 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image, ActivityIndicator, RefreshControl } from 'react-native';
 import { Feather, FontAwesome, Ionicons } from '@expo/vector-icons';
 import Svg, { Circle, G } from 'react-native-svg';
 import TopHeader from '../../components/AdminHeader';
 import Logo from '../../components/Logo';
+import { warehouseService } from '../../services/warehouseService';
 
 const { width } = Dimensions.get('window');
 
 const DashboardContent = ({ navigation }) => {
-  const chartData = [
-    { name: 'JSP 1', value: 45, color: '#0055FF' },
-    { name: 'JSP 2', value: 35, color: '#ADD8E6' },
-    { name: 'JSP 3', value: 20, color: '#00A3FF' },
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchStats = async () => {
+    try {
+      const data = await warehouseService.getDashboardStats();
+      setStats(data);
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchStats();
+  };
+
+  const chartData = stats ? [
+    { name: 'Occupied', value: stats.warehouse.occupied || 0, color: '#0055FF' },
+    { name: 'Available', value: stats.warehouse.available || 1, color: '#ADD8E6' },
+    { name: 'Blocked', value: stats.warehouse.blocked || 0, color: '#FF4444' },
+  ] : [
+    { name: 'Loading', value: 100, color: '#eee' }
   ];
 
   const total = chartData.reduce((acc, curr) => acc + curr.value, 0);
@@ -23,16 +51,28 @@ const DashboardContent = ({ navigation }) => {
 
   let cumulativeOffset = 0;
 
+  if (loading && !refreshing) {
+    return (
+      <View style={[styles.container, { backgroundColor: '#fff', justifyContent: 'center' }]}>
+        <ActivityIndicator size="large" color="#0055FF" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-
-      
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.content} 
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {/* Main Stat Card */}
         <View style={styles.mainCard}>
           <View>
-            <Text style={styles.mainCardTitle}>Number of warehouse</Text>
-            <Text style={styles.mainCardValue}>1000</Text>
+            <Text style={styles.mainCardTitle}>Total Warehouses</Text>
+            <Text style={styles.mainCardValue}>{stats?.warehouse?.count || 0}</Text>
           </View>
           <View style={styles.mainCardIcon}>
             <Logo width={120} height={120} color="rgba(255,255,255,0.2)" />
@@ -43,40 +83,37 @@ const DashboardContent = ({ navigation }) => {
         <View style={styles.statsGrid}>
           <View style={styles.gridRow}>
             <StatBox 
-              icon="truck" 
-              title="Active Warehouse" 
-              subtitle="active number of users" 
-              value="1000" 
+              icon="building" 
+              title="Locations" 
+              subtitle="Total storage slots" 
+              value={stats?.warehouse?.locations || 0} 
             />
             <StatBox 
-              icon="cube" 
+              icon="cubes" 
               title="Products" 
-              subtitle="active number of users" 
-              value="1000" 
-              percentage="+50%"
+              subtitle="Unique SKUs" 
+              value={stats?.inventory?.products || 0} 
             />
           </View>
           <View style={styles.gridRow}>
             <StatBox 
               icon="users" 
-              title="Active Users" 
-              subtitle="active number of users" 
-              value="1000" 
-              percentage="+50%"
+              title="Staff Members" 
+              subtitle="Total registered users" 
+              value={stats?.users?.total || 0} 
             />
             <StatBox 
-              icon="user-circle" 
-              title="Active Users" 
-              subtitle="active number of users" 
-              value="1000" 
-              percentage="+50%"
+              icon="truck" 
+              title="Chariots" 
+              subtitle="Available trolleys" 
+              value={`${stats?.chariots?.available || 0}/${stats?.chariots?.total || 0}`} 
             />
           </View>
         </View>
 
         {/* Analytics Section */}
         <View style={styles.analyticsCard}>
-          <Text style={styles.analyticsTitle}>Analytics About something if needed</Text>
+          <Text style={styles.analyticsTitle}>Warehouse Occupancy</Text>
           
           <View style={styles.chartContainer}>
             <View style={styles.chartWrapper}>
@@ -106,8 +143,8 @@ const DashboardContent = ({ navigation }) => {
                 </G>
                 </Svg>
                 <View style={[StyleSheet.absoluteFill, styles.chartLabel]}>
-                    <Text style={styles.totalLabel}>Total of Jsp</Text>
-                    <Text style={styles.totalValue}>Total of jsp</Text>
+                    <Text style={styles.totalLabel}>{Math.round(stats?.warehouse?.occupancy_rate || 0)}%</Text>
+                    <Text style={styles.totalValue}>Occupancy</Text>
                 </View>
             </View>
 
@@ -115,7 +152,7 @@ const DashboardContent = ({ navigation }) => {
               {chartData.map((item, index) => (
                 <View key={index} style={styles.legendItem}>
                   <View style={[styles.legendColor, { backgroundColor: item.color }]} />
-                  <Text style={styles.legendText}>JSP</Text>
+                  <Text style={styles.legendText}>{item.name}</Text>
                 </View>
               ))}
             </View>
@@ -124,17 +161,17 @@ const DashboardContent = ({ navigation }) => {
 
         {/* Tasks Section */}
         <View style={styles.tasksSection}>
-          <Text style={styles.tasksTitle}>My tasks</Text>
+          <Text style={styles.tasksTitle}>System Activity (24h)</Text>
           <View style={styles.taskCard}>
             <View style={styles.taskIcon}>
-              <FontAwesome name="check-circle" size={20} color="#0055FF" />
+              <FontAwesome name="exchange" size={20} color="#0055FF" />
             </View>
             <View style={styles.taskInfo}>
-              <Text style={styles.taskName}>Update inventory levels</Text>
-              <Text style={styles.taskTime}>Today, 10:00 AM</Text>
+              <Text style={styles.taskName}>{stats?.activity?.total_movements_24h || 0} Movements</Text>
+              <Text style={styles.taskTime}>Receptions: {stats?.activity?.receptions_24h || 0} | Pickings: {stats?.activity?.pickings_24h || 0}</Text>
             </View>
-            <View style={styles.taskBadge}>
-              <Text style={styles.taskBadgeText}>Pending</Text>
+            <View style={[styles.taskBadge, { backgroundColor: '#E8F5E9' }]}>
+              <Text style={[styles.taskBadgeText, { color: '#2E7D32' }]}>Live</Text>
             </View>
           </View>
         </View>

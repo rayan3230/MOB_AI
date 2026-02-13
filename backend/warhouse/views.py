@@ -12,6 +12,8 @@ from .models import (
     Operation, PrevisionIA, AssignmentStockageIA, RoutePickingIA,
     Override, JournalAudit, OperationOffline, AnomalieDetection
 )
+from Users.models import Utilisateur
+from Produit.models import Produit
 from .serializers import (
     EntrepotSerializer, NiveauStockageSerializer, NiveauPickingSerializer, EmplacementSerializer,
     StockSerializer, VrackSerializer, MouvementStockSerializer, ChariotSerializer,
@@ -75,6 +77,70 @@ class EntrepotViewSet(viewsets.ModelViewSet):
         locations = warehouse.emplacements.all()
         serializer = EmplacementSerializer(locations, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def dashboard_stats(self, request):
+        """GET /warehouses/dashboard_stats/ - Get overview statistics for the landing page"""
+        now = timezone.now()
+        last_24h = now - timezone.timedelta(hours=24)
+        
+        # User counts
+        total_users = Utilisateur.objects.count()
+        admin_users = Utilisateur.objects.filter(role='ADMIN').count()
+        employee_users = Utilisateur.objects.filter(role='EMPLOYEE').count()
+        
+        # Warehouse & Structure
+        total_warehouses = Entrepot.objects.count()
+        total_locations = Emplacement.objects.count()
+        occupied_locations = Emplacement.objects.filter(statut='OCCUPIED').count()
+        available_locations = Emplacement.objects.filter(statut='AVAILABLE').count()
+        blocked_locations = Emplacement.objects.filter(statut='BLOCKED').count()
+        
+        # Products & Inventory
+        total_products = Produit.objects.count()
+        total_stock_qty = Stock.objects.aggregate(total=Sum('quantite'))['total'] or 0
+        total_vrack_qty = Vrack.objects.aggregate(total=Sum('quantite'))['total'] or 0
+        
+        # Chariots
+        total_chariots = Chariot.objects.count()
+        available_chariots = Chariot.objects.filter(statut='AVAILABLE').count()
+        maintenance_chariots = Chariot.objects.filter(statut='MAINTENANCE').count()
+        
+        # Activity (Last 24h)
+        receptions_24h = MouvementStock.objects.filter(type_mouvement='RECEPTION', date_execution__gte=last_24h).count()
+        pickings_24h = MouvementStock.objects.filter(type_mouvement='PICKING', date_execution__gte=last_24h).count()
+        movements_24h = MouvementStock.objects.filter(date_execution__gte=last_24h).count()
+
+        return Response({
+            'users': {
+                'total': total_users,
+                'admins': admin_users,
+                'employees': employee_users,
+            },
+            'warehouse': {
+                'count': total_warehouses,
+                'locations': total_locations,
+                'occupied': occupied_locations,
+                'available': available_locations,
+                'blocked': blocked_locations,
+                'occupancy_rate': (occupied_locations / total_locations * 100) if total_locations > 0 else 0
+            },
+            'inventory': {
+                'products': total_products,
+                'stock_qty': float(total_stock_qty),
+                'vrack_qty': float(total_vrack_qty),
+            },
+            'chariots': {
+                'total': total_chariots,
+                'available': available_chariots,
+                'maintenance': maintenance_chariots,
+            },
+            'activity': {
+                'receptions_24h': receptions_24h,
+                'pickings_24h': pickings_24h,
+                'total_movements_24h': movements_24h
+            }
+        })
 
 
 # ============================================================================

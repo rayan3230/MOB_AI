@@ -108,6 +108,10 @@ export const warehouseService = {
         return await apiCall(`/api/warehouse/vracks/by_warehouse/?warehouse_id=${warehouseId}`, 'GET');
     },
 
+    getDashboardStats: async () => {
+        return await apiCall('/api/warehouse/warehouses/dashboard_stats/', 'GET');
+    },
+
     adjustVrackQuantity: async (vrackId, delta) => {
         return await apiCall(`/api/warehouse/vracks/${vrackId}/adjust_quantity/`, 'POST', { delta });
     },
