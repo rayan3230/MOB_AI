@@ -1,0 +1,5 @@
+2026-02-13 01:05:44,792 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 01:05:53,370 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\forecasting\urls.py changed, reloading.
+2026-02-13 01:05:58,072 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 01:06:17,800 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\Ai\forecasting_service.py changed, reloading.
+2026-02-13 01:06:22,599 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
