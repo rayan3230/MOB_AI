@@ -12,12 +12,14 @@ import {
   ScrollView
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker';
 import { warehouseService } from '../../../services/warehouseService';
+import { productService } from '../../../services/productService';
+import { Picker } from '@react-native-picker/picker';
 
-const ChariotManagement = () => {
-  const [chariots, setChariots] = useState([]);
+const VrackManagement = () => {
+  const [vracks, setVracks] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -25,25 +27,33 @@ const ChariotManagement = () => {
   const [editingId, setEditingId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const [newChariot, setNewChariot] = useState({
-    code_chariot: '',
+  const [newVrack, setNewVrack] = useState({
     id_entrepot_id: '',
-    statut: 'AVAILABLE',
-    capacite: ''
+    id_produit_id: '',
+    quantite: '0'
   });
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [chariotsData, warehousesData] = await Promise.all([
-        warehouseService.getChariots(),
-        warehouseService.getWarehouses()
+      const [vrackData, warehouseData, productData] = await Promise.all([
+        warehouseService.getVracks(),
+        warehouseService.getWarehouses(),
+        productService.getProducts()
       ]);
-      setChariots(chariotsData);
-      setWarehouses(warehousesData);
+      setVracks(vrackData);
+      setWarehouses(warehouseData);
+      setProducts(productData);
+      
+      if (warehouseData.length > 0 && !newVrack.id_entrepot_id) {
+        setNewVrack(prev => ({ ...prev, id_entrepot_id: warehouseData[0].id_entrepot }));
+      }
+      if (productData.length > 0 && !newVrack.id_produit_id) {
+        setNewVrack(prev => ({ ...prev, id_produit_id: productData[0].id_produit }));
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
-      Alert.alert('Error', 'Failed to load chariots or warehouses');
+      Alert.alert('Erreur', 'Impossible de charger les données');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -59,48 +69,48 @@ const ChariotManagement = () => {
     fetchData();
   };
 
-  const handleSubmitChariot = async () => {
-    if (!newChariot.code_chariot || !newChariot.id_entrepot_id) {
-      Alert.alert('Error', 'Please fill in required fields (Code and Warehouse)');
+  const handleSubmitVrack = async () => {
+    if (!newVrack.id_entrepot_id || !newVrack.id_produit_id) {
+      Alert.alert('Erreur', 'Veuillez sélectionner un entrepôt et un produit');
       return;
     }
 
     try {
       setSubmitting(true);
       if (isEditing) {
-        await warehouseService.updateChariot(editingId, newChariot);
-        Alert.alert('Success', 'Chariot updated successfully');
+        await warehouseService.updateVrack(editingId, newVrack);
+        Alert.alert('Succès', 'Vrack mis à jour avec succès');
       } else {
-        await warehouseService.createChariot(newChariot);
-        Alert.alert('Success', 'Chariot added successfully');
+        await warehouseService.createVrack(newVrack);
+        Alert.alert('Succès', 'Vrack ajouté avec succès');
       }
       closeModal();
       fetchData();
     } catch (error) {
-      console.error('Error submitting chariot:', error);
-      Alert.alert('Error', `Failed to ${isEditing ? 'update' : 'add'} chariot`);
+      console.error('Error submitting vrack:', error);
+      Alert.alert('Erreur', `Échec de l'opération: ${error.detail || 'Erreur serveur'}`);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleDeleteChariot = (id) => {
+  const handleDeleteVrack = (id) => {
     Alert.alert(
-      'Delete Chariot',
-      'Are you sure you want to delete this chariot?',
+      'Supprimer Vrack',
+      'Êtes-vous sûr de vouloir supprimer cet enregistrement Vrack ?',
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Annuler', style: 'cancel' },
         { 
-          text: 'Delete', 
+          text: 'Supprimer', 
           style: 'destructive',
           onPress: async () => {
             try {
-              await warehouseService.deleteChariot(id);
-              Alert.alert('Success', 'Chariot deleted successfully');
+              await warehouseService.deleteVrack(id);
+              Alert.alert('Succès', 'Vrack supprimé avec succès');
               fetchData();
             } catch (error) {
-              console.error('Error deleting chariot:', error);
-              Alert.alert('Error', 'Failed to delete chariot');
+              console.error('Error deleting vrack:', error);
+              Alert.alert('Erreur', 'Échec de la suppression');
             }
           }
         }
@@ -108,24 +118,22 @@ const ChariotManagement = () => {
     );
   };
 
-  const openEditModal = (chariot) => {
-    setNewChariot({
-      code_chariot: chariot.code_chariot,
-      id_entrepot_id: chariot.id_entrepot?.id_entrepot || chariot.id_entrepot,
-      statut: chariot.statut,
-      capacite: chariot.capacite ? chariot.capacite.toString() : ''
+  const openEditModal = (vrack) => {
+    setNewVrack({
+      id_entrepot_id: vrack.id_entrepot.id_entrepot,
+      id_produit_id: vrack.id_produit.id_produit,
+      quantite: vrack.quantite.toString()
     });
-    setEditingId(chariot.id_chariot);
+    setEditingId(vrack.id_vrack);
     setIsEditing(true);
     setModalVisible(true);
   };
 
   const openAddModal = () => {
-    setNewChariot({
-      code_chariot: '',
+    setNewVrack({
       id_entrepot_id: warehouses.length > 0 ? warehouses[0].id_entrepot : '',
-      statut: 'AVAILABLE',
-      capacite: ''
+      id_produit_id: products.length > 0 ? products[0].id_produit : '',
+      quantite: '0'
     });
     setIsEditing(false);
     setEditingId(null);
@@ -137,31 +145,17 @@ const ChariotManagement = () => {
     setIsEditing(false);
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'AVAILABLE': return '#4CAF50';
-      case 'IN_USE': return '#2196F3';
-      case 'MAINTENANCE': return '#FF9800';
-      case 'INACTIVE': return '#F44336';
-      default: return '#757575';
-    }
-  };
-
-  const renderChariotItem = ({ item }) => (
+  const renderVrackItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.infoContainer}>
         <View style={styles.row}>
-          <Text style={styles.codeText}>{item.code_chariot}</Text>
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.statut) }]}>
-            <Text style={styles.statusText}>{item.statut}</Text>
-          </View>
+          <Text style={styles.warehouseText}>{item.id_entrepot.nom_entrepot}</Text>
         </View>
-        <Text style={styles.subText}>
-          <Feather name="home" size={12} /> {item.id_entrepot?.nom_entrepot || 'N/A'}
-        </Text>
-        {item.capacite ? (
-          <Text style={styles.capaciteText}>Capacity: {item.capacite} kg</Text>
-        ) : null}
+        <Text style={styles.productName}>{item.id_produit.nom_produit}</Text>
+        <Text style={styles.skuText}>SKU: {item.id_produit.sku}</Text>
+        <View style={styles.quantityBadge}>
+          <Text style={styles.quantityText}>Quantité: {item.quantite}</Text>
+        </View>
       </View>
       
       <View style={styles.actionButtons}>
@@ -173,7 +167,7 @@ const ChariotManagement = () => {
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.actionButton} 
-          onPress={() => handleDeleteChariot(item.id_chariot)}
+          onPress={() => handleDeleteVrack(item.id_vrack)}
         >
           <Feather name="trash-2" size={18} color="#F44336" />
         </TouchableOpacity>
@@ -192,24 +186,24 @@ const ChariotManagement = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Chariots</Text>
+        <Text style={styles.title}>Gestion Vrack</Text>
         <TouchableOpacity 
           style={styles.addButton} 
           onPress={openAddModal}
         >
-          <Text style={styles.addButtonText}>+ Add Chariot</Text>
+          <Text style={styles.addButtonText}>+ Ajouter Vrack</Text>
         </TouchableOpacity>
       </View>
       
-      {chariots.length === 0 ? (
+      {vracks.length === 0 ? (
         <View style={styles.centered}>
-          <Text>No chariots found</Text>
+          <Text>Aucun enregistrement Vrack trouvé</Text>
         </View>
       ) : (
         <FlatList
-          data={chariots}
-          keyExtractor={(item) => item.id_chariot}
-          renderItem={renderChariotItem}
+          data={vracks}
+          keyExtractor={(item) => item.id_vrack}
+          renderItem={renderVrackItem}
           onRefresh={onRefresh}
           refreshing={refreshing}
           contentContainerStyle={styles.listContainer}
@@ -226,16 +220,16 @@ const ChariotManagement = () => {
           <View style={styles.modalContent}>
             <View style={styles.modalHandle} />
             <Text style={styles.modalTitle}>
-              {isEditing ? 'Edit Chariot' : 'Add New Chariot'}
+              {isEditing ? 'Modifier Vrack' : 'Ajouter Nouveau Vrack'}
             </Text>
             
             <ScrollView style={styles.form}>
-              <Text style={styles.label}>Warehouse *</Text>
+              <Text style={styles.label}>Entrepôt *</Text>
               <View style={styles.pickerContainer}>
                 <Picker
-                  selectedValue={newChariot.id_entrepot_id}
-                  onValueChange={(val) => setNewChariot({...newChariot, id_entrepot_id: val})}
-                  style={styles.picker}
+                  selectedValue={newVrack.id_entrepot_id}
+                  onValueChange={(val) => setNewVrack({...newVrack, id_entrepot_id: val})}
+                  enabled={!isEditing}
                 >
                   {warehouses.map(w => (
                     <Picker.Item key={w.id_entrepot} label={w.nom_entrepot} value={w.id_entrepot} />
@@ -243,36 +237,27 @@ const ChariotManagement = () => {
                 </Picker>
               </View>
 
-              <Text style={styles.label}>Chariot Code * (e.g., C-01, CHAR-01)</Text>
-              <TextInput
-                style={styles.input}
-                value={newChariot.code_chariot}
-                onChangeText={(t) => setNewChariot({...newChariot, code_chariot: t})}
-                placeholder="Enter unique code"
-              />
-
-              <Text style={styles.label}>Capacity (optional)</Text>
-              <TextInput
-                style={styles.input}
-                value={newChariot.capacite}
-                onChangeText={(t) => setNewChariot({...newChariot, capacite: t})}
-                placeholder="Capacity in kg"
-                keyboardType="numeric"
-              />
-
-              <Text style={styles.label}>Status</Text>
+              <Text style={styles.label}>Produit *</Text>
               <View style={styles.pickerContainer}>
                 <Picker
-                  selectedValue={newChariot.statut}
-                  onValueChange={(val) => setNewChariot({...newChariot, statut: val})}
-                  style={styles.picker}
+                  selectedValue={newVrack.id_produit_id}
+                  onValueChange={(val) => setNewVrack({...newVrack, id_produit_id: val})}
+                  enabled={!isEditing}
                 >
-                  <Picker.Item label="Available" value="AVAILABLE" />
-                  <Picker.Item label="In Use" value="IN_USE" />
-                  <Picker.Item label="Maintenance" value="MAINTENANCE" />
-                  <Picker.Item label="Inactive" value="INACTIVE" />
+                  {products.map(p => (
+                    <Picker.Item key={p.id_produit} label={`${p.nom_produit} (${p.sku})`} value={p.id_produit} />
+                  ))}
                 </Picker>
               </View>
+
+              <Text style={styles.label}>Quantité</Text>
+              <TextInput
+                style={styles.input}
+                value={newVrack.quantite}
+                onChangeText={(t) => setNewVrack({...newVrack, quantite: t})}
+                placeholder="0.00"
+                keyboardType="numeric"
+              />
             </ScrollView>
 
             <View style={styles.modalButtons}>
@@ -281,17 +266,17 @@ const ChariotManagement = () => {
                 onPress={closeModal}
                 disabled={submitting}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text style={styles.cancelButtonText}>Annuler</Text>
               </TouchableOpacity>
               <TouchableOpacity 
                 style={[styles.modalButton, styles.saveButton]} 
-                onPress={handleSubmitChariot}
+                onPress={handleSubmitVrack}
                 disabled={submitting}
               >
                 {submitting ? (
                   <ActivityIndicator color="white" size="small" />
                 ) : (
-                  <Text style={styles.saveButtonText}>{isEditing ? 'Update' : 'Save'}</Text>
+                  <Text style={styles.saveButtonText}>{isEditing ? 'Mettre à jour' : 'Enregistrer'}</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -359,30 +344,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 4,
   },
-  codeText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginRight: 8,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  statusText: {
-    color: 'white',
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  subText: {
+  warehouseText: {
     fontSize: 14,
-    color: '#666',
+    fontWeight: 'bold',
+    color: '#3498db',
     marginBottom: 4,
   },
-  capaciteText: {
-    fontSize: 14,
+  productName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2c3e50',
+    marginBottom: 2,
+  },
+  skuText: {
+    fontSize: 12,
     color: '#7f8c8d',
+    marginBottom: 8,
+  },
+  quantityBadge: {
+    backgroundColor: '#e8f5e9',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    alignSelf: 'flex-start',
+  },
+  quantityText: {
+    color: '#2e7d32',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
   actionButtons: {
     flexDirection: 'row',
@@ -404,7 +393,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
-    maxHeight: '80%',
+    maxHeight: '90%',
   },
   modalHandle: {
     width: 40,
@@ -443,11 +432,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e9ecef',
     borderRadius: 8,
-    overflow: 'hidden',
-  },
-  picker: {
-    height: 50,
-    width: '100%',
+    marginBottom: 8,
   },
   modalButtons: {
     flexDirection: 'row',
@@ -477,4 +462,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChariotManagement;
+export default VrackManagement;

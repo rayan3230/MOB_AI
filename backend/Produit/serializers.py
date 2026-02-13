@@ -5,7 +5,11 @@ from .models import Produit, CodeBarresProduit, HistoriqueDemande, DelaisApprovi
 class ProduitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Produit
-        fields = ['id_produit', 'sku', 'nom_produit', 'unite_mesure', 'categorie', 'actif',]
+        fields = [
+            'id_produit', 'sku', 'nom_produit', 'unite_mesure', 
+            'categorie', 'collisage_palette', 'collisage_fardeau', 
+            'poids', 'actif'
+        ]
 
 
 class CodeBarresProduitSerializer(serializers.ModelSerializer):

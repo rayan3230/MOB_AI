@@ -3,8 +3,10 @@ from rest_framework.routers import SimpleRouter
 from .views import (
     EntrepotViewSet,
     NiveauStockageViewSet,
+    NiveauPickingViewSet,
     EmplacementViewSet,
     StockViewSet,
+    VrackViewSet,
     MouvementStockViewSet,
     ChariotViewSet,
     ChariotOperationViewSet,
@@ -24,8 +26,10 @@ from .views import (
 router = SimpleRouter()
 router.register(r'warehouses', EntrepotViewSet, basename='warehouse')
 router.register(r'floors', NiveauStockageViewSet, basename='floor')
+router.register(r'picking-floors', NiveauPickingViewSet, basename='picking-floor')
 router.register(r'locations', EmplacementViewSet, basename='location')
 router.register(r'stock', StockViewSet, basename='stock')
+router.register(r'vracks', VrackViewSet, basename='vrack')
 router.register(r'stock-movements', MouvementStockViewSet, basename='stock-movement')
 router.register(r'chariots', ChariotViewSet, basename='chariot')
 router.register(r'chariot-operations', ChariotOperationViewSet, basename='chariot-operation')

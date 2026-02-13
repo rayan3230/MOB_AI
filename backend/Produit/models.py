@@ -2,19 +2,38 @@ from django.db import models
 
 
 class Produit(models.Model):
-    id_produit = models.CharField(max_length=10, primary_key=True)
+    id_produit = models.CharField(max_length=10, primary_key=True, blank=True)
     sku = models.CharField(max_length=50, unique=True)
     nom_produit = models.CharField(max_length=255)
     unite_mesure = models.CharField(max_length=50)
     categorie = models.CharField(max_length=100)
+    collisage_palette = models.IntegerField(default=0)
+    collisage_fardeau = models.IntegerField(default=0)
+    poids = models.DecimalField(max_digits=10, decimal_places=3, default=0.0)
     actif = models.BooleanField(default=True)
     
+    def save(self, *args, **kwargs):
+        if not self.id_produit:
+            last_produit = Produit.objects.all().order_by('id_produit').last()
+            if not last_produit:
+                self.id_produit = 'P0001'
+            else:
+                last_id = last_produit.id_produit
+                if last_id.startswith('P'):
+                    try:
+                        num = int(last_id[1:]) + 1
+                        self.id_produit = f"P{num:04d}"
+                    except ValueError:
+                        self.id_produit = 'P0001'
+                else:
+                    self.id_produit = 'P0001'
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.id_produit} - {self.nom_produit}"
 
     class Meta:
-        db_table = 'produits'
+        db_table = 'produit'
 
 
 class CodeBarresProduit(models.Model):

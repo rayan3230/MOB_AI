@@ -35,6 +35,7 @@ import StockingUnitManagement from '../pages/Admin/StockingUnit_management';
 import UserManagement from '../pages/Admin/User_managment';
 import VisualWarehouse from '../pages/Admin/Visual_Warhouse';
 import WarehouseManagement from '../pages/Admin/Warhouse_management';
+import VrackManagement from '../pages/Admin/Vrack_management';
 
 // Supervisor Pages
 import SupervisorDashboard from '../pages/Supervisor/Dashboard';
@@ -124,6 +125,7 @@ const RoleDashboardLayout = ({ role, navigation, route }) => {
         case 'Location_managment': return <LocationManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         case 'Floor_managment': return <FloorManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         case 'StockingUnit_management': return <StockingUnitManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Vrack_management': return <VrackManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         case 'Chariot_management': return <ChariotManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         case 'Visual_Warhouse': return <VisualWarehouse user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         case 'Profile': return <AdminProfile user={user} onOpenDrawer={() => toggleDrawer(true)} />;

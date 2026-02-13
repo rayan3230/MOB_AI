@@ -79,10 +79,34 @@ const UserManagement = ({ user: currentUser }) => {
           style: user.is_banned ? 'default' : 'destructive',
           onPress: async () => {
             try {
-              await apiCall(`/users/users/${user.id_utilisateur}/`, 'PUT', { is_banned: !user.is_banned });
+              await apiCall(`/users/users/${user.id_utilisateur}/`, 'PATCH', { is_banned: !user.is_banned });
               fetchUsers();
             } catch (error) {
               Alert.alert('Error', `Failed to ${action.toLowerCase()} user`);
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const handleDeleteUser = (user) => {
+    Alert.alert(
+      'Delete User',
+      `Are you sure you want to permanently delete ${user.nom_complet}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await apiCall(`/users/users/${user.id_utilisateur}/`, 'DELETE');
+              Alert.alert('Success', 'User deleted successfully');
+              fetchUsers();
+            } catch (error) {
+              console.error('Delete error:', error);
+              Alert.alert('Error', 'Failed to delete user');
             }
           }
         }
@@ -175,6 +199,7 @@ const UserManagement = ({ user: currentUser }) => {
               currentUserRole={currentUser?.user_role}
               onToggleStatus={handleToggleStatus} 
               onEdit={openEditModal} 
+              onDelete={handleDeleteUser}
             />
           )}
           contentContainerStyle={styles.listContent}

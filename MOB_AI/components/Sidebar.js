@@ -12,7 +12,8 @@ const Sidebar = ({ role, user, activePage = 'User_managment', onNavigate, onClos
     { name: 'Warehouse management', id: 'Warhouse_management', icon: 'building' },
     { name: 'Location management', id: 'Location_managment', icon: 'map-marker' },
     { name: 'Floor management', id: 'Floor_managment', icon: 'th' },
-    { name: 'Stocking units management', id: 'StockingUnit_management', icon: 'archive' },
+    { name: 'Gestion des Produits', id: 'StockingUnit_management', icon: 'archive' },
+    { name: 'Gestion Vrack', id: 'Vrack_management', icon: 'database' },
     { name: 'Chariot management', id: 'Chariot_management', icon: 'truck' },
     { name: 'Visual representation', id: 'Visual_Warhouse', icon: 'eye' },
   ];

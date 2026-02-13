@@ -7,14 +7,14 @@ from django.utils import timezone
 from django.db import transaction as db_transaction
 
 from .models import (
-    Entrepot, NiveauStockage, Emplacement, Stock, MouvementStock,
+    Entrepot, NiveauStockage, NiveauPicking, Emplacement, Stock, Vrack, MouvementStock,
     Chariot, ChariotOperation, Commande, LigneCommande, ResultatLivraison,
     Operation, PrevisionIA, AssignmentStockageIA, RoutePickingIA,
     Override, JournalAudit, OperationOffline, AnomalieDetection
 )
 from .serializers import (
-    EntrepotSerializer, NiveauStockageSerializer, EmplacementSerializer,
-    StockSerializer, MouvementStockSerializer, ChariotSerializer,
+    EntrepotSerializer, NiveauStockageSerializer, NiveauPickingSerializer, EmplacementSerializer,
+    StockSerializer, VrackSerializer, MouvementStockSerializer, ChariotSerializer,
     ChariotOperationSerializer, CommandeSerializer, LigneCommandeSerializer,
     ResultatLivraisonSerializer, OperationSerializer, PrevisionIASerializer,
     AssignmentStockageIASerializer, RoutePickingIASerializer, OverrideSerializer,
@@ -56,9 +56,17 @@ class EntrepotViewSet(viewsets.ModelViewSet):
     def warehouse_floors(self, request, id_entrepot=None):
         """GET /warehouses/{id}/warehouse_floors/ - Get all floors in warehouse"""
         warehouse = self.get_object()
-        floors = warehouse.niveaux_stockage.all()
-        serializer = NiveauStockageSerializer(floors, many=True)
-        return Response(serializer.data)
+        
+        # Get from both tables
+        stock_floors = warehouse.niveaux_stockage.all()
+        picking_floors = warehouse.niveaux_picking.all()
+        
+        # Serialize both
+        stock_data = NiveauStockageSerializer(stock_floors, many=True).data
+        picking_data = NiveauPickingSerializer(picking_floors, many=True).data
+        
+        # Combine
+        return Response(stock_data + picking_data)
 
     @action(detail=True, methods=['get'])
     def warehouse_locations(self, request, id_entrepot=None):
@@ -78,7 +86,17 @@ class NiveauStockageViewSet(viewsets.ModelViewSet):
     queryset = NiveauStockage.objects.all()
     serializer_class = NiveauStockageSerializer
     lookup_field = 'id_niveau'
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny] # Changed for development
+
+    def destroy(self, request, *args, **kwargs):
+        floor = self.get_object()
+        # Enforce "At least one storing floor" rule
+        if NiveauStockage.objects.filter(id_entrepot=floor.id_entrepot).count() <= 1:
+            return Response(
+                {'error': 'A warehouse must have at least one storing floor.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return super().destroy(request, *args, **kwargs)
 
     @action(detail=False, methods=['get'])
     def filter_by_warehouse(self, request):
@@ -86,6 +104,33 @@ class NiveauStockageViewSet(viewsets.ModelViewSet):
         warehouse_id = request.query_params.get('warehouse_id')
         if warehouse_id:
             floors = NiveauStockage.objects.filter(id_entrepot=warehouse_id)
+            serializer = self.get_serializer(floors, many=True)
+            return Response(serializer.data)
+        return Response({'error': 'warehouse_id required'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NiveauPickingViewSet(viewsets.ModelViewSet):
+    """Picking Floor Management"""
+    queryset = NiveauPicking.objects.all()
+    serializer_class = NiveauPickingSerializer
+    lookup_field = 'id_niveau_picking'
+    permission_classes = [AllowAny]
+
+    def destroy(self, request, *args, **kwargs):
+        floor = self.get_object()
+        # Enforce "At least one picking floor" rule
+        if NiveauPicking.objects.filter(id_entrepot=floor.id_entrepot).count() <= 1:
+            return Response(
+                {'error': 'A warehouse must have at least one picking floor.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return super().destroy(request, *args, **kwargs)
+
+    @action(detail=False, methods=['get'])
+    def filter_by_warehouse(self, request):
+        warehouse_id = request.query_params.get('warehouse_id')
+        if warehouse_id:
+            floors = NiveauPicking.objects.filter(id_entrepot=warehouse_id)
             serializer = self.get_serializer(floors, many=True)
             return Response(serializer.data)
         return Response({'error': 'warehouse_id required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -207,6 +252,63 @@ class StockViewSet(viewsets.ModelViewSet):
         stock.save()
         serializer = self.get_serializer(stock)
         return Response(serializer.data)
+
+
+class VrackViewSet(viewsets.ModelViewSet):
+    """
+    Vrack Management - specialized bulk storage tracking
+
+    Operations:
+    - Track products in the V-Rack area
+    - Know quantity per product in the bulk zone
+    """
+    queryset = Vrack.objects.all()
+    serializer_class = VrackSerializer
+    lookup_field = 'id_vrack'
+    permission_classes = [AllowAny] # Changed for development
+
+    @action(detail=False, methods=['get'])
+    def by_warehouse(self, request):
+        """GET /vracks/by_warehouse/?warehouse_id=WH001"""
+        warehouse_id = request.query_params.get('warehouse_id')
+        if warehouse_id:
+            vracks = Vrack.objects.filter(id_entrepot=warehouse_id)
+            serializer = self.get_serializer(vracks, many=True)
+            return Response(serializer.data)
+        return Response({'error': 'warehouse_id required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'])
+    def product_quantity(self, request):
+        """GET /vracks/product_quantity/?product_id=P0001&warehouse_id=WH001"""
+        p_id = request.query_params.get('product_id')
+        w_id = request.query_params.get('warehouse_id')
+        if p_id and w_id:
+            try:
+                vrack = Vrack.objects.get(id_produit=p_id, id_entrepot=w_id)
+                return Response({'product_id': p_id, 'quantity': vrack.quantite})
+            except Vrack.DoesNotExist:
+                return Response({'product_id': p_id, 'quantity': 0})
+        return Response({'error': 'product_id and warehouse_id required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'])
+    def adjust_quantity(self, request, id_vrack=None):
+        """POST /vracks/{id}/adjust_quantity/ - Adjust quantity by a delta"""
+        vrack = self.get_object()
+        delta = request.data.get('delta', 0)
+        try:
+            delta = float(delta)
+        except (ValueError, TypeError):
+            return Response({'error': 'Invalid delta value'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if vrack.quantite + delta < 0:
+            return Response({'error': 'Insufficient quantity in Vrack'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        vrack.quantite += delta
+        vrack.save()
+        return Response({
+            'status': 'Quantity adjusted',
+            'new_quantity': vrack.quantite
+        })
 
 
 # ============================================================================

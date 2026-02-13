@@ -23,6 +23,7 @@ class Entrepot(models.Model):
     cree_le = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def save(self, *args, **kwargs):
+        is_new = not self.id_entrepot
         if not self.id_entrepot:
             # Generate a new ID like WH001, WH002...
             last_entrepot = Entrepot.objects.all().order_by('id_entrepot').last()
@@ -45,6 +46,21 @@ class Entrepot(models.Model):
         self.id_entrepot = self.id_entrepot[:10]
         super().save(*args, **kwargs)
 
+        if is_new:
+            # Create a picking floor in the new table
+            NiveauPicking.objects.create(
+                id_entrepot=self,
+                code_niveau='PICK',
+                description='Default Picking Floor'
+            )
+            # Create a stocking floor in the stocking table
+            NiveauStockage.objects.create(
+                id_entrepot=self,
+                code_niveau='N1',
+                type_niveau='STOCK',
+                description='Default Stocking Level 1'
+            )
+
     def __str__(self):
         return f"{self.id_entrepot} - {self.nom_entrepot}"
 
@@ -54,15 +70,47 @@ class Entrepot(models.Model):
 
 class NiveauStockage(models.Model):
     """
-    Storage Floors/Levels
-    FR-13: Each warehouse has multiple floors (N1, N2, N3, N4)
-    Unique per warehouse + level_code
+    Storage Floors/Levels (For stocking only)
     """
-    id_niveau = models.CharField(max_length=20, primary_key=True)
+    TYPE_CHOICES = [
+        ('STOCK', 'Stocking Level'),
+    ]
+
+    id_niveau = models.CharField(max_length=20, primary_key=True, blank=True)
     id_entrepot = models.ForeignKey(Entrepot, on_delete=models.CASCADE, related_name='niveaux_stockage')
     code_niveau = models.CharField(max_length=50)  # N1, N2, N3, N4
+    type_niveau = models.CharField(max_length=20, choices=TYPE_CHOICES, default='STOCK')
     description = models.CharField(max_length=255, null=True, blank=True)
     cree_le = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        is_new = not self.id_niveau
+        if not self.id_niveau:
+            # Generate ID based on warehouse ID and code
+            self.id_niveau = f"{self.id_entrepot_id}_{self.code_niveau}"
+        
+        # Enforce business rules: Max 4 Stocking
+        stocking_count = NiveauStockage.objects.filter(
+            id_entrepot=self.id_entrepot, 
+            type_niveau='STOCK'
+        ).exclude(id_niveau=self.id_niveau).count()
+        if stocking_count >= 4:
+            from django.core.exceptions import ValidationError
+            raise ValidationError("A warehouse cannot have more than 4 stocking floors.")
+
+        super().save(*args, **kwargs)
+
+        if is_new:
+            # Create 2 default locations for each stocking floor
+            for i in range(1, 3):
+                code = f"{self.code_niveau}-S{i}"
+                Emplacement.objects.create(
+                    id_entrepot=self.id_entrepot,
+                    id_niveau=self,
+                    code_emplacement=code,
+                    type_emplacement='STORAGE',
+                    statut='AVAILABLE'
+                )
 
     class Meta:
         db_table = 'niveaux_stockage'
@@ -72,11 +120,60 @@ class NiveauStockage(models.Model):
         return f"{self.id_niveau} - {self.code_niveau}"
 
 
+class NiveauPicking(models.Model):
+    """
+    Picking Floor Table (Separate table as requested)
+    FR-13 subset
+    """
+    id_niveau_picking = models.CharField(max_length=20, primary_key=True, blank=True)
+    id_entrepot = models.ForeignKey(Entrepot, on_delete=models.CASCADE, related_name='niveaux_picking')
+    code_niveau = models.CharField(max_length=50)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    cree_le = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        is_new = not self.id_niveau_picking
+        if not self.id_niveau_picking:
+            self.id_niveau_picking = f"PICK_{self.id_entrepot_id}_{self.code_niveau}"
+        
+        # Enforce business rules: Exactly 1 Picking per warehouse
+        if NiveauPicking.objects.filter(id_entrepot=self.id_entrepot).exclude(id_niveau_picking=self.id_niveau_picking).exists():
+            from django.core.exceptions import ValidationError
+            raise ValidationError("A warehouse can only have one picking floor.")
+            
+        super().save(*args, **kwargs)
+
+        if is_new:
+            # Create a "v rack" location automatically
+            Emplacement.objects.create(
+                id_entrepot=self.id_entrepot,
+                id_niveau_picking=self,
+                code_emplacement=f"V-RACK-{self.id_entrepot_id}",
+                type_emplacement='PICKING',
+                statut='AVAILABLE',
+                zone='Picking Area'
+            )
+            # Create a second default location for the picking floor
+            Emplacement.objects.create(
+                id_entrepot=self.id_entrepot,
+                id_niveau_picking=self,
+                code_emplacement=f"{self.code_niveau}-P1",
+                type_emplacement='PICKING',
+                statut='AVAILABLE'
+            )
+
+    class Meta:
+        db_table = 'niveaux_picking'
+        unique_together = [['id_entrepot', 'code_niveau']]
+
+    def __str__(self):
+        return f"{self.id_niveau_picking} - {self.code_niveau}"
+
+
 class Emplacement(models.Model):
     """
     Storage & Picking Locations
-    FR-14, FR-15, FR-16, FR-17
-    Represents both STORAGE and PICKING locations
+    Can link to either NiveauStockage or NiveauPicking
     """
     TYPE_CHOICES = [
         ('STORAGE', 'Storage Location'),
@@ -89,16 +186,23 @@ class Emplacement(models.Model):
         ('BLOCKED', 'Blocked'),
     ]
 
-    id_emplacement = models.CharField(max_length=20, primary_key=True)
+    id_emplacement = models.CharField(max_length=20, primary_key=True, blank=True)
     code_emplacement = models.CharField(max_length=50, unique=True)  # FR-17: Unique code per location
     id_entrepot = models.ForeignKey(Entrepot, on_delete=models.CASCADE, related_name='emplacements')
     id_niveau = models.ForeignKey(NiveauStockage, on_delete=models.SET_NULL, null=True, blank=True, related_name='emplacements')
+    id_niveau_picking = models.ForeignKey(NiveauPicking, on_delete=models.SET_NULL, null=True, blank=True, related_name='emplacements')
     zone = models.CharField(max_length=50, null=True, blank=True)
     type_emplacement = models.CharField(max_length=50, choices=TYPE_CHOICES)  # STORAGE or PICKING
     statut = models.CharField(max_length=50, choices=STATUS_CHOICES, default='AVAILABLE')
     actif = models.BooleanField(default=True)
     cree_le = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     mise_a_jour_le = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.id_emplacement:
+            # Generate ID based on warehouse ID and code
+            self.id_emplacement = f"{self.id_entrepot_id}_{self.code_emplacement}"
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.id_emplacement} - {self.code_emplacement}"
@@ -134,6 +238,32 @@ class Stock(models.Model):
 
     def __str__(self):
         return f"{self.id_produit} @ {self.id_emplacement}: {self.quantite}"
+
+
+class Vrack(models.Model):
+    """
+    Vrack Storage System (Bulk Storage)
+    FR-23 extension: Tracks quantity per SKU in the V-Rack area
+    Stores different products and their cumulative quantities
+    """
+    id_vrack = models.CharField(max_length=50, primary_key=True, blank=True)
+    id_entrepot = models.ForeignKey(Entrepot, on_delete=models.CASCADE, related_name='vracks')
+    id_produit = models.ForeignKey(Produit, on_delete=models.CASCADE, related_name='vracks')
+    quantite = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    mise_a_jour_le = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.id_vrack:
+            # Composite ID: VRK + Warehouse ID + Product ID
+            self.id_vrack = f"VRK_{self.id_entrepot_id}_{self.id_produit_id}"
+        super().save(*args, **kwargs)
+
+    class Meta:
+        db_table = 'vracks'
+        unique_together = [['id_entrepot', 'id_produit']]
+
+    def __str__(self):
+        return f"Vrack [{self.id_entrepot_id}] - {self.id_produit.sku}: {self.quantite}"
 
 
 class MouvementStock(models.Model):
@@ -193,13 +323,32 @@ class Chariot(models.Model):
         ('INACTIVE', 'Inactive'),
     ]
 
-    id_chariot = models.CharField(max_length=20, primary_key=True)
+    id_chariot = models.CharField(max_length=20, primary_key=True, blank=True)
     code_chariot = models.CharField(max_length=50, unique=True)
     id_entrepot = models.ForeignKey(Entrepot, on_delete=models.CASCADE, related_name='chariots')
     statut = models.CharField(max_length=50, choices=STATUT_CHOICES, default='AVAILABLE')
     id_emplacement_courant = models.ForeignKey(Emplacement, on_delete=models.SET_NULL, null=True, blank=True, related_name='chariots_courants')
     capacite = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     cree_le = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.id_chariot:
+            # Generate a new ID like CH0001, CH0002...
+            last_chariot = Chariot.objects.all().order_by('id_chariot').last()
+            if not last_chariot:
+                self.id_chariot = 'CH0001'
+            else:
+                try:
+                    import re
+                    match = re.search(r'\d+', last_chariot.id_chariot)
+                    if match:
+                        num = int(match.group())
+                        self.id_chariot = f'CH{num + 1:04d}'
+                    else:
+                        self.id_chariot = last_chariot.id_chariot + '1'
+                except:
+                    self.id_chariot = 'CH' + str(Chariot.objects.count() + 1).zfill(4)
+        super().save(*args, **kwargs)
 
     class Meta:
         db_table = 'chariots'
