@@ -12,31 +12,35 @@ from django.contrib.auth.hashers import make_password
 # we need to ensure it handles passwords if used for authentication, 
 # or use the Nom Complet/ID as requested.
 
-username = "testuser"
+# Utilisateur model details:
+# id_utilisateur (PK), password, nom_complet, role, email, telephone, adresse, actif, is_banned
+
+username = "ADMIN001" # Matches the Uxxxx or similar pattern if desired, but CharField(10) allows this
 password = "testpassword"
-user_id = "testuser"
-full_name = "Test User"
+user_id = "ADMIN001"
+full_name = "Admin User"
 role = "ADMIN"
 
-# Check if model has password field. Based on attachment, it doesn't.
-# If the user wants to login, they might need a password field or standard Django auth.
-# However, the user mentioned 'password' in request.
-
 def create_test_user():
-    user, created = Utilisateur.objects.get_or_create(
+    user, created = Utilisateur.objects.update_or_create(
         id_utilisateur=user_id,
         defaults={
             'nom_complet': full_name,
             'role': role,
-            'email': 'test@example.com',
-            'actif': True
+            'email': 'admin@example.com',
+            'actif': True,
+            'is_banned': False
         }
     )
     user.set_password(password)
-    user.nom_complet = full_name
-    user.role = role
     user.save()
-    print(f"User {username} ({user_id}) created/updated with hashed password and role {role}")
+    
+    if created:
+        print(f"User {user_id} created successfully.")
+    else:
+        print(f"User {user_id} updated successfully.")
+    
+    print(f"Credentials: ID={user_id}, Password={password}, Role={role}")
 
 if __name__ == "__main__":
     create_test_user()

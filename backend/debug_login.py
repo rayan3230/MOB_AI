@@ -4,15 +4,23 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 django.setup()
 
 from Users.models import Utilisateur
-from django.contrib.auth.hashers import check_password
 
-try:
-    user = Utilisateur.objects.get(id_utilisateur='testuser')
-    print(f"User found: {user.id_utilisateur}")
-    print(f"Stored Hash: {user.password}")
-    is_correct = check_password("testpassword", user.password)
-    print(f"Password 'testpassword' matches stored hash? {is_correct}")
-except Utilisateur.DoesNotExist:
-    print("User 'testuser' not found in database.")
-except Exception as e:
-    print(f"Error: {e}")
+def verify_user(identifier, password):
+    print(f"\nTesting login for identifier: '{identifier}'")
+    try:
+        user = Utilisateur.objects.filter(nom_complet=identifier).first()
+        if not user:
+            user = Utilisateur.objects.filter(id_utilisateur=identifier).first()
+            
+        if user:
+            print(f"User found: ID={user.id_utilisateur}, Name={user.nom_complet}")
+            is_correct = user.check_password(password)
+            print(f"Password '{password}' matches? {is_correct}")
+        else:
+            print(f"User '{identifier}' not found in database.")
+    except Exception as e:
+        print(f"Error during verification: {e}")
+
+if __name__ == "__main__":
+    verify_user('ADMIN001', 'testpassword')
+    verify_user('Admin User', 'testpassword')
