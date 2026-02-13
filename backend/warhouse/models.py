@@ -14,13 +14,36 @@ class Entrepot(models.Model):
     FR-10, FR-11, FR-12
     Top-level warehouse entity
     """
-    id_entrepot = models.CharField(max_length=10, primary_key=True)
+    id_entrepot = models.CharField(max_length=10, primary_key=True, blank=True)
     code_entrepot = models.CharField(max_length=50, unique=True)
     nom_entrepot = models.CharField(max_length=255)
     ville = models.CharField(max_length=100, null=True, blank=True)
     adresse = models.CharField(max_length=255, null=True, blank=True)
     actif = models.BooleanField(default=True)
     cree_le = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.id_entrepot:
+            # Generate a new ID like WH001, WH002...
+            last_entrepot = Entrepot.objects.all().order_by('id_entrepot').last()
+            if not last_entrepot:
+                self.id_entrepot = 'WH001'
+            else:
+                try:
+                    # Try to parse the last numeric part
+                    import re
+                    match = re.search(r'\d+', last_entrepot.id_entrepot)
+                    if match:
+                        num = int(match.group())
+                        self.id_entrepot = f'WH{num + 1:03d}'
+                    else:
+                        self.id_entrepot = last_entrepot.id_entrepot + '1'
+                except:
+                    self.id_entrepot = 'WH' + str(Entrepot.objects.count() + 1).zfill(3)
+        
+        # Ensure ID doesn't exceed 10 chars
+        self.id_entrepot = self.id_entrepot[:10]
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.id_entrepot} - {self.nom_entrepot}"
