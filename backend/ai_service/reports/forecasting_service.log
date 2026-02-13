@@ -5215,3 +5215,4 @@ Final Items Sent to Warehouse:
 2026-02-13 21:58:54,196 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\Users\serializers.py changed, reloading.
 >>>>>>> 4eb8c305d7fb64037f8f6408632c3861add80b29
 2026-02-13 23:38:38,420 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-13 23:42:22,808 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\Produit\views.py changed, reloading.

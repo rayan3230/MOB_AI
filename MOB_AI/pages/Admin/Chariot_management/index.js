@@ -313,7 +313,6 @@ const styles = StyleSheet.create({
   emptyText: { color: '#94A3B8', marginTop: 20, fontSize: 16 },
   header: {
     paddingHorizontal: 24,
-    paddingTop: 60,
     paddingBottom: 24,
     backgroundColor: '#FFF',
     borderBottomWidth: 1,
