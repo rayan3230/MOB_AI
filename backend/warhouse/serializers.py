@@ -23,7 +23,7 @@ class EntrepotSerializer(serializers.ModelSerializer):
             'id_entrepot', 'code_entrepot', 'nom_entrepot', 'ville',
             'adresse', 'actif', 'cree_le'
         ]
-        read_only_fields = ['cree_le']
+        read_only_fields = ['id_entrepot', 'cree_le']
 
 
 class NiveauStockageSerializer(serializers.ModelSerializer):

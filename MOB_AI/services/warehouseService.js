@@ -11,5 +11,9 @@ export const warehouseService = {
 
     getWarehouseFloors: async (warehouseId) => {
         return await apiCall(`/api/warehouse/warehouses/${warehouseId}/warehouse_floors/`, 'GET');
+    },
+
+    createWarehouse: async (warehouseData) => {
+        return await apiCall('/api/warehouse/warehouses/', 'POST', warehouseData);
     }
 };
