@@ -5,10 +5,7 @@ import uuid
 from datetime import datetime, timedelta
 import os
 from sklearn.linear_model import LinearRegression
-try:
-    from .decision_layer import ForecastDecisionLayer
-except (ImportError, ValueError):
-    from decision_layer import ForecastDecisionLayer
+from .decision_layer import ForecastDecisionLayer
 
 # Set up paths for reports
 REPORT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "reports")
@@ -26,8 +23,9 @@ logging.basicConfig(
 logger = logging.getLogger("ForecastingService")
 
 class DataLoader:
-    def __init__(self, excel_path):
-        self.excel_path = excel_path
+    def __init__(self, data_path, is_csv=False):
+        self.data_path = data_path
+        self.is_csv = is_csv
         self.demand_history = None
         self.transactions = None
         self.transaction_lines = None
@@ -37,15 +35,30 @@ class DataLoader:
         if hasattr(self, 'demand_history') and self.demand_history is not None:
             return
             
-        logger.info(f"Loading data from {self.excel_path}")
+        logger.info(f"Loading data from {self.data_path} (is_csv={self.is_csv})")
         
-        # Load sheets
-        xls = pd.ExcelFile(self.excel_path)
-        
-        self.demand_history = pd.read_excel(xls, sheet_name='historique_demande')
-        self.transactions = pd.read_excel(xls, sheet_name='transactions')
-        self.transaction_lines = pd.read_excel(xls, sheet_name='lignes_transaction')
-        self.products = pd.read_excel(xls, sheet_name='produits')
+        if not self.is_csv:
+            # Load sheets from Excel
+            xls = pd.ExcelFile(self.data_path)
+            self.demand_history = pd.read_excel(xls, sheet_name='historique_demande')
+            self.transaction_lines = pd.read_excel(xls, sheet_name='lignes_transaction')
+            self.products = pd.read_excel(xls, sheet_name='produits')
+            if 'transactions' in xls.sheet_names:
+                self.transactions = pd.read_excel(xls, sheet_name='transactions')
+        else:
+            # Load from CSV files in the directory
+            self.demand_history = pd.read_csv(os.path.join(self.data_path, 'historique_demande.csv'))
+            self.transaction_lines = pd.read_csv(os.path.join(self.data_path, 'lignes_transaction.csv'))
+            self.products = pd.read_csv(os.path.join(self.data_path, 'produits.csv'))
+            # Transactions might be missing in some exports, but let's try
+            t_path = os.path.join(self.data_path, 'transactions.csv')
+            if os.path.exists(t_path):
+                self.transactions = pd.read_csv(t_path)
+
+        # Ensure column names are clean
+        for df in [self.demand_history, self.transaction_lines, self.products, self.transactions]:
+            if df is not None:
+                df.columns = df.columns.str.strip()
 
         # Clean Demand History
         self.demand_history = self._clean_df(self.demand_history, 'date')
@@ -459,8 +472,8 @@ class PreparationOrderService:
         return order_obj
 
 class ForecastingService:
-    def __init__(self, excel_path):
-        self.loader = DataLoader(excel_path)
+    def __init__(self, data_path, is_csv=False):
+        self.loader = DataLoader(data_path, is_csv=is_csv)
         self.baseline = BaselineModel()
         self.regression = RegressionModel()
         self.deterministic = DeterministicForecastModel()
@@ -751,6 +764,36 @@ class ForecastingService:
         # Generate Orders
         orders = self.order_service.generate_order_advanced(forecast_metadata, current_stock)
         return orders
+
+    def get_high_demand_skus(self, threshold_quantile=0.85):
+        """
+        Returns a list of SKUs that are predicted to have high demand tomorrow.
+        Uses the deterministic forecast engine.
+        """
+        self.loader.load_and_clean()
+        all_products = self.loader.demand_history['id_produit'].unique()
+        predictions = {}
+
+        for pid in all_products:
+            history = self.loader.demand_history[self.loader.demand_history['id_produit'] == pid]
+            if len(history) < 3:
+                continue
+            
+            # Use deterministic predict
+            target_date = datetime.now() + timedelta(days=1)
+            deterministic = self.deterministic.predict(history, pid, self.regression, target_date=target_date)
+            predictions[pid] = deterministic['forecast']
+
+        if not predictions:
+            return []
+
+        # Find top N%
+        pred_values = [v for v in predictions.values() if v > 0]
+        if not pred_values: return []
+        
+        thresh = np.quantile(pred_values, threshold_quantile)
+        high_demand_skus = [pid for pid, val in predictions.items() if val >= thresh and val > 0]
+        return high_demand_skus
 
 def main():
     # Adjusted path for reorganized structure
