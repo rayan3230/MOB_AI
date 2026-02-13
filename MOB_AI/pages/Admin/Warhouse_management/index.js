@@ -11,6 +11,7 @@ import {
   TextInput,
   ScrollView
 } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { warehouseService } from '../../../services/warehouseService';
 
 const WarehouseManagement = () => {
@@ -18,6 +19,8 @@ const WarehouseManagement = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [newWarehouse, setNewWarehouse] = useState({
     code_entrepot: '',
     nom_entrepot: '',
@@ -49,7 +52,7 @@ const WarehouseManagement = () => {
     fetchWarehouses();
   };
 
-  const handleAddWarehouse = async () => {
+  const handleSubmitWarehouse = async () => {
     if (!newWarehouse.code_entrepot || !newWarehouse.nom_entrepot) {
       Alert.alert('Error', 'Please fill in required fields (Code and Name)');
       return;
@@ -57,22 +60,81 @@ const WarehouseManagement = () => {
 
     try {
       setSubmitting(true);
-      await warehouseService.createWarehouse(newWarehouse);
-      Alert.alert('Success', 'Warehouse added successfully');
-      setModalVisible(false);
-      setNewWarehouse({
-        code_entrepot: '',
-        nom_entrepot: '',
-        ville: '',
-        adresse: ''
-      });
+      if (isEditing) {
+        await warehouseService.updateWarehouse(editingId, newWarehouse);
+        Alert.alert('Success', 'Warehouse updated successfully');
+      } else {
+        await warehouseService.createWarehouse(newWarehouse);
+        Alert.alert('Success', 'Warehouse added successfully');
+      }
+      closeModal();
       fetchWarehouses();
     } catch (error) {
-      console.error('Error adding warehouse:', error);
-      Alert.alert('Error', 'Failed to add warehouse');
+      console.error('Error submitting warehouse:', error);
+      Alert.alert('Error', `Failed to ${isEditing ? 'update' : 'add'} warehouse`);
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleDeleteWarehouse = (id) => {
+    Alert.alert(
+      'Delete Warehouse',
+      'Are you sure you want to delete this warehouse?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await warehouseService.deleteWarehouse(id);
+              Alert.alert('Success', 'Warehouse deleted successfully');
+              fetchWarehouses();
+            } catch (error) {
+              console.error('Error deleting warehouse:', error);
+              Alert.alert('Error', 'Failed to delete warehouse');
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const openEditModal = (warehouse) => {
+    setNewWarehouse({
+      code_entrepot: warehouse.code_entrepot,
+      nom_entrepot: warehouse.nom_entrepot,
+      ville: warehouse.ville || '',
+      adresse: warehouse.adresse || ''
+    });
+    setEditingId(warehouse.id_entrepot);
+    setIsEditing(true);
+    setModalVisible(true);
+  };
+
+  const openAddModal = () => {
+    setNewWarehouse({
+      code_entrepot: '',
+      nom_entrepot: '',
+      ville: '',
+      adresse: ''
+    });
+    setIsEditing(false);
+    setEditingId(null);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    setNewWarehouse({
+      code_entrepot: '',
+      nom_entrepot: '',
+      ville: '',
+      adresse: ''
+    });
+    setIsEditing(false);
+    setEditingId(null);
   };
 
   const renderWarehouseItem = ({ item }) => (
@@ -83,9 +145,24 @@ const WarehouseManagement = () => {
         <Text style={styles.warehouseDetails}>
           {item.ville}{item.adresse ? ` - ${item.adresse}` : ''}
         </Text>
+        <View style={[styles.statusBadge, { backgroundColor: item.actif ? '#4CAF50' : '#F44336', alignSelf: 'flex-start', marginTop: 8 }]}>
+          <Text style={styles.statusText}>{item.actif ? 'Active' : 'Inactive'}</Text>
+        </View>
       </View>
-      <View style={[styles.statusBadge, { backgroundColor: item.actif ? '#4CAF50' : '#F44336' }]}>
-        <Text style={styles.statusText}>{item.actif ? 'Active' : 'Inactive'}</Text>
+      
+      <View style={styles.actionButtons}>
+        <TouchableOpacity 
+          style={[styles.actionButton, styles.editButton]} 
+          onPress={() => openEditModal(item)}
+        >
+          <Feather name="edit-2" size={18} color="#2196F3" />
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.actionButton, styles.deleteButton]} 
+          onPress={() => handleDeleteWarehouse(item.id_entrepot)}
+        >
+          <Feather name="trash-2" size={18} color="#F44336" />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -105,15 +182,9 @@ const WarehouseManagement = () => {
         <View style={styles.headerButtons}>
           <TouchableOpacity 
             style={[styles.headerButton, styles.addButton]} 
-            onPress={() => setModalVisible(true)}
+            onPress={openAddModal}
           >
             <Text style={styles.buttonText}>+ Add</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.headerButton, styles.refreshButton]} 
-            onPress={fetchWarehouses}
-          >
-            <Text style={styles.buttonText}>Refresh</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -137,12 +208,12 @@ const WarehouseManagement = () => {
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+        onRequestClose={closeModal}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHandle} />
-            <Text style={styles.modalTitle}>Add New Warehouse</Text>
+            <Text style={styles.modalTitle}>{isEditing ? 'Edit Warehouse' : 'Add New Warehouse'}</Text>
             <ScrollView style={styles.modalForm}>
               <Text style={styles.label}>Warehouse Code *</Text>
               <TextInput
@@ -180,20 +251,20 @@ const WarehouseManagement = () => {
             <View style={styles.modalButtons}>
               <TouchableOpacity 
                 style={[styles.modalButton, styles.cancelButton]} 
-                onPress={() => setModalVisible(false)}
+                onPress={closeModal}
                 disabled={submitting}
               >
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity 
                 style={[styles.modalButton, styles.saveButton]} 
-                onPress={handleAddWarehouse}
+                onPress={handleSubmitWarehouse}
                 disabled={submitting}
               >
                 {submitting ? (
                   <ActivityIndicator size="small" color="white" />
                 ) : (
-                  <Text style={styles.saveButtonText}>Add Warehouse</Text>
+                  <Text style={styles.saveButtonText}>{isEditing ? 'Update Warehouse' : 'Add Warehouse'}</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -235,9 +306,6 @@ const styles = StyleSheet.create({
   addButton: {
     backgroundColor: '#4CAF50',
   },
-  refreshButton: {
-    backgroundColor: '#2196F3',
-  },
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
@@ -266,6 +334,22 @@ const styles = StyleSheet.create({
   },
   warehouseInfo: {
     flex: 1,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
+    padding: 8,
+    marginLeft: 4,
+    borderRadius: 8,
+    backgroundColor: '#F5F5F5',
+  },
+  editButton: {
+    // Custom edit styles if needed
+  },
+  deleteButton: {
+    // Custom delete styles if needed
   },
   warehouseName: {
     fontSize: 18,
