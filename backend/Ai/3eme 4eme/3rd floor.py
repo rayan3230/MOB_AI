@@ -338,8 +338,8 @@ class DepotB7Map:
             ax.scatter(coord.x, coord.y, c=color, s=100, marker='s', label=name)
             ax.text(coord.x + 0.5, coord.y + 0.5, name, fontsize=8, fontweight='bold')
 
-        ax.set_xlim(-2, self.width + 5)
-        ax.set_ylim(-2, self.height + 5)
+        ax.set_xlim(-2, self.width + 2)
+        ax.set_ylim(-2, self.height + 2)
         ax.set_aspect('equal')
         floor_name = "RDC" if self.floor_index == 0 else f"Etage {self.floor_index}"
         ax.set_title(f"Depot B7 - Digital Twin Layout ({floor_name}) - {self.width}x{self.height}")
@@ -351,11 +351,6 @@ class DepotB7Map:
         ax.set_yticks(range(0, self.height + 1))
         ax.tick_params(axis='both', which='major', labelsize=7)
         ax.grid(True, linestyle=':', alpha=0.4)
-        
-        # Clean up legend (remove duplicates)
-        handles, labels = ax.get_legend_handles_labels()
-        by_label = dict(zip(labels, handles))
-        ax.legend(by_label.values(), by_label.keys(), loc='upper left', bbox_to_anchor=(1, 1))
         
         plt.tight_layout()
         plt.show()

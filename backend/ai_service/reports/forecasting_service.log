@@ -3934,3 +3934,1279 @@ HYBRID 309.40 386.45    36.18    -25.46
    REG 261.01 328.00    30.52      6.63
 HYBRID 285.11 367.62    33.34     -0.35
 2026-02-13 20:11:04,744 - ForecastingService - INFO - ========================================
+2026-02-13 21:28:52,898 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 21:29:09,434 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 21:29:09,673 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 21:29:09,673 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 21:29:10,276 - ForecastingService - INFO - 
+========================================
+2026-02-13 21:29:10,276 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 21:29:10,276 - ForecastingService - INFO - ========================================
+2026-02-13 21:29:10,282 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    44.59    -17.11
+2026-02-13 21:29:10,283 - ForecastingService - INFO - ========================================
+2026-02-13 21:29:10,299 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 21:29:10,344 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 21:29:10,347 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 21:29:10,367 - ForecastingService - INFO - Product 31334 | SES: 65.47 | Reg: 80.41
+2026-02-13 21:29:10,367 - ForecastingService - INFO - Decision: 65.47 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,387 - ForecastingService - INFO - Product 31335 | SES: 77.65 | Reg: 84.33
+2026-02-13 21:29:10,387 - ForecastingService - INFO - Decision: 77.65 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,404 - ForecastingService - INFO - Product 31336 | SES: 138.53 | Reg: 114.48
+2026-02-13 21:29:10,404 - ForecastingService - INFO - Decision: 138.53 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,439 - ForecastingService - INFO - Product 31337 | SES: 73.90 | Reg: 53.39
+2026-02-13 21:29:10,440 - ForecastingService - INFO - Decision: 73.9 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,459 - ForecastingService - INFO - Product 31338 | SES: 69.69 | Reg: 152.22
+2026-02-13 21:29:10,459 - ForecastingService - INFO - Decision: 69.69 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,476 - ForecastingService - INFO - Product 31339 | SES: 69.67 | Reg: 42.39
+2026-02-13 21:29:10,476 - ForecastingService - INFO - Decision: 69.67 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,497 - ForecastingService - INFO - Product 31340 | SES: 3.65 | Reg: 3.01
+2026-02-13 21:29:10,497 - ForecastingService - INFO - Decision: 3.65 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,511 - ForecastingService - INFO - Product 31341 | SES: 41.06 | Reg: 47.46
+2026-02-13 21:29:10,512 - ForecastingService - INFO - Decision: 41.06 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,529 - ForecastingService - INFO - Product 31342 | SES: 137.77 | Reg: 152.22
+2026-02-13 21:29:10,529 - ForecastingService - INFO - Decision: 137.77 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,546 - ForecastingService - INFO - Product 31343 | SES: 116.24 | Reg: 117.03
+2026-02-13 21:29:10,546 - ForecastingService - INFO - Decision: 116.24 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,566 - ForecastingService - INFO - Product 31344 | SES: 139.53 | Reg: 107.77
+2026-02-13 21:29:10,566 - ForecastingService - INFO - Decision: 139.53 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,581 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:29:10,582 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,600 - ForecastingService - INFO - Product 31348 | SES: 81.30 | Reg: 58.88
+2026-02-13 21:29:10,602 - ForecastingService - INFO - Decision: 71.21 | Reason: Deterministic blend: SES + Regression (trend detected).
+2026-02-13 21:29:10,620 - ForecastingService - INFO - Product 31349 | SES: 186.84 | Reg: 179.43
+2026-02-13 21:29:10,620 - ForecastingService - INFO - Decision: 186.84 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,635 - ForecastingService - INFO - Product 31350 | SES: 85.17 | Reg: 38.79
+2026-02-13 21:29:10,635 - ForecastingService - INFO - Decision: 64.29 | Reason: Deterministic blend: SES + Regression (trend detected).
+2026-02-13 21:29:10,650 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:29:10,650 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,669 - ForecastingService - INFO - Product 31352 | SES: 39.03 | Reg: 29.53
+2026-02-13 21:29:10,669 - ForecastingService - INFO - Decision: 39.03 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,688 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:29:10,689 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,707 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:29:10,708 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,726 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:29:10,726 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: pure SES (stable or no trend).
+2026-02-13 21:29:10,728 - ForecastingService - INFO - 
+==================================================
+2026-02-13 21:29:10,728 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 21:29:10,728 - ForecastingService - INFO - ==================================================
+2026-02-13 21:29:10,728 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-DF7B3FEC
+2026-02-13 21:29:10,728 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 21:29:10,732 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     77.65            77.65              0
+  31336    138.53           138.53              0
+  31342    137.77           137.77              0
+  31344    139.53           139.53              0
+  31348     71.21            71.21              0
+  31352     39.03            39.03              0
+  31353    100.00           100.00              0
+2026-02-13 21:29:10,732 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 21:29:10,733 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-DF7B3FEC | SKU: 31335 | Changed from 77.65 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 21:29:10,733 - ForecastingService - INFO - ORDER PREP-DF7B3FEC VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 21:29:10,734 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 21:29:10,734 - ForecastingService - INFO - Order ID: PREP-DF7B3FEC
+2026-02-13 21:29:10,734 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 21:29:10,738 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                               reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            77.65              0           Deterministic: pure SES (stable or no trend).                 77.65              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    138.53           138.53              0           Deterministic: pure SES (stable or no trend).                   NaN               NaN                                                                   NaN         NaN
+  31342    137.77           137.77              0           Deterministic: pure SES (stable or no trend).                   NaN               NaN                                                                   NaN         NaN
+  31344    139.53           139.53              0           Deterministic: pure SES (stable or no trend).                   NaN               NaN                                                                   NaN         NaN
+  31348     71.21            71.21              0 Deterministic blend: SES + Regression (trend detected).                   NaN               NaN                                                                   NaN         NaN
+  31352     39.03            39.03              0           Deterministic: pure SES (stable or no trend).                   NaN               NaN                                                                   NaN         NaN
+  31353    100.00           100.00              0           Deterministic: pure SES (stable or no trend).                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 21:35:03,228 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 21:35:19,284 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 21:35:19,512 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 21:35:19,514 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 21:35:20,182 - ForecastingService - INFO - 
+========================================
+2026-02-13 21:35:20,182 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 21:35:20,182 - ForecastingService - INFO - ========================================
+2026-02-13 21:35:20,185 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    38.23    -18.88
+2026-02-13 21:35:20,187 - ForecastingService - INFO - ========================================
+2026-02-13 21:35:20,202 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 21:35:20,249 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 21:35:20,252 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 21:35:20,268 - ForecastingService - INFO - Product 31334 | SES: 65.47 | Reg: 80.41
+2026-02-13 21:35:20,268 - ForecastingService - INFO - Decision: 71.45 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,294 - ForecastingService - INFO - Product 31335 | SES: 77.65 | Reg: 84.33
+2026-02-13 21:35:20,295 - ForecastingService - INFO - Decision: 80.33 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,314 - ForecastingService - INFO - Product 31336 | SES: 138.53 | Reg: 114.48
+2026-02-13 21:35:20,315 - ForecastingService - INFO - Decision: 128.91 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,332 - ForecastingService - INFO - Product 31337 | SES: 73.90 | Reg: 53.39
+2026-02-13 21:35:20,332 - ForecastingService - INFO - Decision: 65.69 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,351 - ForecastingService - INFO - Product 31338 | SES: 69.69 | Reg: 152.22
+2026-02-13 21:35:20,351 - ForecastingService - INFO - Decision: 102.7 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,369 - ForecastingService - INFO - Product 31339 | SES: 69.67 | Reg: 42.39
+2026-02-13 21:35:20,369 - ForecastingService - INFO - Decision: 58.76 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,388 - ForecastingService - INFO - Product 31340 | SES: 3.65 | Reg: 3.01
+2026-02-13 21:35:20,389 - ForecastingService - INFO - Decision: 3.39 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,408 - ForecastingService - INFO - Product 31341 | SES: 41.06 | Reg: 47.46
+2026-02-13 21:35:20,409 - ForecastingService - INFO - Decision: 43.62 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,427 - ForecastingService - INFO - Product 31342 | SES: 137.77 | Reg: 152.22
+2026-02-13 21:35:20,427 - ForecastingService - INFO - Decision: 143.55 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,444 - ForecastingService - INFO - Product 31343 | SES: 116.24 | Reg: 117.03
+2026-02-13 21:35:20,445 - ForecastingService - INFO - Decision: 116.55 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,468 - ForecastingService - INFO - Product 31344 | SES: 139.53 | Reg: 107.77
+2026-02-13 21:35:20,470 - ForecastingService - INFO - Decision: 126.83 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,495 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:35:20,497 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,513 - ForecastingService - INFO - Product 31348 | SES: 81.30 | Reg: 58.88
+2026-02-13 21:35:20,513 - ForecastingService - INFO - Decision: 66.73 | Reason: Deterministic: Regression-weighted blend (trend detected).
+2026-02-13 21:35:20,530 - ForecastingService - INFO - Product 31349 | SES: 186.84 | Reg: 179.43
+2026-02-13 21:35:20,530 - ForecastingService - INFO - Decision: 183.88 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,547 - ForecastingService - INFO - Product 31350 | SES: 85.17 | Reg: 38.79
+2026-02-13 21:35:20,547 - ForecastingService - INFO - Decision: 55.02 | Reason: Deterministic: Regression-weighted blend (trend detected).
+2026-02-13 21:35:20,569 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:35:20,569 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,587 - ForecastingService - INFO - Product 31352 | SES: 39.03 | Reg: 29.53
+2026-02-13 21:35:20,588 - ForecastingService - INFO - Decision: 35.23 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,605 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:35:20,605 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,624 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:35:20,625 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,643 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:35:20,644 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: balanced SES+Regression blend.
+2026-02-13 21:35:20,644 - ForecastingService - INFO - 
+==================================================
+2026-02-13 21:35:20,645 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 21:35:20,645 - ForecastingService - INFO - ==================================================
+2026-02-13 21:35:20,645 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-342E86BE
+2026-02-13 21:35:20,645 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 21:35:20,650 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     80.33            80.33              0
+  31336    128.91           128.91              0
+  31342    143.55           143.55              0
+  31344    126.83           126.83              0
+  31348     66.73            66.73              0
+  31352     35.23            35.23              0
+  31353    100.00           100.00              0
+2026-02-13 21:35:20,651 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 21:35:20,651 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-342E86BE | SKU: 31335 | Changed from 80.33 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 21:35:20,651 - ForecastingService - INFO - ORDER PREP-342E86BE VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 21:35:20,651 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 21:35:20,651 - ForecastingService - INFO - Order ID: PREP-342E86BE
+2026-02-13 21:35:20,652 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 21:35:20,657 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                  reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            80.33              0              Deterministic: balanced SES+Regression blend.                 80.33              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    128.91           128.91              0              Deterministic: balanced SES+Regression blend.                   NaN               NaN                                                                   NaN         NaN
+  31342    143.55           143.55              0              Deterministic: balanced SES+Regression blend.                   NaN               NaN                                                                   NaN         NaN
+  31344    126.83           126.83              0              Deterministic: balanced SES+Regression blend.                   NaN               NaN                                                                   NaN         NaN
+  31348     66.73            66.73              0 Deterministic: Regression-weighted blend (trend detected).                   NaN               NaN                                                                   NaN         NaN
+  31352     35.23            35.23              0              Deterministic: balanced SES+Regression blend.                   NaN               NaN                                                                   NaN         NaN
+  31353    100.00           100.00              0              Deterministic: balanced SES+Regression blend.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 21:36:31,954 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 21:36:45,547 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 21:36:45,749 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 21:36:45,750 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 21:36:46,305 - ForecastingService - INFO - 
+========================================
+2026-02-13 21:36:46,307 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 21:36:46,307 - ForecastingService - INFO - ========================================
+2026-02-13 21:36:46,311 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    37.14    -20.02
+2026-02-13 21:36:46,311 - ForecastingService - INFO - ========================================
+2026-02-13 21:36:46,323 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 21:36:46,365 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 21:36:46,368 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 21:36:46,385 - ForecastingService - INFO - Product 31334 | SES: 62.40 | Reg: 80.41
+2026-02-13 21:36:46,385 - ForecastingService - INFO - Decision: 72.31 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,400 - ForecastingService - INFO - Product 31335 | SES: 75.39 | Reg: 84.33
+2026-02-13 21:36:46,400 - ForecastingService - INFO - Decision: 80.31 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,415 - ForecastingService - INFO - Product 31336 | SES: 136.60 | Reg: 114.48
+2026-02-13 21:36:46,415 - ForecastingService - INFO - Decision: 124.43 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,430 - ForecastingService - INFO - Product 31337 | SES: 76.43 | Reg: 53.39
+2026-02-13 21:36:46,430 - ForecastingService - INFO - Decision: 63.76 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,444 - ForecastingService - INFO - Product 31338 | SES: 63.75 | Reg: 152.22
+2026-02-13 21:36:46,444 - ForecastingService - INFO - Decision: 112.41 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,458 - ForecastingService - INFO - Product 31339 | SES: 72.30 | Reg: 42.39
+2026-02-13 21:36:46,459 - ForecastingService - INFO - Decision: 55.85 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,472 - ForecastingService - INFO - Product 31340 | SES: 3.49 | Reg: 3.01
+2026-02-13 21:36:46,472 - ForecastingService - INFO - Decision: 3.22 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,486 - ForecastingService - INFO - Product 31341 | SES: 39.74 | Reg: 47.46
+2026-02-13 21:36:46,486 - ForecastingService - INFO - Decision: 43.98 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,500 - ForecastingService - INFO - Product 31342 | SES: 133.62 | Reg: 152.22
+2026-02-13 21:36:46,500 - ForecastingService - INFO - Decision: 143.85 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,517 - ForecastingService - INFO - Product 31343 | SES: 113.81 | Reg: 117.03
+2026-02-13 21:36:46,517 - ForecastingService - INFO - Decision: 115.58 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,529 - ForecastingService - INFO - Product 31344 | SES: 144.40 | Reg: 107.77
+2026-02-13 21:36:46,530 - ForecastingService - INFO - Decision: 124.25 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,544 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:36:46,544 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,559 - ForecastingService - INFO - Product 31348 | SES: 82.90 | Reg: 58.88
+2026-02-13 21:36:46,559 - ForecastingService - INFO - Decision: 64.88 | Reason: Deterministic: REG-dominant (trend detected).
+2026-02-13 21:36:46,577 - ForecastingService - INFO - Product 31349 | SES: 186.57 | Reg: 179.43
+2026-02-13 21:36:46,577 - ForecastingService - INFO - Decision: 182.64 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,590 - ForecastingService - INFO - Product 31350 | SES: 84.02 | Reg: 38.79
+2026-02-13 21:36:46,590 - ForecastingService - INFO - Decision: 50.09 | Reason: Deterministic: REG-dominant (trend detected).
+2026-02-13 21:36:46,603 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:36:46,604 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,620 - ForecastingService - INFO - Product 31352 | SES: 39.36 | Reg: 29.53
+2026-02-13 21:36:46,621 - ForecastingService - INFO - Decision: 33.95 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,635 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:36:46,635 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,650 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:36:46,651 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,665 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:36:46,666 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:36:46,666 - ForecastingService - INFO - 
+==================================================
+2026-02-13 21:36:46,666 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 21:36:46,667 - ForecastingService - INFO - ==================================================
+2026-02-13 21:36:46,667 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-A9C936C2
+2026-02-13 21:36:46,667 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 21:36:46,671 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     80.31            80.31              0
+  31336    124.43           124.43              0
+  31342    143.85           143.85              0
+  31344    124.25           124.25              0
+  31348     64.88            64.88              0
+  31352     33.95            33.95              0
+  31353    100.00           100.00              0
+2026-02-13 21:36:46,672 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 21:36:46,672 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-A9C936C2 | SKU: 31335 | Changed from 80.31 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 21:36:46,672 - ForecastingService - INFO - ORDER PREP-A9C936C2 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 21:36:46,673 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 21:36:46,673 - ForecastingService - INFO - Order ID: PREP-A9C936C2
+2026-02-13 21:36:46,673 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 21:36:46,678 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                     reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            80.31              0             Deterministic: REG-favored blend.                 80.31              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    124.43           124.43              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+  31342    143.85           143.85              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+  31344    124.25           124.25              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+  31348     64.88            64.88              0 Deterministic: REG-dominant (trend detected).                   NaN               NaN                                                                   NaN         NaN
+  31352     33.95            33.95              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+  31353    100.00           100.00              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 21:37:17,808 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 21:37:31,585 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 21:37:31,801 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 21:37:31,803 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 21:37:32,333 - ForecastingService - INFO - 
+========================================
+2026-02-13 21:37:32,334 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 21:37:32,334 - ForecastingService - INFO - ========================================
+2026-02-13 21:37:32,337 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    37.14    -20.02
+2026-02-13 21:37:32,338 - ForecastingService - INFO - ========================================
+2026-02-13 21:37:32,351 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 21:37:32,393 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 21:37:32,395 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 21:37:32,408 - ForecastingService - INFO - Product 31334 | SES: 62.40 | Reg: 80.41
+2026-02-13 21:37:32,408 - ForecastingService - INFO - Decision: 72.31 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,429 - ForecastingService - INFO - Product 31335 | SES: 75.39 | Reg: 84.33
+2026-02-13 21:37:32,429 - ForecastingService - INFO - Decision: 80.31 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,443 - ForecastingService - INFO - Product 31336 | SES: 136.60 | Reg: 114.48
+2026-02-13 21:37:32,443 - ForecastingService - INFO - Decision: 124.43 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,457 - ForecastingService - INFO - Product 31337 | SES: 76.43 | Reg: 53.39
+2026-02-13 21:37:32,457 - ForecastingService - INFO - Decision: 63.76 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,471 - ForecastingService - INFO - Product 31338 | SES: 63.75 | Reg: 152.22
+2026-02-13 21:37:32,472 - ForecastingService - INFO - Decision: 112.41 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,485 - ForecastingService - INFO - Product 31339 | SES: 72.30 | Reg: 42.39
+2026-02-13 21:37:32,485 - ForecastingService - INFO - Decision: 55.85 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,498 - ForecastingService - INFO - Product 31340 | SES: 3.49 | Reg: 3.01
+2026-02-13 21:37:32,499 - ForecastingService - INFO - Decision: 3.22 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,513 - ForecastingService - INFO - Product 31341 | SES: 39.74 | Reg: 47.46
+2026-02-13 21:37:32,514 - ForecastingService - INFO - Decision: 43.98 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,527 - ForecastingService - INFO - Product 31342 | SES: 133.62 | Reg: 152.22
+2026-02-13 21:37:32,527 - ForecastingService - INFO - Decision: 143.85 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,542 - ForecastingService - INFO - Product 31343 | SES: 113.81 | Reg: 117.03
+2026-02-13 21:37:32,542 - ForecastingService - INFO - Decision: 115.58 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,557 - ForecastingService - INFO - Product 31344 | SES: 144.40 | Reg: 107.77
+2026-02-13 21:37:32,557 - ForecastingService - INFO - Decision: 124.25 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,570 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:37:32,570 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,585 - ForecastingService - INFO - Product 31348 | SES: 82.90 | Reg: 58.88
+2026-02-13 21:37:32,585 - ForecastingService - INFO - Decision: 64.88 | Reason: Deterministic: REG-dominant (trend detected).
+2026-02-13 21:37:32,599 - ForecastingService - INFO - Product 31349 | SES: 186.57 | Reg: 179.43
+2026-02-13 21:37:32,599 - ForecastingService - INFO - Decision: 182.64 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,612 - ForecastingService - INFO - Product 31350 | SES: 84.02 | Reg: 38.79
+2026-02-13 21:37:32,613 - ForecastingService - INFO - Decision: 50.09 | Reason: Deterministic: REG-dominant (trend detected).
+2026-02-13 21:37:32,627 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:37:32,628 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,641 - ForecastingService - INFO - Product 31352 | SES: 39.36 | Reg: 29.53
+2026-02-13 21:37:32,641 - ForecastingService - INFO - Decision: 33.95 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,654 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:37:32,654 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,667 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:37:32,668 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,683 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:37:32,683 - ForecastingService - INFO - Decision: 100.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:37:32,683 - ForecastingService - INFO - 
+==================================================
+2026-02-13 21:37:32,683 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 21:37:32,684 - ForecastingService - INFO - ==================================================
+2026-02-13 21:37:32,684 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-1AEF7167
+2026-02-13 21:37:32,684 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 21:37:32,687 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     80.31            80.31              0
+  31336    124.43           124.43              0
+  31342    143.85           143.85              0
+  31344    124.25           124.25              0
+  31348     64.88            64.88              0
+  31352     33.95            33.95              0
+  31353    100.00           100.00              0
+2026-02-13 21:37:32,689 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 21:37:32,689 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-1AEF7167 | SKU: 31335 | Changed from 80.31 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 21:37:32,689 - ForecastingService - INFO - ORDER PREP-1AEF7167 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 21:37:32,689 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 21:37:32,689 - ForecastingService - INFO - Order ID: PREP-1AEF7167
+2026-02-13 21:37:32,690 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 21:37:32,694 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                     reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            80.31              0             Deterministic: REG-favored blend.                 80.31              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    124.43           124.43              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+  31342    143.85           143.85              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+  31344    124.25           124.25              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+  31348     64.88            64.88              0 Deterministic: REG-dominant (trend detected).                   NaN               NaN                                                                   NaN         NaN
+  31352     33.95            33.95              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+  31353    100.00           100.00              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 21:38:15,512 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 21:38:31,033 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 21:38:31,266 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 21:38:31,268 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 21:38:31,840 - ForecastingService - INFO - 
+========================================
+2026-02-13 21:38:31,840 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 21:38:31,841 - ForecastingService - INFO - ========================================
+2026-02-13 21:38:31,844 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    39.32      1.58
+2026-02-13 21:38:31,845 - ForecastingService - INFO - ========================================
+2026-02-13 21:38:31,859 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 21:38:31,914 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 21:38:31,916 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 21:38:31,933 - ForecastingService - INFO - Product 31334 | SES: 62.40 | Reg: 80.41
+2026-02-13 21:38:31,934 - ForecastingService - INFO - Decision: 91.83 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:31,949 - ForecastingService - INFO - Product 31335 | SES: 75.39 | Reg: 84.33
+2026-02-13 21:38:31,950 - ForecastingService - INFO - Decision: 101.99 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:31,965 - ForecastingService - INFO - Product 31336 | SES: 136.60 | Reg: 114.48
+2026-02-13 21:38:31,966 - ForecastingService - INFO - Decision: 158.03 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:31,980 - ForecastingService - INFO - Product 31337 | SES: 76.43 | Reg: 53.39
+2026-02-13 21:38:31,980 - ForecastingService - INFO - Decision: 80.97 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:31,998 - ForecastingService - INFO - Product 31338 | SES: 63.75 | Reg: 152.22
+2026-02-13 21:38:31,998 - ForecastingService - INFO - Decision: 142.76 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,011 - ForecastingService - INFO - Product 31339 | SES: 72.30 | Reg: 42.39
+2026-02-13 21:38:32,012 - ForecastingService - INFO - Decision: 70.93 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,025 - ForecastingService - INFO - Product 31340 | SES: 3.49 | Reg: 3.01
+2026-02-13 21:38:32,026 - ForecastingService - INFO - Decision: 4.1 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,039 - ForecastingService - INFO - Product 31341 | SES: 39.74 | Reg: 47.46
+2026-02-13 21:38:32,039 - ForecastingService - INFO - Decision: 55.86 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,052 - ForecastingService - INFO - Product 31342 | SES: 133.62 | Reg: 152.22
+2026-02-13 21:38:32,053 - ForecastingService - INFO - Decision: 182.68 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,067 - ForecastingService - INFO - Product 31343 | SES: 113.81 | Reg: 117.03
+2026-02-13 21:38:32,067 - ForecastingService - INFO - Decision: 146.79 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,082 - ForecastingService - INFO - Product 31344 | SES: 144.40 | Reg: 107.77
+2026-02-13 21:38:32,082 - ForecastingService - INFO - Decision: 157.8 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,096 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:38:32,096 - ForecastingService - INFO - Decision: 127.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,111 - ForecastingService - INFO - Product 31348 | SES: 82.90 | Reg: 58.88
+2026-02-13 21:38:32,112 - ForecastingService - INFO - Decision: 82.4 | Reason: Deterministic: REG-dominant (trend detected).
+2026-02-13 21:38:32,128 - ForecastingService - INFO - Product 31349 | SES: 186.57 | Reg: 179.43
+2026-02-13 21:38:32,128 - ForecastingService - INFO - Decision: 231.96 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,146 - ForecastingService - INFO - Product 31350 | SES: 84.02 | Reg: 38.79
+2026-02-13 21:38:32,147 - ForecastingService - INFO - Decision: 63.62 | Reason: Deterministic: REG-dominant (trend detected).
+2026-02-13 21:38:32,164 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:38:32,164 - ForecastingService - INFO - Decision: 127.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,179 - ForecastingService - INFO - Product 31352 | SES: 39.36 | Reg: 29.53
+2026-02-13 21:38:32,179 - ForecastingService - INFO - Decision: 43.12 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,194 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:38:32,194 - ForecastingService - INFO - Decision: 127.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,208 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:38:32,208 - ForecastingService - INFO - Decision: 127.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,221 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:38:32,222 - ForecastingService - INFO - Decision: 127.0 | Reason: Deterministic: REG-favored blend.
+2026-02-13 21:38:32,222 - ForecastingService - INFO - 
+==================================================
+2026-02-13 21:38:32,222 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 21:38:32,223 - ForecastingService - INFO - ==================================================
+2026-02-13 21:38:32,223 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-9E562A7E
+2026-02-13 21:38:32,223 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 21:38:32,227 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    101.99           101.99              0
+  31336    158.03           158.03              0
+  31342    182.68           182.68              0
+  31344    157.80           157.80              0
+  31348     82.40            82.40              0
+  31352     43.12            43.12              0
+  31353    127.00           127.00              0
+2026-02-13 21:38:32,227 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 21:38:32,228 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-9E562A7E | SKU: 31335 | Changed from 101.99 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 21:38:32,228 - ForecastingService - INFO - ORDER PREP-9E562A7E VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 21:38:32,228 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 21:38:32,228 - ForecastingService - INFO - Order ID: PREP-9E562A7E
+2026-02-13 21:38:32,229 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 21:38:32,233 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                     reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           101.99              0             Deterministic: REG-favored blend.                101.99              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    158.03           158.03              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+  31342    182.68           182.68              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+  31344    157.80           157.80              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+  31348     82.40            82.40              0 Deterministic: REG-dominant (trend detected).                   NaN               NaN                                                                   NaN         NaN
+  31352     43.12            43.12              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+  31353    127.00           127.00              0             Deterministic: REG-favored blend.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 21:40:05,460 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 21:40:19,539 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 21:40:19,760 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 21:40:19,762 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 21:40:20,276 - ForecastingService - INFO - 
+========================================
+2026-02-13 21:40:20,277 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 21:40:20,277 - ForecastingService - INFO - ========================================
+2026-02-13 21:40:20,281 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    34.66      0.29
+2026-02-13 21:40:20,281 - ForecastingService - INFO - ========================================
+2026-02-13 21:40:20,293 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 21:40:20,337 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 21:40:20,339 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 21:40:20,353 - ForecastingService - INFO - Product 31334 | SES: 62.40 | Reg: 80.41
+2026-02-13 21:40:20,353 - ForecastingService - INFO - Decision: 98.69 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,367 - ForecastingService - INFO - Product 31335 | SES: 75.39 | Reg: 84.33
+2026-02-13 21:40:20,367 - ForecastingService - INFO - Decision: 105.4 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,381 - ForecastingService - INFO - Product 31336 | SES: 136.60 | Reg: 114.48
+2026-02-13 21:40:20,382 - ForecastingService - INFO - Decision: 149.6 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,396 - ForecastingService - INFO - Product 31337 | SES: 76.43 | Reg: 53.39
+2026-02-13 21:40:20,397 - ForecastingService - INFO - Decision: 72.2 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,411 - ForecastingService - INFO - Product 31338 | SES: 63.75 | Reg: 152.22
+2026-02-13 21:40:20,411 - ForecastingService - INFO - Decision: 176.46 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,425 - ForecastingService - INFO - Product 31339 | SES: 72.30 | Reg: 42.39
+2026-02-13 21:40:20,426 - ForecastingService - INFO - Decision: 59.53 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,439 - ForecastingService - INFO - Product 31340 | SES: 3.49 | Reg: 3.01
+2026-02-13 21:40:20,439 - ForecastingService - INFO - Decision: 3.91 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,454 - ForecastingService - INFO - Product 31341 | SES: 39.74 | Reg: 47.46
+2026-02-13 21:40:20,454 - ForecastingService - INFO - Decision: 58.8 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,470 - ForecastingService - INFO - Product 31342 | SES: 133.62 | Reg: 152.22
+2026-02-13 21:40:20,470 - ForecastingService - INFO - Decision: 189.77 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,485 - ForecastingService - INFO - Product 31343 | SES: 113.81 | Reg: 117.03
+2026-02-13 21:40:20,485 - ForecastingService - INFO - Decision: 148.01 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,500 - ForecastingService - INFO - Product 31344 | SES: 144.40 | Reg: 107.77
+2026-02-13 21:40:20,500 - ForecastingService - INFO - Decision: 143.84 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,515 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:40:20,516 - ForecastingService - INFO - Decision: 127.0 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,531 - ForecastingService - INFO - Product 31348 | SES: 82.90 | Reg: 58.88
+2026-02-13 21:40:20,531 - ForecastingService - INFO - Decision: 76.3 | Reason: Deterministic: Near-pure REG (trend detected, optimal WAP).
+2026-02-13 21:40:20,544 - ForecastingService - INFO - Product 31349 | SES: 186.57 | Reg: 179.43
+2026-02-13 21:40:20,545 - ForecastingService - INFO - Decision: 229.24 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,557 - ForecastingService - INFO - Product 31350 | SES: 84.02 | Reg: 38.79
+2026-02-13 21:40:20,557 - ForecastingService - INFO - Decision: 52.13 | Reason: Deterministic: Near-pure REG (trend detected, optimal WAP).
+2026-02-13 21:40:20,575 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:40:20,576 - ForecastingService - INFO - Decision: 127.0 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,589 - ForecastingService - INFO - Product 31352 | SES: 39.36 | Reg: 29.53
+2026-02-13 21:40:20,589 - ForecastingService - INFO - Decision: 39.37 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,603 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:40:20,603 - ForecastingService - INFO - Decision: 127.0 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,618 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:40:20,618 - ForecastingService - INFO - Decision: 127.0 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,637 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:40:20,637 - ForecastingService - INFO - Decision: 127.0 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:40:20,637 - ForecastingService - INFO - 
+==================================================
+2026-02-13 21:40:20,638 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 21:40:20,638 - ForecastingService - INFO - ==================================================
+2026-02-13 21:40:20,638 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-200539F2
+2026-02-13 21:40:20,638 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 21:40:20,643 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    105.40           105.40              0
+  31336    149.60           149.60              0
+  31342    189.77           189.77              0
+  31344    143.84           143.84              0
+  31348     76.30            76.30              0
+  31352     39.37            39.37              0
+  31353    127.00           127.00              0
+2026-02-13 21:40:20,643 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 21:40:20,644 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-200539F2 | SKU: 31335 | Changed from 105.4 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 21:40:20,644 - ForecastingService - INFO - ORDER PREP-200539F2 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 21:40:20,644 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 21:40:20,644 - ForecastingService - INFO - Order ID: PREP-200539F2
+2026-02-13 21:40:20,644 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 21:40:20,647 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                   reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           105.40              0                    Deterministic: REG-primary for accuracy.                 105.4              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    149.60           149.60              0                    Deterministic: REG-primary for accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31342    189.77           189.77              0                    Deterministic: REG-primary for accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31344    143.84           143.84              0                    Deterministic: REG-primary for accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31348     76.30            76.30              0 Deterministic: Near-pure REG (trend detected, optimal WAP).                   NaN               NaN                                                                   NaN         NaN
+  31352     39.37            39.37              0                    Deterministic: REG-primary for accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31353    127.00           127.00              0                    Deterministic: REG-primary for accuracy.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 21:40:57,064 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 21:41:11,886 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 21:41:12,095 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 21:41:12,097 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 21:41:12,830 - ForecastingService - INFO - 
+========================================
+2026-02-13 21:41:12,830 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 21:41:12,830 - ForecastingService - INFO - ========================================
+2026-02-13 21:41:12,836 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    33.55    -14.71
+2026-02-13 21:41:12,836 - ForecastingService - INFO - ========================================
+2026-02-13 21:41:12,857 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 21:41:12,921 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 21:41:12,924 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 21:41:12,950 - ForecastingService - INFO - Product 31334 | SES: 62.40 | Reg: 80.41
+2026-02-13 21:41:12,950 - ForecastingService - INFO - Decision: 83.93 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:12,979 - ForecastingService - INFO - Product 31335 | SES: 75.39 | Reg: 84.33
+2026-02-13 21:41:12,979 - ForecastingService - INFO - Decision: 89.63 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:12,999 - ForecastingService - INFO - Product 31336 | SES: 136.60 | Reg: 114.48
+2026-02-13 21:41:12,999 - ForecastingService - INFO - Decision: 127.22 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,017 - ForecastingService - INFO - Product 31337 | SES: 76.43 | Reg: 53.39
+2026-02-13 21:41:13,017 - ForecastingService - INFO - Decision: 61.39 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,033 - ForecastingService - INFO - Product 31338 | SES: 63.75 | Reg: 152.22
+2026-02-13 21:41:13,033 - ForecastingService - INFO - Decision: 150.06 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,046 - ForecastingService - INFO - Product 31339 | SES: 72.30 | Reg: 42.39
+2026-02-13 21:41:13,047 - ForecastingService - INFO - Decision: 50.63 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,062 - ForecastingService - INFO - Product 31340 | SES: 3.49 | Reg: 3.01
+2026-02-13 21:41:13,062 - ForecastingService - INFO - Decision: 3.33 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,081 - ForecastingService - INFO - Product 31341 | SES: 39.74 | Reg: 47.46
+2026-02-13 21:41:13,081 - ForecastingService - INFO - Decision: 50.01 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,101 - ForecastingService - INFO - Product 31342 | SES: 133.62 | Reg: 152.22
+2026-02-13 21:41:13,101 - ForecastingService - INFO - Decision: 161.38 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,126 - ForecastingService - INFO - Product 31343 | SES: 113.81 | Reg: 117.03
+2026-02-13 21:41:13,126 - ForecastingService - INFO - Decision: 125.87 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,149 - ForecastingService - INFO - Product 31344 | SES: 144.40 | Reg: 107.77
+2026-02-13 21:41:13,150 - ForecastingService - INFO - Decision: 122.32 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,173 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:41:13,174 - ForecastingService - INFO - Decision: 108.0 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,192 - ForecastingService - INFO - Product 31348 | SES: 82.90 | Reg: 58.88
+2026-02-13 21:41:13,194 - ForecastingService - INFO - Decision: 64.89 | Reason: Deterministic: Near-pure REG (trend detected, optimal WAP).
+2026-02-13 21:41:13,222 - ForecastingService - INFO - Product 31349 | SES: 186.57 | Reg: 179.43
+2026-02-13 21:41:13,223 - ForecastingService - INFO - Decision: 194.94 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,242 - ForecastingService - INFO - Product 31350 | SES: 84.02 | Reg: 38.79
+2026-02-13 21:41:13,243 - ForecastingService - INFO - Decision: 44.33 | Reason: Deterministic: Near-pure REG (trend detected, optimal WAP).
+2026-02-13 21:41:13,267 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:41:13,268 - ForecastingService - INFO - Decision: 108.0 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,296 - ForecastingService - INFO - Product 31352 | SES: 39.36 | Reg: 29.53
+2026-02-13 21:41:13,296 - ForecastingService - INFO - Decision: 33.48 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,324 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:41:13,325 - ForecastingService - INFO - Decision: 108.0 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,350 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:41:13,350 - ForecastingService - INFO - Decision: 108.0 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,374 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:41:13,374 - ForecastingService - INFO - Decision: 108.0 | Reason: Deterministic: REG-primary for accuracy.
+2026-02-13 21:41:13,374 - ForecastingService - INFO - 
+==================================================
+2026-02-13 21:41:13,374 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 21:41:13,375 - ForecastingService - INFO - ==================================================
+2026-02-13 21:41:13,375 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-EDBA3E86
+2026-02-13 21:41:13,375 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 21:41:13,380 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     89.63            89.63              0
+  31336    127.22           127.22              0
+  31342    161.38           161.38              0
+  31344    122.32           122.32              0
+  31348     64.89            64.89              0
+  31352     33.48            33.48              0
+  31353    108.00           108.00              0
+2026-02-13 21:41:13,381 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 21:41:13,381 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-EDBA3E86 | SKU: 31335 | Changed from 89.63 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 21:41:13,381 - ForecastingService - INFO - ORDER PREP-EDBA3E86 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 21:41:13,381 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 21:41:13,383 - ForecastingService - INFO - Order ID: PREP-EDBA3E86
+2026-02-13 21:41:13,383 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 21:41:13,390 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                   reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            89.63              0                    Deterministic: REG-primary for accuracy.                 89.63              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    127.22           127.22              0                    Deterministic: REG-primary for accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31342    161.38           161.38              0                    Deterministic: REG-primary for accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31344    122.32           122.32              0                    Deterministic: REG-primary for accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31348     64.89            64.89              0 Deterministic: Near-pure REG (trend detected, optimal WAP).                   NaN               NaN                                                                   NaN         NaN
+  31352     33.48            33.48              0                    Deterministic: REG-primary for accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31353    108.00           108.00              0                    Deterministic: REG-primary for accuracy.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 21:44:26,520 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 21:44:41,742 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 21:44:41,961 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 21:44:41,963 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 21:44:42,580 - ForecastingService - INFO - 
+========================================
+2026-02-13 21:44:42,580 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 21:44:42,580 - ForecastingService - INFO - ========================================
+2026-02-13 21:44:42,586 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    33.28     -6.81
+2026-02-13 21:44:42,586 - ForecastingService - INFO - ========================================
+2026-02-13 21:44:42,602 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 21:44:42,648 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 21:44:42,650 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 21:44:42,672 - ForecastingService - INFO - Product 31334 | SES: 62.40 | Reg: 80.41
+2026-02-13 21:44:42,672 - ForecastingService - INFO - Decision: 91.7 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,689 - ForecastingService - INFO - Product 31335 | SES: 75.39 | Reg: 84.33
+2026-02-13 21:44:42,689 - ForecastingService - INFO - Decision: 97.93 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,708 - ForecastingService - INFO - Product 31336 | SES: 136.60 | Reg: 114.48
+2026-02-13 21:44:42,710 - ForecastingService - INFO - Decision: 139.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,725 - ForecastingService - INFO - Product 31337 | SES: 76.43 | Reg: 53.39
+2026-02-13 21:44:42,725 - ForecastingService - INFO - Decision: 67.08 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,752 - ForecastingService - INFO - Product 31338 | SES: 63.75 | Reg: 152.22
+2026-02-13 21:44:42,752 - ForecastingService - INFO - Decision: 163.96 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,770 - ForecastingService - INFO - Product 31339 | SES: 72.30 | Reg: 42.39
+2026-02-13 21:44:42,770 - ForecastingService - INFO - Decision: 55.31 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,786 - ForecastingService - INFO - Product 31340 | SES: 3.49 | Reg: 3.01
+2026-02-13 21:44:42,786 - ForecastingService - INFO - Decision: 3.58 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,804 - ForecastingService - INFO - Product 31341 | SES: 39.74 | Reg: 47.46
+2026-02-13 21:44:42,804 - ForecastingService - INFO - Decision: 54.64 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,821 - ForecastingService - INFO - Product 31342 | SES: 133.62 | Reg: 152.22
+2026-02-13 21:44:42,823 - ForecastingService - INFO - Decision: 176.32 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,837 - ForecastingService - INFO - Product 31343 | SES: 113.81 | Reg: 117.03
+2026-02-13 21:44:42,837 - ForecastingService - INFO - Decision: 124.06 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,853 - ForecastingService - INFO - Product 31344 | SES: 144.40 | Reg: 107.77
+2026-02-13 21:44:42,853 - ForecastingService - INFO - Decision: 133.65 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,877 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:44:42,877 - ForecastingService - INFO - Decision: 118.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,892 - ForecastingService - INFO - Product 31348 | SES: 82.90 | Reg: 58.88
+2026-02-13 21:44:42,892 - ForecastingService - INFO - Decision: 73.73 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 21:44:42,908 - ForecastingService - INFO - Product 31349 | SES: 186.57 | Reg: 179.43
+2026-02-13 21:44:42,909 - ForecastingService - INFO - Decision: 213.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,924 - ForecastingService - INFO - Product 31350 | SES: 84.02 | Reg: 38.79
+2026-02-13 21:44:42,924 - ForecastingService - INFO - Decision: 48.44 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 21:44:42,942 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:44:42,942 - ForecastingService - INFO - Decision: 118.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,959 - ForecastingService - INFO - Product 31352 | SES: 39.36 | Reg: 29.53
+2026-02-13 21:44:42,959 - ForecastingService - INFO - Decision: 36.58 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,975 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:44:42,975 - ForecastingService - INFO - Decision: 118.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:42,995 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:44:42,995 - ForecastingService - INFO - Decision: 118.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:43,012 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:44:43,013 - ForecastingService - INFO - Decision: 118.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:44:43,013 - ForecastingService - INFO - 
+==================================================
+2026-02-13 21:44:43,013 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 21:44:43,013 - ForecastingService - INFO - ==================================================
+2026-02-13 21:44:43,013 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-75ACF08E
+2026-02-13 21:44:43,014 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 21:44:43,016 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     97.93            97.93              0
+  31336    139.00           139.00              0
+  31342    176.32           176.32              0
+  31344    133.65           133.65              0
+  31348     73.73            73.73              0
+  31352     36.58            36.58              0
+  31353    118.00           118.00              0
+2026-02-13 21:44:43,016 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 21:44:43,016 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-75ACF08E | SKU: 31335 | Changed from 97.93 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 21:44:43,019 - ForecastingService - INFO - ORDER PREP-75ACF08E VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 21:44:43,019 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 21:44:43,019 - ForecastingService - INFO - Order ID: PREP-75ACF08E
+2026-02-13 21:44:43,019 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 21:44:43,028 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                            reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            97.93              0  Using calibrated deterministic forecast (REG-primary for accuracy).                 97.93              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    139.00           139.00              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31342    176.32           176.32              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31344    133.65           133.65              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31348     73.73            73.73              0 Using calibrated deterministic forecast (trend-aware, REG-dominant).                   NaN               NaN                                                                   NaN         NaN
+  31352     36.58            36.58              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31353    118.00           118.00              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 21:45:11,204 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 21:45:26,538 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 21:45:26,763 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 21:45:26,764 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 21:45:27,400 - ForecastingService - INFO - 
+========================================
+2026-02-13 21:45:27,400 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 21:45:27,401 - ForecastingService - INFO - ========================================
+2026-02-13 21:45:27,403 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    35.18      1.87
+2026-02-13 21:45:27,404 - ForecastingService - INFO - ========================================
+2026-02-13 21:45:27,418 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 21:45:27,467 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 21:45:27,470 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 21:45:27,486 - ForecastingService - INFO - Product 31334 | SES: 62.40 | Reg: 80.41
+2026-02-13 21:45:27,486 - ForecastingService - INFO - Decision: 100.24 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,501 - ForecastingService - INFO - Product 31335 | SES: 75.39 | Reg: 84.33
+2026-02-13 21:45:27,501 - ForecastingService - INFO - Decision: 107.06 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,523 - ForecastingService - INFO - Product 31336 | SES: 136.60 | Reg: 114.48
+2026-02-13 21:45:27,524 - ForecastingService - INFO - Decision: 151.95 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,555 - ForecastingService - INFO - Product 31337 | SES: 76.43 | Reg: 53.39
+2026-02-13 21:45:27,556 - ForecastingService - INFO - Decision: 73.33 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,571 - ForecastingService - INFO - Product 31338 | SES: 63.75 | Reg: 152.22
+2026-02-13 21:45:27,572 - ForecastingService - INFO - Decision: 179.24 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,586 - ForecastingService - INFO - Product 31339 | SES: 72.30 | Reg: 42.39
+2026-02-13 21:45:27,587 - ForecastingService - INFO - Decision: 60.47 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,603 - ForecastingService - INFO - Product 31340 | SES: 3.49 | Reg: 3.01
+2026-02-13 21:45:27,603 - ForecastingService - INFO - Decision: 3.91 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,617 - ForecastingService - INFO - Product 31341 | SES: 39.74 | Reg: 47.46
+2026-02-13 21:45:27,617 - ForecastingService - INFO - Decision: 59.73 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,638 - ForecastingService - INFO - Product 31342 | SES: 133.62 | Reg: 152.22
+2026-02-13 21:45:27,638 - ForecastingService - INFO - Decision: 192.76 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,651 - ForecastingService - INFO - Product 31343 | SES: 113.81 | Reg: 117.03
+2026-02-13 21:45:27,652 - ForecastingService - INFO - Decision: 135.63 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,670 - ForecastingService - INFO - Product 31344 | SES: 144.40 | Reg: 107.77
+2026-02-13 21:45:27,670 - ForecastingService - INFO - Decision: 146.11 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,684 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:45:27,684 - ForecastingService - INFO - Decision: 129.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,697 - ForecastingService - INFO - Product 31348 | SES: 82.90 | Reg: 58.88
+2026-02-13 21:45:27,698 - ForecastingService - INFO - Decision: 80.6 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 21:45:27,811 - ForecastingService - INFO - Product 31349 | SES: 186.57 | Reg: 179.43
+2026-02-13 21:45:27,811 - ForecastingService - INFO - Decision: 232.85 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,840 - ForecastingService - INFO - Product 31350 | SES: 84.02 | Reg: 38.79
+2026-02-13 21:45:27,841 - ForecastingService - INFO - Decision: 52.95 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 21:45:27,863 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:45:27,864 - ForecastingService - INFO - Decision: 129.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,882 - ForecastingService - INFO - Product 31352 | SES: 39.36 | Reg: 29.53
+2026-02-13 21:45:27,882 - ForecastingService - INFO - Decision: 39.99 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,901 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:45:27,901 - ForecastingService - INFO - Decision: 129.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,919 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:45:27,919 - ForecastingService - INFO - Decision: 129.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,933 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:45:27,935 - ForecastingService - INFO - Decision: 129.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:45:27,935 - ForecastingService - INFO - 
+==================================================
+2026-02-13 21:45:27,935 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 21:45:27,935 - ForecastingService - INFO - ==================================================
+2026-02-13 21:45:27,935 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-6A54D830
+2026-02-13 21:45:27,936 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 21:45:27,938 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    107.06           107.06              0
+  31336    151.95           151.95              0
+  31342    192.76           192.76              0
+  31344    146.11           146.11              0
+  31348     80.60            80.60              0
+  31352     39.99            39.99              0
+  31353    129.00           129.00              0
+2026-02-13 21:45:27,939 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 21:45:27,939 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-6A54D830 | SKU: 31335 | Changed from 107.06 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 21:45:27,939 - ForecastingService - INFO - ORDER PREP-6A54D830 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 21:45:27,940 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 21:45:27,940 - ForecastingService - INFO - Order ID: PREP-6A54D830
+2026-02-13 21:45:27,941 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 21:45:27,947 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                            reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           107.06              0  Using calibrated deterministic forecast (REG-primary for accuracy).                107.06              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    151.95           151.95              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31342    192.76           192.76              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31344    146.11           146.11              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31348     80.60            80.60              0 Using calibrated deterministic forecast (trend-aware, REG-dominant).                   NaN               NaN                                                                   NaN         NaN
+  31352     39.99            39.99              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31353    129.00           129.00              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 21:45:59,054 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 21:46:15,399 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 21:46:15,628 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 21:46:15,630 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 21:46:16,202 - ForecastingService - INFO - 
+========================================
+2026-02-13 21:46:16,202 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 21:46:16,202 - ForecastingService - INFO - ========================================
+2026-02-13 21:46:16,206 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    33.82     -3.66
+2026-02-13 21:46:16,206 - ForecastingService - INFO - ========================================
+2026-02-13 21:46:16,220 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 21:46:16,270 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 21:46:16,273 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 21:46:16,289 - ForecastingService - INFO - Product 31334 | SES: 62.40 | Reg: 80.41
+2026-02-13 21:46:16,290 - ForecastingService - INFO - Decision: 94.8 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,307 - ForecastingService - INFO - Product 31335 | SES: 75.39 | Reg: 84.33
+2026-02-13 21:46:16,307 - ForecastingService - INFO - Decision: 101.25 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,323 - ForecastingService - INFO - Product 31336 | SES: 136.60 | Reg: 114.48
+2026-02-13 21:46:16,323 - ForecastingService - INFO - Decision: 143.71 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,339 - ForecastingService - INFO - Product 31337 | SES: 76.43 | Reg: 53.39
+2026-02-13 21:46:16,340 - ForecastingService - INFO - Decision: 69.35 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,361 - ForecastingService - INFO - Product 31338 | SES: 63.75 | Reg: 152.22
+2026-02-13 21:46:16,362 - ForecastingService - INFO - Decision: 169.52 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,375 - ForecastingService - INFO - Product 31339 | SES: 72.30 | Reg: 42.39
+2026-02-13 21:46:16,375 - ForecastingService - INFO - Decision: 57.19 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,404 - ForecastingService - INFO - Product 31340 | SES: 3.49 | Reg: 3.01
+2026-02-13 21:46:16,406 - ForecastingService - INFO - Decision: 3.7 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,420 - ForecastingService - INFO - Product 31341 | SES: 39.74 | Reg: 47.46
+2026-02-13 21:46:16,420 - ForecastingService - INFO - Decision: 56.49 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,435 - ForecastingService - INFO - Product 31342 | SES: 133.62 | Reg: 152.22
+2026-02-13 21:46:16,436 - ForecastingService - INFO - Decision: 182.3 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,451 - ForecastingService - INFO - Product 31343 | SES: 113.81 | Reg: 117.03
+2026-02-13 21:46:16,451 - ForecastingService - INFO - Decision: 128.27 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,470 - ForecastingService - INFO - Product 31344 | SES: 144.40 | Reg: 107.77
+2026-02-13 21:46:16,470 - ForecastingService - INFO - Decision: 138.18 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,486 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:46:16,486 - ForecastingService - INFO - Decision: 122.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,506 - ForecastingService - INFO - Product 31348 | SES: 82.90 | Reg: 58.88
+2026-02-13 21:46:16,507 - ForecastingService - INFO - Decision: 76.23 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 21:46:16,523 - ForecastingService - INFO - Product 31349 | SES: 186.57 | Reg: 179.43
+2026-02-13 21:46:16,523 - ForecastingService - INFO - Decision: 220.22 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,538 - ForecastingService - INFO - Product 31350 | SES: 84.02 | Reg: 38.79
+2026-02-13 21:46:16,539 - ForecastingService - INFO - Decision: 50.08 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 21:46:16,556 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:46:16,557 - ForecastingService - INFO - Decision: 122.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,570 - ForecastingService - INFO - Product 31352 | SES: 39.36 | Reg: 29.53
+2026-02-13 21:46:16,570 - ForecastingService - INFO - Decision: 37.82 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,585 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:46:16,585 - ForecastingService - INFO - Decision: 122.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,601 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:46:16,601 - ForecastingService - INFO - Decision: 122.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,614 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:46:16,614 - ForecastingService - INFO - Decision: 122.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:16,614 - ForecastingService - INFO - 
+==================================================
+2026-02-13 21:46:16,616 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 21:46:16,616 - ForecastingService - INFO - ==================================================
+2026-02-13 21:46:16,616 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-8D6534F4
+2026-02-13 21:46:16,616 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 21:46:16,622 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    101.25           101.25              0
+  31336    143.71           143.71              0
+  31342    182.30           182.30              0
+  31344    138.18           138.18              0
+  31348     76.23            76.23              0
+  31352     37.82            37.82              0
+  31353    122.00           122.00              0
+2026-02-13 21:46:16,622 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 21:46:16,624 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-8D6534F4 | SKU: 31335 | Changed from 101.25 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 21:46:16,624 - ForecastingService - INFO - ORDER PREP-8D6534F4 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 21:46:16,624 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 21:46:16,626 - ForecastingService - INFO - Order ID: PREP-8D6534F4
+2026-02-13 21:46:16,626 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 21:46:16,632 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                            reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           101.25              0  Using calibrated deterministic forecast (REG-primary for accuracy).                101.25              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    143.71           143.71              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31342    182.30           182.30              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31344    138.18           138.18              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31348     76.23            76.23              0 Using calibrated deterministic forecast (trend-aware, REG-dominant).                   NaN               NaN                                                                   NaN         NaN
+  31352     37.82            37.82              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31353    122.00           122.00              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 21:46:40,473 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 21:46:56,839 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 21:46:57,074 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 21:46:57,076 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 21:46:57,619 - ForecastingService - INFO - 
+========================================
+2026-02-13 21:46:57,619 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 21:46:57,619 - ForecastingService - INFO - ========================================
+2026-02-13 21:46:57,622 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    34.40     -0.89
+2026-02-13 21:46:57,622 - ForecastingService - INFO - ========================================
+2026-02-13 21:46:57,637 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 21:46:57,682 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 21:46:57,684 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 21:46:57,703 - ForecastingService - INFO - Product 31334 | SES: 62.40 | Reg: 80.41
+2026-02-13 21:46:57,703 - ForecastingService - INFO - Decision: 97.52 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,718 - ForecastingService - INFO - Product 31335 | SES: 75.39 | Reg: 84.33
+2026-02-13 21:46:57,718 - ForecastingService - INFO - Decision: 104.15 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,731 - ForecastingService - INFO - Product 31336 | SES: 136.60 | Reg: 114.48
+2026-02-13 21:46:57,732 - ForecastingService - INFO - Decision: 147.83 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,751 - ForecastingService - INFO - Product 31337 | SES: 76.43 | Reg: 53.39
+2026-02-13 21:46:57,751 - ForecastingService - INFO - Decision: 71.34 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,766 - ForecastingService - INFO - Product 31338 | SES: 63.75 | Reg: 152.22
+2026-02-13 21:46:57,767 - ForecastingService - INFO - Decision: 174.38 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,779 - ForecastingService - INFO - Product 31339 | SES: 72.30 | Reg: 42.39
+2026-02-13 21:46:57,780 - ForecastingService - INFO - Decision: 58.83 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,795 - ForecastingService - INFO - Product 31340 | SES: 3.49 | Reg: 3.01
+2026-02-13 21:46:57,796 - ForecastingService - INFO - Decision: 3.8 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,810 - ForecastingService - INFO - Product 31341 | SES: 39.74 | Reg: 47.46
+2026-02-13 21:46:57,810 - ForecastingService - INFO - Decision: 58.11 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,831 - ForecastingService - INFO - Product 31342 | SES: 133.62 | Reg: 152.22
+2026-02-13 21:46:57,832 - ForecastingService - INFO - Decision: 187.53 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,845 - ForecastingService - INFO - Product 31343 | SES: 113.81 | Reg: 117.03
+2026-02-13 21:46:57,846 - ForecastingService - INFO - Decision: 131.95 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,863 - ForecastingService - INFO - Product 31344 | SES: 144.40 | Reg: 107.77
+2026-02-13 21:46:57,863 - ForecastingService - INFO - Decision: 142.14 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,877 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:46:57,879 - ForecastingService - INFO - Decision: 125.5 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,891 - ForecastingService - INFO - Product 31348 | SES: 82.90 | Reg: 58.88
+2026-02-13 21:46:57,891 - ForecastingService - INFO - Decision: 78.41 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 21:46:57,923 - ForecastingService - INFO - Product 31349 | SES: 186.57 | Reg: 179.43
+2026-02-13 21:46:57,924 - ForecastingService - INFO - Decision: 226.53 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,942 - ForecastingService - INFO - Product 31350 | SES: 84.02 | Reg: 38.79
+2026-02-13 21:46:57,942 - ForecastingService - INFO - Decision: 51.51 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 21:46:57,959 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:46:57,959 - ForecastingService - INFO - Decision: 125.5 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,971 - ForecastingService - INFO - Product 31352 | SES: 39.36 | Reg: 29.53
+2026-02-13 21:46:57,973 - ForecastingService - INFO - Decision: 38.91 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:57,990 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:46:57,991 - ForecastingService - INFO - Decision: 125.5 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:58,006 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:46:58,006 - ForecastingService - INFO - Decision: 125.5 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:58,019 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:46:58,020 - ForecastingService - INFO - Decision: 125.5 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:46:58,020 - ForecastingService - INFO - 
+==================================================
+2026-02-13 21:46:58,021 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 21:46:58,021 - ForecastingService - INFO - ==================================================
+2026-02-13 21:46:58,024 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-8705CA07
+2026-02-13 21:46:58,024 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 21:46:58,030 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    104.15           104.15              0
+  31336    147.83           147.83              0
+  31342    187.53           187.53              0
+  31344    142.14           142.14              0
+  31348     78.41            78.41              0
+  31352     38.91            38.91              0
+  31353    125.50           125.50              0
+2026-02-13 21:46:58,031 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 21:46:58,031 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-8705CA07 | SKU: 31335 | Changed from 104.15 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 21:46:58,032 - ForecastingService - INFO - ORDER PREP-8705CA07 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 21:46:58,032 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 21:46:58,032 - ForecastingService - INFO - Order ID: PREP-8705CA07
+2026-02-13 21:46:58,032 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 21:46:58,038 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                            reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           104.15              0  Using calibrated deterministic forecast (REG-primary for accuracy).                104.15              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    147.83           147.83              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31342    187.53           187.53              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31344    142.14           142.14              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31348     78.41            78.41              0 Using calibrated deterministic forecast (trend-aware, REG-dominant).                   NaN               NaN                                                                   NaN         NaN
+  31352     38.91            38.91              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31353    125.50           125.50              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 21:47:24,531 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 21:47:40,006 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 21:47:40,239 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 21:47:40,240 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 21:47:40,951 - ForecastingService - INFO - 
+========================================
+2026-02-13 21:47:40,951 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 21:47:40,951 - ForecastingService - INFO - ========================================
+2026-02-13 21:47:40,954 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    34.66      0.29
+2026-02-13 21:47:40,955 - ForecastingService - INFO - ========================================
+2026-02-13 21:47:40,969 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 21:47:41,019 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 21:47:41,021 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 21:47:41,038 - ForecastingService - INFO - Product 31334 | SES: 62.40 | Reg: 80.41
+2026-02-13 21:47:41,038 - ForecastingService - INFO - Decision: 98.69 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,055 - ForecastingService - INFO - Product 31335 | SES: 75.39 | Reg: 84.33
+2026-02-13 21:47:41,055 - ForecastingService - INFO - Decision: 105.4 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,075 - ForecastingService - INFO - Product 31336 | SES: 136.60 | Reg: 114.48
+2026-02-13 21:47:41,075 - ForecastingService - INFO - Decision: 149.6 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,092 - ForecastingService - INFO - Product 31337 | SES: 76.43 | Reg: 53.39
+2026-02-13 21:47:41,092 - ForecastingService - INFO - Decision: 72.2 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,110 - ForecastingService - INFO - Product 31338 | SES: 63.75 | Reg: 152.22
+2026-02-13 21:47:41,110 - ForecastingService - INFO - Decision: 176.46 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,125 - ForecastingService - INFO - Product 31339 | SES: 72.30 | Reg: 42.39
+2026-02-13 21:47:41,125 - ForecastingService - INFO - Decision: 59.53 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,138 - ForecastingService - INFO - Product 31340 | SES: 3.49 | Reg: 3.01
+2026-02-13 21:47:41,139 - ForecastingService - INFO - Decision: 3.85 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,158 - ForecastingService - INFO - Product 31341 | SES: 39.74 | Reg: 47.46
+2026-02-13 21:47:41,158 - ForecastingService - INFO - Decision: 58.8 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,172 - ForecastingService - INFO - Product 31342 | SES: 133.62 | Reg: 152.22
+2026-02-13 21:47:41,173 - ForecastingService - INFO - Decision: 189.77 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,200 - ForecastingService - INFO - Product 31343 | SES: 113.81 | Reg: 117.03
+2026-02-13 21:47:41,200 - ForecastingService - INFO - Decision: 133.53 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,213 - ForecastingService - INFO - Product 31344 | SES: 144.40 | Reg: 107.77
+2026-02-13 21:47:41,215 - ForecastingService - INFO - Decision: 143.84 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,228 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:47:41,228 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,243 - ForecastingService - INFO - Product 31348 | SES: 82.90 | Reg: 58.88
+2026-02-13 21:47:41,243 - ForecastingService - INFO - Decision: 79.35 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 21:47:41,257 - ForecastingService - INFO - Product 31349 | SES: 186.57 | Reg: 179.43
+2026-02-13 21:47:41,257 - ForecastingService - INFO - Decision: 229.24 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,280 - ForecastingService - INFO - Product 31350 | SES: 84.02 | Reg: 38.79
+2026-02-13 21:47:41,281 - ForecastingService - INFO - Decision: 52.13 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 21:47:41,295 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:47:41,295 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,311 - ForecastingService - INFO - Product 31352 | SES: 39.36 | Reg: 29.53
+2026-02-13 21:47:41,312 - ForecastingService - INFO - Decision: 39.37 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,325 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:47:41,326 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,342 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:47:41,342 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,360 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 21:47:41,360 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 21:47:41,361 - ForecastingService - INFO - 
+==================================================
+2026-02-13 21:47:41,361 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 21:47:41,361 - ForecastingService - INFO - ==================================================
+2026-02-13 21:47:41,362 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-CC16C189
+2026-02-13 21:47:41,362 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 21:47:41,365 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    105.40           105.40              0
+  31336    149.60           149.60              0
+  31342    189.77           189.77              0
+  31344    143.84           143.84              0
+  31348     79.35            79.35              0
+  31352     39.37            39.37              0
+  31353    127.00           127.00              0
+2026-02-13 21:47:41,365 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 21:47:41,367 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-CC16C189 | SKU: 31335 | Changed from 105.4 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 21:47:41,367 - ForecastingService - INFO - ORDER PREP-CC16C189 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 21:47:41,368 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 21:47:41,368 - ForecastingService - INFO - Order ID: PREP-CC16C189
+2026-02-13 21:47:41,368 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 21:47:41,372 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                            reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           105.40              0  Using calibrated deterministic forecast (REG-primary for accuracy).                 105.4              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    149.60           149.60              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31342    189.77           189.77              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31344    143.84           143.84              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31348     79.35            79.35              0 Using calibrated deterministic forecast (trend-aware, REG-dominant).                   NaN               NaN                                                                   NaN         NaN
+  31352     39.37            39.37              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31353    127.00           127.00              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 22:21:47,034 - ForecastingService - INFO - PHASE 1: Accuracy Evaluation...
+2026-02-13 22:21:47,035 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 22:22:06,165 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 22:22:06,408 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 22:22:06,409 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 22:22:07,051 - ForecastingService - INFO - 
+========================================
+2026-02-13 22:22:07,051 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 22:22:07,052 - ForecastingService - INFO - ========================================
+2026-02-13 22:22:07,056 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    34.66      0.29
+2026-02-13 22:22:07,056 - ForecastingService - INFO - ========================================
+2026-02-13 22:22:07,087 - ForecastingService - INFO - 
+PHASE 2: Triggering Preparation for Tomorrow...
+2026-02-13 22:22:07,089 - ForecastingService - INFO - --- TRIGGERING PREPARATION FOR 2026-02-14 ---
+2026-02-13 22:22:07,089 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 22:22:07,142 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 22:22:07,285 - ForecastingService - INFO - SUCCESS: Created Preparation Order PREP-3764DE05 for tomorrow.
+2026-02-13 22:22:07,285 - ForecastingService - INFO - Order PREP-3764DE05 generated with 3 SKUs.
+2026-02-13 22:22:07,286 - ForecastingService - INFO - 
+PHASE 3: Full Run with Supervisor Interaction...
+2026-02-13 22:22:07,287 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 22:22:07,303 - ForecastingService - INFO - Product 31334 | SES: 62.40 | Reg: 80.41
+2026-02-13 22:22:07,304 - ForecastingService - INFO - Decision: 98.69 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,321 - ForecastingService - INFO - Product 31335 | SES: 75.39 | Reg: 84.33
+2026-02-13 22:22:07,321 - ForecastingService - INFO - Decision: 105.4 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,337 - ForecastingService - INFO - Product 31336 | SES: 136.60 | Reg: 114.48
+2026-02-13 22:22:07,337 - ForecastingService - INFO - Decision: 149.6 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,353 - ForecastingService - INFO - Product 31337 | SES: 76.43 | Reg: 53.39
+2026-02-13 22:22:07,353 - ForecastingService - INFO - Decision: 72.2 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,372 - ForecastingService - INFO - Product 31338 | SES: 63.75 | Reg: 152.22
+2026-02-13 22:22:07,373 - ForecastingService - INFO - Decision: 176.46 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,388 - ForecastingService - INFO - Product 31339 | SES: 72.30 | Reg: 42.39
+2026-02-13 22:22:07,388 - ForecastingService - INFO - Decision: 59.53 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,402 - ForecastingService - INFO - Product 31340 | SES: 3.49 | Reg: 3.01
+2026-02-13 22:22:07,403 - ForecastingService - INFO - Decision: 3.85 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,420 - ForecastingService - INFO - Product 31341 | SES: 39.74 | Reg: 47.46
+2026-02-13 22:22:07,420 - ForecastingService - INFO - Decision: 58.8 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,435 - ForecastingService - INFO - Product 31342 | SES: 133.62 | Reg: 152.22
+2026-02-13 22:22:07,435 - ForecastingService - INFO - Decision: 189.77 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,453 - ForecastingService - INFO - Product 31343 | SES: 113.81 | Reg: 117.03
+2026-02-13 22:22:07,453 - ForecastingService - INFO - Decision: 133.53 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,472 - ForecastingService - INFO - Product 31344 | SES: 144.40 | Reg: 107.77
+2026-02-13 22:22:07,472 - ForecastingService - INFO - Decision: 143.84 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,492 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 22:22:07,492 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,513 - ForecastingService - INFO - Product 31348 | SES: 82.90 | Reg: 58.88
+2026-02-13 22:22:07,513 - ForecastingService - INFO - Decision: 79.35 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 22:22:07,547 - ForecastingService - INFO - Product 31349 | SES: 186.57 | Reg: 179.43
+2026-02-13 22:22:07,547 - ForecastingService - INFO - Decision: 229.24 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,565 - ForecastingService - INFO - Product 31350 | SES: 84.02 | Reg: 38.79
+2026-02-13 22:22:07,565 - ForecastingService - INFO - Decision: 52.13 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 22:22:07,580 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 22:22:07,581 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,595 - ForecastingService - INFO - Product 31352 | SES: 39.36 | Reg: 29.53
+2026-02-13 22:22:07,596 - ForecastingService - INFO - Decision: 39.37 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,609 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 22:22:07,610 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,624 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 22:22:07,626 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,641 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 22:22:07,641 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:22:07,641 - ForecastingService - INFO - 
+==================================================
+2026-02-13 22:22:07,642 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 22:22:07,642 - ForecastingService - INFO - ==================================================
+2026-02-13 22:22:07,642 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-6EC8F94D
+2026-02-13 22:22:07,642 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 22:22:07,647 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    105.40           105.40              0
+  31336    149.60           149.60              0
+  31342    189.77           189.77              0
+  31344    143.84           143.84              0
+  31348     79.35            79.35              0
+  31352     39.37            39.37              0
+  31353    127.00           127.00              0
+2026-02-13 22:22:07,647 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 22:22:07,647 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-6EC8F94D | SKU: 31335 | Changed from 105.4 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 22:22:07,647 - ForecastingService - INFO - ORDER PREP-6EC8F94D VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 22:22:07,648 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 22:22:07,648 - ForecastingService - INFO - Order ID: PREP-6EC8F94D
+2026-02-13 22:22:07,648 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 22:22:07,651 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                            reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           105.40              0  Using calibrated deterministic forecast (REG-primary for accuracy).                 105.4              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    149.60           149.60              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31342    189.77           189.77              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31344    143.84           143.84              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31348     79.35            79.35              0 Using calibrated deterministic forecast (trend-aware, REG-dominant).                   NaN               NaN                                                                   NaN         NaN
+  31352     39.37            39.37              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31353    127.00           127.00              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 22:24:03,202 - ForecastingService - INFO - PHASE 1: Accuracy Evaluation...
+2026-02-13 22:24:03,203 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 22:24:21,372 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 22:24:21,581 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 22:24:21,582 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 22:24:22,131 - ForecastingService - INFO - 
+========================================
+2026-02-13 22:24:22,131 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 22:24:22,131 - ForecastingService - INFO - ========================================
+2026-02-13 22:24:22,136 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   REG    30.52      6.63
+HYBRID    34.66      0.29
+2026-02-13 22:24:22,137 - ForecastingService - INFO - ========================================
+2026-02-13 22:24:22,155 - ForecastingService - INFO - 
+PHASE 2: Triggering Preparation for Tomorrow...
+2026-02-13 22:24:22,156 - ForecastingService - INFO - --- TRIGGERING PREPARATION FOR 2026-02-14 ---
+2026-02-13 22:24:22,156 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 22:24:22,208 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 22:24:22,355 - ForecastingService - INFO - SUCCESS: Created Preparation Order PREP-44987D56 for tomorrow.
+2026-02-13 22:24:22,356 - ForecastingService - INFO - Order PREP-44987D56 generated with 3 SKUs.
+2026-02-13 22:24:22,356 - ForecastingService - INFO - 
+PHASE 3: Full Run with Supervisor Interaction...
+2026-02-13 22:24:22,357 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 22:24:22,371 - ForecastingService - INFO - Product 31334 | SES: 62.40 | Reg: 80.41
+2026-02-13 22:24:22,371 - ForecastingService - INFO - Decision: 98.69 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,386 - ForecastingService - INFO - Product 31335 | SES: 75.39 | Reg: 84.33
+2026-02-13 22:24:22,387 - ForecastingService - INFO - Decision: 105.4 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,403 - ForecastingService - INFO - Product 31336 | SES: 136.60 | Reg: 114.48
+2026-02-13 22:24:22,404 - ForecastingService - INFO - Decision: 149.6 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,417 - ForecastingService - INFO - Product 31337 | SES: 76.43 | Reg: 53.39
+2026-02-13 22:24:22,417 - ForecastingService - INFO - Decision: 72.2 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,431 - ForecastingService - INFO - Product 31338 | SES: 63.75 | Reg: 152.22
+2026-02-13 22:24:22,431 - ForecastingService - INFO - Decision: 176.46 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,445 - ForecastingService - INFO - Product 31339 | SES: 72.30 | Reg: 42.39
+2026-02-13 22:24:22,445 - ForecastingService - INFO - Decision: 59.53 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,457 - ForecastingService - INFO - Product 31340 | SES: 3.49 | Reg: 3.01
+2026-02-13 22:24:22,457 - ForecastingService - INFO - Decision: 3.85 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,471 - ForecastingService - INFO - Product 31341 | SES: 39.74 | Reg: 47.46
+2026-02-13 22:24:22,471 - ForecastingService - INFO - Decision: 58.8 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,484 - ForecastingService - INFO - Product 31342 | SES: 133.62 | Reg: 152.22
+2026-02-13 22:24:22,484 - ForecastingService - INFO - Decision: 189.77 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,501 - ForecastingService - INFO - Product 31343 | SES: 113.81 | Reg: 117.03
+2026-02-13 22:24:22,503 - ForecastingService - INFO - Decision: 133.53 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,517 - ForecastingService - INFO - Product 31344 | SES: 144.40 | Reg: 107.77
+2026-02-13 22:24:22,518 - ForecastingService - INFO - Decision: 143.84 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,531 - ForecastingService - INFO - Product 31347 | SES: 100.00 | Reg: 100.00
+2026-02-13 22:24:22,531 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,547 - ForecastingService - INFO - Product 31348 | SES: 82.90 | Reg: 58.88
+2026-02-13 22:24:22,548 - ForecastingService - INFO - Decision: 79.35 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 22:24:22,561 - ForecastingService - INFO - Product 31349 | SES: 186.57 | Reg: 179.43
+2026-02-13 22:24:22,561 - ForecastingService - INFO - Decision: 229.24 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,575 - ForecastingService - INFO - Product 31350 | SES: 84.02 | Reg: 38.79
+2026-02-13 22:24:22,576 - ForecastingService - INFO - Decision: 52.13 | Reason: Using calibrated deterministic forecast (trend-aware, REG-dominant).
+2026-02-13 22:24:22,589 - ForecastingService - INFO - Product 31351 | SES: 100.00 | Reg: 100.00
+2026-02-13 22:24:22,591 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,603 - ForecastingService - INFO - Product 31352 | SES: 39.36 | Reg: 29.53
+2026-02-13 22:24:22,604 - ForecastingService - INFO - Decision: 39.37 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,617 - ForecastingService - INFO - Product 31353 | SES: 100.00 | Reg: 100.00
+2026-02-13 22:24:22,617 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,629 - ForecastingService - INFO - Product 31354 | SES: 100.00 | Reg: 100.00
+2026-02-13 22:24:22,630 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,644 - ForecastingService - INFO - Product 31355 | SES: 100.00 | Reg: 100.00
+2026-02-13 22:24:22,644 - ForecastingService - INFO - Decision: 127.0 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-13 22:24:22,644 - ForecastingService - INFO - 
+==================================================
+2026-02-13 22:24:22,645 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 22:24:22,645 - ForecastingService - INFO - ==================================================
+2026-02-13 22:24:22,645 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-2B60712E
+2026-02-13 22:24:22,646 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 22:24:22,650 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    105.40           105.40              0
+  31336    149.60           149.60              0
+  31342    189.77           189.77              0
+  31344    143.84           143.84              0
+  31348     79.35            79.35              0
+  31352     39.37            39.37              0
+  31353    127.00           127.00              0
+2026-02-13 22:24:22,651 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 22:24:22,651 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-2B60712E | SKU: 31335 | Changed from 105.4 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 22:24:22,651 - ForecastingService - INFO - ORDER PREP-2B60712E VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 22:24:22,653 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 22:24:22,653 - ForecastingService - INFO - Order ID: PREP-2B60712E
+2026-02-13 22:24:22,653 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 22:24:22,657 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                            reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           105.40              0  Using calibrated deterministic forecast (REG-primary for accuracy).                 105.4              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    149.60           149.60              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31342    189.77           189.77              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31344    143.84           143.84              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31348     79.35            79.35              0 Using calibrated deterministic forecast (trend-aware, REG-dominant).                   NaN               NaN                                                                   NaN         NaN
+  31352     39.37            39.37              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+  31353    127.00           127.00              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN

@@ -46,26 +46,23 @@ class ForecastDecisionLayer:
         
     def decide(self, sku_data):
         """
-        Deterministic fallback: choose a stable forecast from provided candidates.
-        LLM must not degrade numerical accuracy.
+        Deterministic fallback: Near-pure REG strategy for WAP < 30%, Bias 0-5%.
+        Note: Calibration already applied in deterministic engine.
         """
         deterministic_base = float(sku_data.get('deterministic_base', 0.0))
         candidates = sku_data.get('candidates', {}) or {}
 
-        wma = float(candidates.get('wma', deterministic_base))
         ses = float(candidates.get('ses', deterministic_base))
         reg = float(candidates.get('regression', deterministic_base))
         trend_significant = bool(sku_data.get('trend_significant', False))
 
-        if reg > 0:
-            final_forecast = 1.27 * reg
-            reasoning = "Deterministic calibrated regression selected to control WAP/Bias drift."
-        elif trend_significant:
-            final_forecast = 0.90 * (0.70 * reg + 0.20 * ses + 0.10 * wma)
-            reasoning = "Trend significant but sparse regression; guarded regression blend applied."
+        # Use the deterministic_base directly (already calibrated 1.18x in engine)
+        final_forecast = deterministic_base
+        
+        if trend_significant:
+            reasoning = "Using calibrated deterministic forecast (trend-aware, REG-dominant)."
         else:
-            final_forecast = 0.92 * (0.60 * ses + 0.40 * wma)
-            reasoning = "No reliable regression: conservative SES+WMA blend applied."
+            reasoning = "Using calibrated deterministic forecast (REG-primary for accuracy)."
 
         return {
             'final_forecast': round(max(0.0, final_forecast), 2),
@@ -97,7 +94,7 @@ class ForecastDecisionLayer:
         TASK: Select or adjust the next-day demand forecast for the following SKU.
         DATA:
         - SKU ID: {sku_data.get('id', 'N/A')}
-        - SMA forecast: {sma_val:.2f}
+        - SES forecast: {sma_val:.2f}
         - Regression forecast: {reg_val:.2f}
         - Trend slope: {slope_val:.4f} ({trend_val})
         - Volatility: {std_val:.2f} ({vol_val})
@@ -107,7 +104,7 @@ class ForecastDecisionLayer:
         1. Analyze the trend, volatility, and provided forecasts.
         2. If strong upward trend -> prefer regression.
         3. If high volatility -> add safety buffer.
-        4. If stable demand -> prefer SMA.
+        4. If stable demand -> prefer SES (exponential smoothing).
         5. If decreasing -> reduce forecast slightly.
         6. If Year-over-Year seasonal pattern detected -> consider historical demand from same date in previous years.
         7. Return JSON only.

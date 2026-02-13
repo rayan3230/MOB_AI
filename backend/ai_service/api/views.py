@@ -12,13 +12,29 @@ service = ForecastingService(EXCEL_PATH)
 
 def generate_forecast_all(request):
     """
-    Endpoint 1: Generate forecast for all SKUs (limited to 20 for performance in this demo)
+    Endpoint 1: Generate forecast for all SKUs (Requirement 8.1 part 1)
     """
     try:
         limit = int(request.GET.get('limit', 20))
         order_obj = service.run(limit_products=limit)
         return JsonResponse({
             'status': 'success',
+            'order': order_obj
+        })
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+def trigger_preparation_tomorrow(request):
+    """
+    Endpoint 5: Trigger preparation one day in advance (Requirement 8.1 part 2)
+    Analyzes historical stock and delivery data to predict tomorrow's needs.
+    """
+    try:
+        limit = int(request.GET.get('limit', 20))
+        order_obj = service.trigger_daily_preparation(limit_products=limit)
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Preparation order triggered one day in advance.',
             'order': order_obj
         })
     except Exception as e:
@@ -52,10 +68,12 @@ def get_explanation(request, sku_id):
                 'sku_id': sku_id,
                 'explanation': result['explanation'],
                 'model_logic': {
-                    'sma': result['sma'],
+                    'ses': result['ses'],
                     'regression': result['regression'],
+                    'yoy_seasonal': result['yoy_seasonal'],
                     'trend': result['trend'],
-                    'volatility': result['volatility']
+                    'volatility': result['volatility'],
+                    'demand_class': result['demand_class']
                 }
             })
         else:
