@@ -27,30 +27,48 @@ class DepotB7Map:
         
         # Rectangular Zones (e.g., Racks/Storage Blocks): (name, x_min, y_min, x_max, y_max)
         self.zones = {
-            "Rack VS": (4, 1, 6, 11),
+            "V": (4, 1, 5, 11),
+            "S": (5, 1, 6, 11),
             "Bureau": (28, 0, 42, 7),
             "Expédition 1": (35, 7, 42, 13),
             "Expédition 2": (35, 13, 42, 20),
             "VRAC": (28, 20, 42, 27),
             "Monte Charge 1": (31, 20, 34, 24),
             "Monte Charge 2": (28, 20, 31, 24),
-            "Rack B": (25, 1, 26, 11),
-            "Rack FD": (20, 1, 22, 11),
-            "Rack KH": (15, 1, 17, 11),
-            "Rack QN": (10, 1, 12, 11),
-            "Rack W": (1, 2, 2, 20),
+            "B": (25, 1, 26, 11),
+            "F": (20, 1, 21, 11),
+            "D": (21, 1, 22, 11),
+            "K": (15, 1, 16, 11),
+            "H": (16, 1, 17, 11),
+            "Q": (10, 1, 11, 11),
+            "N": (11, 1, 12, 11),
+            "W": (1, 2, 2, 20),
             "Assenseur": (0, 20, 5, 22),
             "Zone Spec": (0, 20, 9, 27),
             "Black object": (29, 7, 35, 9),
-            "Rack TR": (4, 13, 6, 20),
-            "Rack PM": (10, 13, 12, 20),
-            "Rack IG": (15, 13, 17, 20),
-            "Rack E": (20, 13, 21, 20),
-            "Rack CA": (24, 13, 26, 20)
+            "T": (4, 13, 5, 20),
+            "R": (5, 13, 6, 20),
+            "P": (10, 13, 11, 20),
+            "M": (11, 13, 12, 20),
+            "I": (15, 13, 16, 20),
+            "G": (16, 13, 17, 20),
+            "E": (20, 13, 21, 20),
+            "C": (24, 13, 25, 20),
+            "A": (25, 13, 26, 20),
+            "Rack X": [
+                (9, 22, 10, 25),
+                (10, 25, 17, 26),
+                (14, 20, 17, 21),
+                (17, 21, 18, 24)
+            ],
+            "Reserved": (24, 20, 28, 27)
         }
 
         # Landmarks: (x, y)
-        self.landmarks = {}
+        self.landmarks = {
+            "Chariot Start 1": WarehouseCoordinate(34, 10),
+            "Chariot Start 2": WarehouseCoordinate(34, 16)
+        }
 
         # Pillars (Impassable obstacles)
         self.pillars: List[WarehouseCoordinate] = [
@@ -58,8 +76,42 @@ class DepotB7Map:
             WarehouseCoordinate(4, 7),
             WarehouseCoordinate(20, 7),
             WarehouseCoordinate(19, 7),
-            WarehouseCoordinate(18, 7)
+            WarehouseCoordinate(18, 7),
+            WarehouseCoordinate(11, 13),
+            WarehouseCoordinate(20, 13),
+            WarehouseCoordinate(19, 13),
+            WarehouseCoordinate(18, 13),
+            WarehouseCoordinate(25, 13),
+            WarehouseCoordinate(26, 13),
+            WarehouseCoordinate(4, 13),
+            WarehouseCoordinate(11, 20)
         ]
+        
+        # Wall between Expédition 1 and 2 (y=13, x=35 to 42)
+        for x_wall in range(35, 43):
+            self.pillars.append(WarehouseCoordinate(x_wall, 13))
+            
+        # Special thin walls: (x, y, width, height)
+        self.special_walls = [
+            (18, 21, 0.1, 6)  # Wall at x=18, y=21 to 27
+        ]
+        # Block movement for special walls
+        for (xw, yw, ww, hw) in self.special_walls:
+            for y_step in range(int(yw), int(yw + hw)):
+                self.pillars.append(WarehouseCoordinate(int(xw), y_step))
+        
+        # Track occupied slots (for items/stock)
+        self.occupied_slots: set[Tuple[int, int]] = set()
+
+    def is_slot_available(self, coord: WarehouseCoordinate) -> bool:
+        """Check if a coordinate is neither a pillar nor occupied by stock."""
+        # 1. Check if it's a pillar
+        if any(p.x == coord.x and p.y == coord.y for p in self.pillars):
+            return False
+        # 2. Check if it's occupied by stock
+        if coord.to_tuple() in self.occupied_slots:
+            return False
+        return True
 
     def get_slot_name(self, coord: WarehouseCoordinate) -> str:
         return f"B7-L0-{coord.x:02d}-{coord.y:02d}"
@@ -84,29 +136,45 @@ class DepotB7Map:
         for p in self.pillars:
             pillar_patch = patches.Rectangle((p.x, p.y), 1, 1, color='salmon', alpha=0.9, label='Pillar' if p == self.pillars[0] else "")
             ax.add_patch(pillar_patch)
+            
+        # Draw Special Walls
+        for xw, yw, ww, hw in self.special_walls:
+            wall_patch = patches.Rectangle((xw, yw), ww, hw, color='black', alpha=1.0, label='Special Wall' if xw == self.special_walls[0][0] else "")
+            ax.add_patch(wall_patch)
 
         # Draw Zones (Racks/Bureau/Expedition/Reserved/Monte Charge)
-        for name, (x1, y1, x2, y2) in self.zones.items():
-            if name == "Bureau":
-                color, edge = 'lavender', 'purple'
-            elif "Expédition" in name:
-                color, edge = 'orange', 'darkorange'
-            elif name == "Reserved":
-                color, edge = 'lightgray', 'gray'
-            elif name == "Assenseur":
-                color, edge = 'lightsteelblue', 'blue'
-            elif name == "Zone Spec":
-                color, edge = 'none', 'black'
-            elif name == "Black object":
-                color, edge = 'black', 'black'
-            elif "Monte Charge" in name:
-                color, edge = 'lightskyblue', 'deepskyblue'
-            else:
-                color, edge = 'tan', 'brown'
+        for name, coords in self.zones.items():
+            # Convert single tuple to list for uniform handling
+            segments = coords if isinstance(coords, list) else [coords]
+            
+            for i, (x1, y1, x2, y2) in enumerate(segments):
+                if name == "Bureau":
+                    color, edge = 'lavender', 'purple'
+                elif "Expédition" in name:
+                    color, edge = 'orange', 'darkorange'
+                elif name == "Reserved":
+                    color, edge = 'lightgray', 'gray'
+                elif name == "Assenseur":
+                    color, edge = 'lightsteelblue', 'blue'
+                elif name == "Zone Spec":
+                    color, edge = 'none', 'black'
+                elif name == "Black object":
+                    color, edge = 'black', 'black'
+                elif "Monte Charge" in name:
+                    color, edge = 'lightskyblue', 'deepskyblue'
+                elif "Rack X" in name:
+                    color, edge = 'plum', 'purple'
+                else:
+                    color, edge = 'tan', 'brown'
+                    
+                # Only add label to the first segment to avoid clutter
+                label = f'Zone {name}' if i == 0 else ""
+                zone_patch = patches.Rectangle((x1, y1), x2-x1, y2-y1, linewidth=1, edgecolor=edge, facecolor=color, alpha=0.5, label=label)
+                ax.add_patch(zone_patch)
                 
-            zone_patch = patches.Rectangle((x1, y1), x2-x1, y2-y1, linewidth=1, edgecolor=edge, facecolor=color, alpha=0.5, label=f'Zone {name}')
-            ax.add_patch(zone_patch)
-            ax.text((x1 + x2)/2, (y1 + y2)/2, name, color=edge, fontsize=10, fontweight='bold', ha='center', va='center')
+                # Only draw text for the first segment or if it's not Reserved
+                if name != "Reserved" and i == 0:
+                    ax.text((x1 + x2)/2, (y1 + y2)/2, name, color=edge, fontsize=10, fontweight='bold', ha='center', va='center')
             
         # Draw Landmarks
         landmark_colors = {
@@ -116,7 +184,9 @@ class DepotB7Map:
             "Receipt Zone": "green",
             "Expedition Zone 1": "orange",
             "Expedition Zone 2": "orange",
-            "Bureau": "purple"
+            "Bureau": "purple",
+            "Chariot Start 1": "red",
+            "Chariot Start 2": "red"
         }
         
         for name, coord in self.landmarks.items():
@@ -130,7 +200,12 @@ class DepotB7Map:
         ax.set_title("Depot B7 - Digital Twin Layout (2D)")
         ax.set_xlabel("X (meters)")
         ax.set_ylabel("Y (meters)")
-        ax.grid(True, linestyle=':', alpha=0.6)
+        
+        # Grid every 1 meter
+        ax.set_xticks(range(0, self.width + 1))
+        ax.set_yticks(range(0, self.height + 1))
+        ax.tick_params(axis='both', which='major', labelsize=7)
+        ax.grid(True, linestyle=':', alpha=0.4)
         
         # Clean up legend (remove duplicates)
         handles, labels = ax.get_legend_handles_labels()
@@ -153,14 +228,9 @@ class AuditTrail:
 class OptimizationService:
     def __init__(self, warehouse_map: DepotB7Map):
         self.warehouse_map = warehouse_map
-        # Slot availability map: (x, y) -> bool (True if free)
-        self.slots_availability: Dict[Tuple[int, int], bool] = {}
 
     def is_slot_available(self, coord: WarehouseCoordinate) -> bool:
-        # Check if it's a pillar
-        if any(p.x == coord.x and p.y == coord.y for p in self.warehouse_map.pillars):
-            return False
-        return self.slots_availability.get(coord.to_tuple(), True)
+        return self.warehouse_map.is_slot_available(coord)
 
 class StorageOptimizationService(OptimizationService):
     def suggest_placement(self, weight_kg: float, turnover_frequency: str) -> WarehouseCoordinate:
@@ -172,8 +242,11 @@ class StorageOptimizationService(OptimizationService):
         exp_centers = []
         for name, coords in self.warehouse_map.zones.items():
             if "Expédition" in name:
-                center = WarehouseCoordinate((coords[0] + coords[2]) // 2, (coords[1] + coords[3]) // 2)
-                exp_centers.append(center)
+                # Handle potential list of segments for expedition zones
+                segments = coords if isinstance(coords, list) else [coords]
+                for (x1, y1, x2, y2) in segments:
+                    center = WarehouseCoordinate((x1 + x2) // 2, (y1 + y2) // 2)
+                    exp_centers.append(center)
         
         best_coord = None
         min_score = float('inf')
@@ -201,12 +274,13 @@ class StorageOptimizationService(OptimizationService):
         return best_coord
 
 class PickingOptimizationService(OptimizationService):
-    def optimize_picking_path(self, items_coords: List[WarehouseCoordinate]) -> List[WarehouseCoordinate]:
+    def optimize_picking_path(self, items_coords: List[WarehouseCoordinate], chariot_id: int = 1) -> List[WarehouseCoordinate]:
         """
         TSP-like optimization for picking path.
         """
-        # Simple greedy approach for demonstration
-        current_pos = self.warehouse_map.landmarks["Bureau"]
+        # Simple greedy approach starting from assigned chariot position
+        start_key = f"Chariot Start {chariot_id}"
+        current_pos = self.warehouse_map.landmarks.get(start_key, self.warehouse_map.landmarks.get("Bureau"))
         path = []
         remaining = list(items_coords)
         
@@ -228,8 +302,23 @@ class WMSOperationManager:
     def request_placement(self, weight: float, frequency: str) -> Optional[WarehouseCoordinate]:
         suggestion = self.storage_service.suggest_placement(weight, frequency)
         if suggestion:
+            # Final safety check: ensuring the suggested slot is not a pillar
+            if not self.map.is_slot_available(suggestion):
+                print(f"ERROR: AI suggested a blocked slot {suggestion}. Blockage confirmed.")
+                return None
             print(f"AI Suggestion: Place at {self.map.get_slot_name(suggestion)}")
         return suggestion
+
+    def request_pick(self, coord: WarehouseCoordinate) -> bool:
+        """
+        Validate if an item can be picked from a location.
+        Forbidden if the location is blocked by a pillar.
+        """
+        if not self.storage_service.is_slot_available(coord):
+            print(f"ACCESS DENIED: Slot {self.map.get_slot_name(coord)} is blocked by a pillar.")
+            return False
+        print(f"Pick initialized for {self.map.get_slot_name(coord)}.")
+        return True
 
     def validate_order(self, supervisor_role: Role, order_id: str):
         if supervisor_role != Role.SUPERVISOR and supervisor_role != Role.ADMIN:
