@@ -150,7 +150,6 @@ const AIActions = ({ user, onOpenDrawer }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TopHeader onOpenDrawer={onOpenDrawer} />
       
       <View style={styles.contentHeader}>
         <Text style={styles.title}>AI Logistics Actions</Text>
