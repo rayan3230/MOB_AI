@@ -13,11 +13,11 @@ class UserLoginSerializer(serializers.Serializer):
         password = data.get('password')
         
         if username and password:
-            # Note: Utilisateur uses 'id_utilisateur' as unique identifier
-            # or if the user specifically wants 'nom_complet' field to be the login field:
-            user = authenticate(username=username, password=password)
-            
-            if not user:
+            try:
+                user = Utilisateur.objects.get(id_utilisateur=username, actif=True)
+                if not user.check_password(password):
+                    raise serializers.ValidationError("Invalid username or password")
+            except Utilisateur.DoesNotExist:
                 raise serializers.ValidationError("Invalid username or password")
         else:
             raise serializers.ValidationError("Must include 'username' and 'password'")

@@ -50,12 +50,12 @@ const Signin = () => {
       const response = await authService.login(username, password);
       console.log('Login Success:', response);
       
-      // Determine navigation based on role from response
-      const role = response.user?.user_role || 'supervisor'; // Adjust based on your API response structure
+      // Normalize role to lowercase for comparison
+      const role = (response.user?.user_role || '').toLowerCase();
       
-      if (role === 'admin') {
+      if (role === 'admin' || role === 'administrator') {
         navigation.replace('AdminHome');
-      } else if (role === 'supervisor') {
+      } else if (role === 'manager' || role === 'supervisor') {
         navigation.replace('SupervisorHome');
       } else {
         navigation.replace('EmployeeHome');
