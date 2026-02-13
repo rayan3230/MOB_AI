@@ -1,0 +1,56 @@
+﻿Table,Colonne,Type,Obligatoire,Description,Exemple
+produits,id_produit,texte,O,Identifiant unique du produit (UUID ou entier).,P001
+produits,sku,texte,O,Référence/SKU lisible utilisée dans les opérations.,ABC-001
+produits,nom_produit,texte,O,Nom/description du produit.,"Mixer Tap 1/2"""
+produits,unite_mesure,texte,O,"Unité de mesure (pcs, kg, m).",pcs
+produits,categorie,texte,N,Catégorie ou famille (optionnel).,Fittings
+produits,actif,booleen,O,Indique si la référence est active (TRUE/FALSE).,TRUE
+codes_barres_produits,code_barres,texte,O,Chaîne de code-barres scannable (EAN/Code128/QR).,6291234567890
+codes_barres_produits,id_produit,texte,O,Clé étrangère vers produits.id_produit.,P001
+codes_barres_produits,type_code_barres,texte,O,EAN13 | CODE128 | QR,EAN13
+codes_barres_produits,principal,booleen,N,Code-barres principal pour la référence (TRUE/FALSE).,TRUE
+entrepots,id_entrepot,texte,O,Identifiant unique de l'entrepôt.,W1
+entrepots,code_entrepot,texte,O,Code court affiché dans l'UI et les codes d'emplacement.,WH1
+entrepots,nom_entrepot,texte,O,Nom de l'entrepôt.,Central Finished Goods
+entrepots,ville,texte,N,Ville (optionnel).,Algiers
+entrepots,actif,booleen,O,Entrepôt actif (TRUE/FALSE).,TRUE
+emplacements,id_emplacement,texte,O,Identifiant unique de l'emplacement (bin).,L1001
+emplacements,code_emplacement,texte,O,Code d'emplacement (souvent imprimé en étiquette/QR).,WH1-Z01-A02-B05
+emplacements,id_entrepot,texte,O,Clé étrangère vers entrepots.id_entrepot.,W1
+emplacements,zone,texte,N,"Zone (optionnel), ex: RECEPTION, STOCKAGE, PICK.",Z01
+emplacements,type_emplacement,texte,O,RECEIVING | STORAGE | PICK | QC | DAMAGED,STORAGE
+emplacements,actif,booleen,O,Emplacement actif (TRUE/FALSE).,TRUE
+utilisateurs,id_utilisateur,texte,O,Identifiant unique de l'utilisateur.,U001
+utilisateurs,nom_complet,texte,O,Nom complet affiché dans l'application.,A. Operator
+utilisateurs,role,texte,O,OPERATOR | SUPERVISOR | PLANNER | ADMIN,OPERATOR
+utilisateurs,email,texte,N,Email (optionnel).,operator@example.com
+utilisateurs,actif,booleen,O,Utilisateur actif (TRUE/FALSE).,TRUE
+transactions,id_transaction,texte,O,Identifiant unique de la transaction.,T0001
+transactions,type_transaction,texte,O,RECEIPT | MOVE | PICK | ADJUSTMENT,RECEIPT
+transactions,reference_transaction,texte,O,Référence lisible (ex: RCV-2026-0001).,RCV-2026-0001
+transactions,cree_le,datetime,O,Date/heure de création (YYYY-MM-DD HH:MM:SS).,2026-02-03 09:15:00
+transactions,cree_par_id_utilisateur,texte,O,Clé étrangère vers utilisateurs.id_utilisateur.,U001
+transactions,statut,texte,O,DRAFT | CONFIRMED | CANCELLED,CONFIRMED
+transactions,notes,texte,N,Notes (optionnel).,Inbound from supplier X
+lignes_transaction,id_transaction,texte,O,Clé étrangère vers transactions.id_transaction.,T0001
+lignes_transaction,no_ligne,entier,O,"Numéro de ligne (1,2,3...).",1
+lignes_transaction,id_produit,texte,O,Clé étrangère vers produits.id_produit.,P001
+lignes_transaction,quantite,nombre,O,Quantité (positive).,10
+lignes_transaction,id_emplacement_source,texte,N,Emplacement source (optionnel selon type).,L1001
+lignes_transaction,id_emplacement_destination,texte,N,Emplacement destination (optionnel selon type).,L2001
+lignes_transaction,lot_serie,texte,N,Lot/série (optionnel) pour traçabilité.,BATCH-24A
+lignes_transaction,code_motif,texte,N,"Code motif (optionnel) ex: COUNT, DAMAGED, EXPIRY.",COUNT
+historique_demande,date,date,O,Date (YYYY-MM-DD).,2026-01-15
+historique_demande,id_produit,texte,O,Clé étrangère vers produits.id_produit.,P001
+historique_demande,quantite_demande,nombre,O,Demande/consommation sur la période.,4
+delais_approvisionnement,id_produit,texte,O,Clé étrangère vers produits.id_produit.,P001
+delais_approvisionnement,delai_jours,entier,O,Délai d'approvisionnement en jours (entier).,14
+politique_reapprovisionnement,id_produit,texte,O,Clé étrangère vers produits.id_produit.,P001
+politique_reapprovisionnement,stock_securite,nombre,N,Stock de sécurité (optionnel).,10
+politique_reapprovisionnement,quantite_min_commande,nombre,N,Quantité minimale de commande (optionnel).,20
+politique_reapprovisionnement,taille_lot,nombre,N,Taille de lot (arrondi) (optionnel).,5
+cmd_achat_ouvertes_opt,id_commande_achat,texte,O,Identifiant de la commande d'achat (PO).,PO-0001
+cmd_achat_ouvertes_opt,id_produit,texte,O,Clé étrangère vers produits.id_produit.,P001
+cmd_achat_ouvertes_opt,quantite_commandee,nombre,O,Quantité commandée.,100
+cmd_achat_ouvertes_opt,date_reception_prevue,date,O,Date de réception prévue (YYYY-MM-DD).,2026-02-20
+cmd_achat_ouvertes_opt,statut,texte,O,OPEN | RECEIVED | CANCELLED,OPEN

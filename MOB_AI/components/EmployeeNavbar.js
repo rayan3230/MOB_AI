@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Dimensions, Animated } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Dimensions, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { lightTheme } from '../constants/theme';
 
 const { width } = Dimensions.get('window');
 
-const EmployeeNavbar = ({ state, descriptors, navigation }) => {
+const EmployeeNavbar = ({ state, navigation }) => {
   /**
    * Navigation Logic:
    * Maps through the current navigation state routes to generate tab buttons.
@@ -15,7 +15,6 @@ const EmployeeNavbar = ({ state, descriptors, navigation }) => {
     <View style={styles.container}>
       <View style={styles.navbar}>
         {state.routes.map((route, index) => {
-          const { options } = descriptors[route.key];
           const isFocused = state.index === index;
 
           /**
@@ -41,12 +40,13 @@ const EmployeeNavbar = ({ state, descriptors, navigation }) => {
            * This provides immediate visual feedback to the user on where they are.
            */
           let iconName;
-          if (route.name === 'Dashboard') {
-            iconName = isFocused ? 'grid' : 'grid-outline';
-          } else if (route.name === 'Tasks') {
-            iconName = isFocused ? 'flash' : 'flash-outline';
+          let label;
+          if (route.name === 'Tasks') {
+            iconName = isFocused ? 'list' : 'list-outline';
+            label = 'Tâches';
           } else if (route.name === 'Profile') {
             iconName = isFocused ? 'person' : 'person-outline';
+            label = 'Profil';
           }
 
           return (
@@ -62,12 +62,11 @@ const EmployeeNavbar = ({ state, descriptors, navigation }) => {
               ]}>
                 <Ionicons 
                   name={iconName} 
-                  size={26} 
-                  color={isFocused ? '#000000' : '#8E8E93'} 
+                  size={22}
+                  color={isFocused ? lightTheme.primary : lightTheme.textSecondary}
                 />
+                <Text style={[styles.label, isFocused && styles.activeLabel]}>{label}</Text>
               </View>
-              {/* Simple Dot Indicator: Minimalist UI design as per template */}
-              {isFocused && <View style={styles.indicator} />}
             </TouchableOpacity>
           );
         })}
@@ -78,43 +77,57 @@ const EmployeeNavbar = ({ state, descriptors, navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: lightTheme.white,
     width: width,
-    borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
-    paddingBottom: 25, // For iPhone home indicator
+    paddingBottom: 16,
   },
   navbar: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    width: width,
-    height: 65,
+    backgroundColor: lightTheme.white,
+    marginHorizontal: 16,
+    marginTop: 8,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: lightTheme.border,
+    height: 64,
     alignItems: 'center',
     justifyContent: 'space-around',
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
+    shadowColor: lightTheme.black,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 5,
   },
   navItem: {
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
+    height: '100%',
   },
   iconContainer: {
-    width: 44,
+    minWidth: 92,
     height: 44,
-    borderRadius: 22,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
   },
   activeIconContainer: {
-    backgroundColor: '#F8F9FA', // Very subtle background for active
+    backgroundColor: lightTheme.bgHighlight,
+    borderWidth: 1,
+    borderColor: lightTheme.borderHighlight,
   },
-  indicator: {
-    marginTop: 2,
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: '#000', // Small simple dot
-  }
+  label: {
+    fontSize: 13,
+    color: lightTheme.textSecondary,
+    fontWeight: '500',
+  },
+  activeLabel: {
+    color: lightTheme.primary,
+    fontWeight: '700',
+  },
 });
 
 export default EmployeeNavbar;

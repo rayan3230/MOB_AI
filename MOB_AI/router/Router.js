@@ -14,7 +14,6 @@ import {
   StyleSheet,
   ActivityIndicator
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
 import lightTheme from '../constants/theme.js';
 import { authService } from '../services/authService';
 
@@ -44,14 +43,16 @@ import SupervisorListActions from '../pages/Supervisor/List_Actions';
 import SupervisorProfile from '../pages/Supervisor/Profile';
 
 // Employee Pages
-import EmployeeDashboard from '../pages/employee/Dashboard';
 import EmployeeListActions from '../pages/employee/List_Actions';
 import EmployeeProfile from '../pages/employee/Profile';
+import EmployeeNavbar from '../components/EmployeeNavbar';
 
 // Common Pages
 import Intro from '../pages/common/Intro/Intro';
 import ForgetPassword from '../pages/common/Forget_Password';
 import WelcomePage from '../pages/common/welcome_Page';
+import Notifications from '../pages/common/Notifications';
+import Settings from '../pages/common/Settings';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -63,21 +64,11 @@ const EmployeeTabs = ({ route }) => {
   const user = route.params?.user;
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
+      tabBar={(props) => <EmployeeNavbar {...props} />}
+      screenOptions={{
         headerShown: false,
-        tabBarIcon: ({ color, size }) => {
-          let iconName;
-          if (route.name === 'Dashboard') iconName = 'grid';
-          else if (route.name === 'Tasks') iconName = 'list';
-          else if (route.name === 'Profile') iconName = 'user';
-          return <Feather name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: '#00a3ff',
-        tabBarInactiveTintColor: 'gray',
-        tabBarStyle: { height: 60, paddingBottom: 10 },
-      })}
+      }}
     >
-      <Tab.Screen name="Dashboard" component={EmployeeDashboard} initialParams={{ user }} />
       <Tab.Screen name="Tasks" component={EmployeeListActions} initialParams={{ user }} />
       <Tab.Screen name="Profile" component={EmployeeProfile} initialParams={{ user }} />
     </Tab.Navigator>
@@ -137,6 +128,8 @@ const RoleDashboardLayout = ({ role, navigation, route }) => {
         case 'Visual_Warhouse': return <VisualWarehouse user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         case 'Profile': return <AdminProfile user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         case 'List_Actions': return <ListActions user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Notifications': return <Notifications />;
+        case 'Settings': return <Settings />;
         default: return <PlaceholderScreen title={`Admin - ${activePage}`} />;
       }
     } else if (role === 'supervisor') {
@@ -147,6 +140,8 @@ const RoleDashboardLayout = ({ role, navigation, route }) => {
         case 'Profile': return <SupervisorProfile user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         case 'Floor_managment': return <FloorManagement user={user} onOpenDrawer={() => toggleDrawer(true)} />;
         case 'Visual_Warhouse': return <VisualWarehouse user={user} onOpenDrawer={() => toggleDrawer(true)} />;
+        case 'Notifications': return <Notifications />;
+        case 'Settings': return <Settings />;
         default: return <PlaceholderScreen title={`Supervisor - ${activePage}`} />;
       }
     }
@@ -168,8 +163,8 @@ const RoleDashboardLayout = ({ role, navigation, route }) => {
         {activePage !== 'Profile' && (
           <TopHeader 
               onMenuPress={() => toggleDrawer(true)}
-              onSettingsPress={() => console.log('Settings')}
-              onNotificationPress={() => console.log('Notifications')}
+              onSettingsPress={() => setActivePage('Settings')}
+              onNotificationPress={() => setActivePage('Notifications')}
           />
         )}
 

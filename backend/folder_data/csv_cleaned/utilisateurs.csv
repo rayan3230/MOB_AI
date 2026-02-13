@@ -1,0 +1,2 @@
+﻿id_utilisateur,password,nom_complet,role,email,telephone,adresse,actif,is_banned
+U001,ChangeMe123!,A. Operator,EMPLOYEE,operator@example.com,,,True,False

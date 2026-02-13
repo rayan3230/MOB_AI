@@ -1,0 +1,24 @@
+﻿id_utilisateur,nom_complet,role,email,actif
+texte,texte,texte,texte,booleen
+O,O,O,N,O
+U001,A. Operator,OPERATOR,operator@example.com,TRUE
+,,responsable magasin,,
+,,preparateur de commade,,
+,,controleur,,
+,,reciptioniste,,
+,,responsable logistique,,
+,,Preparateur VRAC,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
+,,,,
