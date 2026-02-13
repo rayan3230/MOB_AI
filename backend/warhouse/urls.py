@@ -4,6 +4,8 @@ from .views import (
     EntrepotViewSet,
     NiveauStockageViewSet,
     NiveauPickingViewSet,
+    RackViewSet,
+    RackProductViewSet,
     EmplacementViewSet,
     StockViewSet,
     VrackViewSet,
@@ -27,6 +29,8 @@ router = SimpleRouter()
 router.register(r'warehouses', EntrepotViewSet, basename='warehouse')
 router.register(r'floors', NiveauStockageViewSet, basename='floor')
 router.register(r'picking-floors', NiveauPickingViewSet, basename='picking-floor')
+router.register(r'racks', RackViewSet, basename='rack')
+router.register(r'rack-products', RackProductViewSet, basename='rack-product')
 router.register(r'locations', EmplacementViewSet, basename='location')
 router.register(r'stock', StockViewSet, basename='stock')
 router.register(r'vracks', VrackViewSet, basename='vrack')

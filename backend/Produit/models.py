@@ -12,6 +12,9 @@ class Produit(models.Model):
     poids = models.DecimalField(max_digits=10, decimal_places=3, default=0.0)
     actif = models.BooleanField(default=True)
     
+    # Store reference to main storage location
+    id_rack = models.CharField(max_length=100, null=True, blank=True)
+    
     def save(self, *args, **kwargs):
         if not self.id_produit:
             last_produit = Produit.objects.all().order_by('id_produit').last()

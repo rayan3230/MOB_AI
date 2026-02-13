@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.db import transaction as db_transaction
 
 from .models import (
-    Entrepot, NiveauStockage, NiveauPicking, Emplacement, Stock, Vrack, MouvementStock,
+    Entrepot, NiveauStockage, NiveauPicking, Rack, RackProduct, Emplacement, Stock, Vrack, MouvementStock,
     Chariot, ChariotOperation, Commande, LigneCommande, ResultatLivraison,
     Operation, PrevisionIA, AssignmentStockageIA, RoutePickingIA,
     Override, JournalAudit, OperationOffline, AnomalieDetection
@@ -15,7 +15,8 @@ from .models import (
 from Users.models import Utilisateur
 from Produit.models import Produit
 from .serializers import (
-    EntrepotSerializer, NiveauStockageSerializer, NiveauPickingSerializer, EmplacementSerializer,
+    EntrepotSerializer, NiveauStockageSerializer, NiveauPickingSerializer, 
+    RackSerializer, RackProductSerializer, EmplacementSerializer,
     StockSerializer, VrackSerializer, MouvementStockSerializer, ChariotSerializer,
     ChariotOperationSerializer, CommandeSerializer, LigneCommandeSerializer,
     ResultatLivraisonSerializer, OperationSerializer, PrevisionIASerializer,
@@ -267,6 +268,25 @@ class EmplacementViewSet(viewsets.ModelViewSet):
 # ============================================================================
 # INVENTORY - STOCK (FR-23 → FR-27)
 # ============================================================================
+
+class RackViewSet(viewsets.ModelViewSet):
+    """
+    Rack Management
+    """
+    queryset = Rack.objects.all()
+    serializer_class = RackSerializer
+    lookup_field = 'id_rack'
+    permission_classes = [AllowAny]
+
+
+class RackProductViewSet(viewsets.ModelViewSet):
+    """
+    Products in Rack Management
+    """
+    queryset = RackProduct.objects.all()
+    serializer_class = RackProductSerializer
+    permission_classes = [AllowAny]
+
 
 class StockViewSet(viewsets.ModelViewSet):
     """

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import (
-    Entrepot, NiveauStockage, NiveauPicking, Emplacement, Stock, Vrack, MouvementStock,
+    Entrepot, NiveauStockage, NiveauPicking, Rack, RackProduct, Emplacement, Stock, Vrack, MouvementStock,
     Chariot, ChariotOperation, Commande, LigneCommande, ResultatLivraison,
     Operation, PrevisionIA, AssignmentStockageIA, RoutePickingIA,
     Override, JournalAudit, OperationOffline, AnomalieDetection
@@ -92,6 +92,30 @@ class NiveauPickingSerializer(serializers.ModelSerializer):
         return data
 
 
+class RackProductSerializer(serializers.ModelSerializer):
+    """Product in Rack serializer"""
+    product_name = serializers.ReadOnlyField(source='product.nom_produit')
+    sku = serializers.ReadOnlyField(source='product.sku')
+
+    class Meta:
+        model = RackProduct
+        fields = ['id', 'rack', 'product', 'product_name', 'sku', 'quantity']
+
+
+class RackSerializer(serializers.ModelSerializer):
+    """Rack serializer"""
+    rack_products = RackProductSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Rack
+        fields = [
+            'id_rack', 'storage_floor', 'picking_floor', 
+            'code_rack', 'capacity', 'description', 
+            'rack_products', 'cree_le'
+        ]
+        read_only_fields = ['id_rack', 'cree_le']
+
+
 class EmplacementSerializer(serializers.ModelSerializer):
     """Location (Storage/Picking) serializer"""
     id_entrepot = EntrepotSerializer(read_only=True)
@@ -100,17 +124,17 @@ class EmplacementSerializer(serializers.ModelSerializer):
         source='id_entrepot',
         write_only=True
     )
-    id_niveau = NiveauStockageSerializer(read_only=True)
-    id_niveau_id = serializers.PrimaryKeyRelatedField(
+    storage_floor = NiveauStockageSerializer(read_only=True)
+    storage_floor_id = serializers.PrimaryKeyRelatedField(
         queryset=NiveauStockage.objects.all(),
-        source='id_niveau',
+        source='storage_floor',
         write_only=True,
         required=False
     )
-    id_niveau_picking = NiveauPickingSerializer(read_only=True)
-    id_niveau_picking_id = serializers.PrimaryKeyRelatedField(
+    picking_floor = NiveauPickingSerializer(read_only=True)
+    picking_floor_id = serializers.PrimaryKeyRelatedField(
         queryset=NiveauPicking.objects.all(),
-        source='id_niveau_picking',
+        source='picking_floor',
         write_only=True,
         required=False,
         allow_null=True
@@ -121,8 +145,8 @@ class EmplacementSerializer(serializers.ModelSerializer):
         fields = [
             'id_emplacement', 'code_emplacement', 'zone', 'type_emplacement',
             'statut', 'actif', 'cree_le', 'mise_a_jour_le',
-            'id_entrepot', 'id_entrepot_id', 'id_niveau', 'id_niveau_id',
-            'id_niveau_picking', 'id_niveau_picking_id'
+            'id_entrepot', 'id_entrepot_id', 'storage_floor', 'storage_floor_id',
+            'picking_floor', 'picking_floor_id'
         ]
         read_only_fields = ['cree_le', 'mise_a_jour_le']
 

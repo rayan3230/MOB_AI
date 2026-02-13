@@ -108,10 +108,51 @@ class NiveauStockage(models.Model):
                 code = f"{self.code_niveau}-S{i}"
                 Emplacement.objects.create(
                     id_entrepot=self.id_entrepot,
-                    id_niveau=self,
+                    storage_floor=self,
                     code_emplacement=code,
                     type_emplacement='STORAGE',
                     statut='AVAILABLE'
+                )
+            
+            # Create default racks based on floor number
+            # N1, N2 are Floors 1-2. N3, N4 are Floors 3-4.
+            racks_data = []
+            
+            if self.code_niveau in ['N1', 'N2']:
+                # Row A (Floor 1-2)
+                for i in range(1, 9): racks_data.append((f"A{i}", 4 if i==4 else (11 if i in [5,6,7] else 9)))
+                # Row B (Floor 1-2)
+                for i in range(1, 8): racks_data.append((f"B{i}", 13 if i==6 else 9))
+                # Row C, D, E (Floor 1-2)
+                for i in range(1, 10): racks_data.append((f"C{i}", 9))
+                for i in range(1, 9): racks_data.append((f"D{i}", 9))
+                for i in range(1, 19): racks_data.append((f"E{i}", 9))
+            
+            elif self.code_niveau in ['N3', 'N4']:
+                # Row A (Floor 3-4): A1-A3(9), A4(5 horiz), A5(13 horiz), A6(9)
+                for i in range(1, 4): racks_data.append((f"A{i}", 9))
+                racks_data.append(("A4", 5))
+                racks_data.append(("A5", 13))
+                racks_data.append(("A6", 9))
+                # Row B (Floor 3-4): B1-B4(9), B5(13 horiz), B6(9)
+                for i in range(1, 5): racks_data.append((f"B{i}", 9))
+                racks_data.append(("B5", 13))
+                racks_data.append(("B6", 9))
+                # Row C (Floor 3-4): C1-C12(9)
+                for i in range(1, 13): racks_data.append((f"C{i}", 9))
+                # Row D (Floor 3-4): D1-D14(9)
+                for i in range(1, 15): racks_data.append((f"D{i}", 9))
+                # Row E (Floor 3-4): E1-E17(9)
+                for i in range(1, 18): racks_data.append((f"E{i}", 9))
+
+            for code, cap in racks_data:
+                Rack.objects.get_or_create(
+                    storage_floor=self,
+                    code_rack=code,
+                    defaults={
+                        'capacity': cap,
+                        'description': f"Automatic Storage Rack {code}"
+                    }
                 )
 
     class Meta:
@@ -149,7 +190,7 @@ class NiveauPicking(models.Model):
             # Create a "v rack" location automatically
             Emplacement.objects.create(
                 id_entrepot=self.id_entrepot,
-                id_niveau_picking=self,
+                picking_floor=self,
                 code_emplacement=f"V-RACK-{self.id_entrepot_id}",
                 type_emplacement='PICKING',
                 statut='AVAILABLE',
@@ -158,11 +199,32 @@ class NiveauPicking(models.Model):
             # Create a second default location for the picking floor
             Emplacement.objects.create(
                 id_entrepot=self.id_entrepot,
-                id_niveau_picking=self,
+                picking_floor=self,
                 code_emplacement=f"{self.code_niveau}-P1",
                 type_emplacement='PICKING',
                 statut='AVAILABLE'
             )
+
+            # Create default racks for the picking floor (FR-13 extension)
+            racks_codes = "ABCDEFGHIKMNPQRSTVWX"
+            for code in racks_codes:
+                # Capacity logic based on code
+                cap = 10  # Default
+                if code in "ACEGIPR": cap = 7
+                elif code in "BDFHKQS": cap = 10
+                elif code == 'W': cap = 18
+                elif code in 'MT': cap = 6
+                elif code in 'NV': cap = 9
+                elif code == 'X': cap = 17
+
+                Rack.objects.get_or_create(
+                    picking_floor=self,
+                    code_rack=code,
+                    defaults={
+                        'capacity': cap,
+                        'description': f"Automatic Picking Rack {code}"
+                    }
+                )
 
     class Meta:
         db_table = 'niveaux_picking'
@@ -170,6 +232,57 @@ class NiveauPicking(models.Model):
 
     def __str__(self):
         return f"{self.id_niveau_picking} - {self.code_niveau}"
+
+
+class Rack(models.Model):
+    """
+    Racks located on Floors (NiveauStockage or NiveauPicking)
+    """
+    id_rack = models.CharField(max_length=100, primary_key=True, blank=True)
+    storage_floor = models.ForeignKey(NiveauStockage, on_delete=models.CASCADE, null=True, blank=True, related_name='racks')
+    picking_floor = models.ForeignKey(NiveauPicking, on_delete=models.CASCADE, null=True, blank=True, related_name='racks')
+    code_rack = models.CharField(max_length=50)
+    capacity = models.IntegerField(default=100)  # Total storing capacity
+    description = models.CharField(max_length=255, null=True, blank=True)
+    cree_le = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.id_rack:
+            # Composed ID: warehouseid + floorid + rack name
+            warehouse_id = ""
+            floor_id = ""
+            if self.storage_floor:
+                warehouse_id = self.storage_floor.id_entrepot_id
+                floor_id = self.storage_floor.id_niveau
+            elif self.picking_floor:
+                warehouse_id = self.picking_floor.id_entrepot_id
+                floor_id = self.picking_floor.id_niveau_picking
+            
+            self.id_rack = f"{warehouse_id}_{floor_id}_{self.code_rack}"
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        floor_info = self.storage_floor.code_niveau if self.storage_floor else self.picking_floor.code_niveau
+        return f"Rack {self.code_rack} - {floor_info}"
+
+    class Meta:
+        db_table = 'racks'
+
+
+class RackProduct(models.Model):
+    """
+    Products stored in a Rack with their quantities
+    """
+    rack = models.ForeignKey(Rack, on_delete=models.CASCADE, related_name='rack_products')
+    product = models.ForeignKey(Produit, on_delete=models.CASCADE, related_name='rack_assignments')
+    quantity = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    class Meta:
+        db_table = 'rack_products'
+        unique_together = [['rack', 'product']]
+
+    def __str__(self):
+        return f"{self.product.sku} in {self.rack.code_rack}: {self.quantity}"
 
 
 class Emplacement(models.Model):
@@ -191,8 +304,8 @@ class Emplacement(models.Model):
     id_emplacement = models.CharField(max_length=20, primary_key=True, blank=True)
     code_emplacement = models.CharField(max_length=50, unique=True)  # FR-17: Unique code per location
     id_entrepot = models.ForeignKey(Entrepot, on_delete=models.CASCADE, related_name='emplacements')
-    id_niveau = models.ForeignKey(NiveauStockage, on_delete=models.SET_NULL, null=True, blank=True, related_name='emplacements')
-    id_niveau_picking = models.ForeignKey(NiveauPicking, on_delete=models.SET_NULL, null=True, blank=True, related_name='emplacements')
+    storage_floor = models.ForeignKey(NiveauStockage, on_delete=models.SET_NULL, null=True, blank=True, related_name='emplacements')
+    picking_floor = models.ForeignKey(NiveauPicking, on_delete=models.SET_NULL, null=True, blank=True, related_name='emplacements')
     zone = models.CharField(max_length=50, null=True, blank=True)
     type_emplacement = models.CharField(max_length=50, choices=TYPE_CHOICES)  # STORAGE or PICKING
     statut = models.CharField(max_length=50, choices=STATUS_CHOICES, default='AVAILABLE')

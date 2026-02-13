@@ -3,13 +3,25 @@ from .models import Produit, CodeBarresProduit, HistoriqueDemande, DelaisApprovi
 
 
 class ProduitSerializer(serializers.ModelSerializer):
+    rack_placements = serializers.SerializerMethodField()
+
     class Meta:
         model = Produit
         fields = [
             'id_produit', 'sku', 'nom_produit', 'unite_mesure', 
             'categorie', 'collisage_palette', 'collisage_fardeau', 
-            'poids', 'actif'
+            'poids', 'actif', 'id_rack', 'rack_placements'
         ]
+
+    def get_rack_placements(self, obj):
+        # We import here to avoid circular dependencies
+        from warhouse.models import RackProduct
+        placements = RackProduct.objects.filter(product=obj)
+        return [{
+            'rack_id': p.rack.id_rack,
+            'rack_code': p.rack.code_rack,
+            'quantity': p.quantity
+        } for p in placements]
 
 
 class CodeBarresProduitSerializer(serializers.ModelSerializer):
