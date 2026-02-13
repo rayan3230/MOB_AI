@@ -1,4 +1,6 @@
-from django.db import models
+from django.db import models, transaction
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 from Produit.models import Produit
 from Users.models import Utilisateur
@@ -718,4 +720,70 @@ class AnomalieDetection(models.Model):
 
     def __str__(self):
         return f"{self.id_anomalie} - {self.type_anomalie}"
+
+
+# ============================================================================
+# SIGNALS (Automation)
+# ============================================================================
+
+@receiver(post_save, sender=MouvementStock)
+def update_vrack_on_movement(sender, instance, created, **kwargs):
+    """
+    Automatically adjust Vrack quantity based on Stock Movements.
+    If source is V-RACK, decrease. If destination is V-RACK, increase.
+    """
+    if not created:
+        return
+
+    # Check source
+    if instance.id_emplacement_source and instance.id_emplacement_source.code_emplacement.startswith('V-RACK-'):
+        warehouse = instance.id_emplacement_source.id_entrepot
+        product = instance.id_produit
+        if product:
+            vrack, _ = Vrack.objects.get_or_create(
+                id_entrepot=warehouse,
+                id_produit=product
+            )
+            vrack.quantite -= instance.quantite
+            vrack.save()
+
+    # Check destination
+    if instance.id_emplacement_destination and instance.id_emplacement_destination.code_emplacement.startswith('V-RACK-'):
+        warehouse = instance.id_emplacement_destination.id_entrepot
+        product = instance.id_produit
+        if product:
+            vrack, _ = Vrack.objects.get_or_create(
+                id_entrepot=warehouse,
+                id_produit=product
+            )
+            vrack.quantite += instance.quantite
+            vrack.save()
+
+
+@receiver(post_save, sender=NiveauStockage)
+def create_chariot_for_stock_floor(sender, instance, created, **kwargs):
+    """
+    FR-30: Automatically create a chariot for each new stocking floor.
+    """
+    if created:
+        Chariot.objects.create(
+            id_entrepot=instance.id_entrepot,
+            code_chariot=f"CH-STK-{instance.id_niveau}",
+            statut='AVAILABLE',
+            capacite=500.00  # Default capacity for stock floor chariot
+        )
+
+
+@receiver(post_save, sender=NiveauPicking)
+def create_chariot_for_picking_floor(sender, instance, created, **kwargs):
+    """
+    FR-30: Automatically create a chariot for each new picking floor.
+    """
+    if created:
+        Chariot.objects.create(
+            id_entrepot=instance.id_entrepot,
+            code_chariot=f"CH-PCK-{instance.id_niveau_picking}",
+            statut='AVAILABLE',
+            capacite=200.00  # Default capacity for picking floor chariot
+        )
 

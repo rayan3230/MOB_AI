@@ -291,24 +291,78 @@ class VrackViewSet(viewsets.ModelViewSet):
         return Response({'error': 'product_id and warehouse_id required'}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['post'])
-    def adjust_quantity(self, request, id_vrack=None):
-        """POST /vracks/{id}/adjust_quantity/ - Adjust quantity by a delta"""
+    def transfer_to_shelf(self, request, id_vrack=None):
+        """
+        POST /vracks/{id}/transfer_to_shelf/
+        Body: { 
+          'destination_location_id': 'EMP001', 
+          'quantity': 10,
+          'notes': 'Picking for order...' 
+        }
+        This will create a MouvementStock which triggers the signal to update Vrack qty.
+        """
         vrack = self.get_object()
-        delta = request.data.get('delta', 0)
+        dest_id = request.data.get('destination_location_id')
+        qty = request.data.get('quantity')
+        notes = request.data.get('notes', '')
+
+        if not dest_id or not qty:
+            return Response({'error': 'destination_location_id and quantity required'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            delta = float(delta)
-        except (ValueError, TypeError):
-            return Response({'error': 'Invalid delta value'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if vrack.quantite + delta < 0:
-            return Response({'error': 'Insufficient quantity in Vrack'}, status=status.HTTP_400_BAD_REQUEST)
+            qty = float(qty)
+            if qty <= 0:
+                return Response({'error': 'Quantity must be positive'}, status=status.HTTP_400_BAD_REQUEST)
+            if qty > vrack.quantite:
+                return Response({'error': 'Insufficient quantity in Vrack'}, status=status.HTTP_400_BAD_REQUEST)
+
+            destination = Emplacement.objects.get(id_emplacement=dest_id)
+            source_code = f"V-RACK-{vrack.id_entrepot_id}"
             
-        vrack.quantite += delta
-        vrack.save()
-        return Response({
-            'status': 'Quantity adjusted',
-            'new_quantity': vrack.quantite
-        })
+            # Find the V-RACK source emplacement
+            try:
+                source = Emplacement.objects.get(code_emplacement=source_code, id_entrepot=vrack.id_entrepot)
+            except Emplacement.DoesNotExist:
+                # Fallback: maybe just V-RACK
+                source = Emplacement.objects.filter(code_emplacement__contains='V-RACK', id_entrepot=vrack.id_entrepot).first()
+                if not source:
+                    return Response({'error': f'Source location {source_code} not found in this warehouse'}, status=status.HTTP_404_NOT_FOUND)
+
+            with db_transaction.atomic():
+                # 1. Create MouvementStock
+                mvt_id = f"MVT_{timezone.now().strftime('%Y%m%d%H%M%S')}_{vrack.id_produit_id}"
+                mvt = MouvementStock.objects.create(
+                    id_mouvement=mvt_id,
+                    type_mouvement='TRANSFERT',
+                    id_produit=vrack.id_produit,
+                    id_emplacement_source=source,
+                    id_emplacement_destination=destination,
+                    quantite=qty,
+                    notes=f"Vrack Transfer: {notes}"
+                )
+                
+                # 2. Update physical stock in destination
+                # (Normally handled by a trigger/signal or manually)
+                stock_dest, _ = Stock.objects.get_or_create(
+                    id_produit=vrack.id_produit,
+                    id_emplacement=destination,
+                    defaults={'quantite': 0}
+                )
+                stock_dest.quantite += qty
+                stock_dest.save()
+
+                # Note: The post_save signal on MouvementStock will handle vrack.quantite -= qty
+
+            return Response({
+                'status': 'Transfer successful',
+                'new_vrack_quantity': vrack.quantite - qty, # Signal will have updated the DB but we return expected
+                'movement_id': mvt.id_mouvement
+            })
+
+        except Emplacement.DoesNotExist:
+            return Response({'error': 'Destination location not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # ============================================================================
@@ -361,7 +415,7 @@ class ChariotViewSet(viewsets.ModelViewSet):
     queryset = Chariot.objects.all()
     serializer_class = ChariotSerializer
     lookup_field = 'id_chariot'
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny] # Changed for development
 
     @action(detail=False, methods=['get'])
     def list_available_chariots(self, request):
@@ -370,12 +424,35 @@ class ChariotViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(chariots, many=True)
         return Response(serializer.data)
 
+    @action(detail=False, methods=['get'])
+    def by_code(self, request):
+        """GET /chariots/by_code/?code=CH01"""
+        code = request.query_params.get('code')
+        if not code:
+            return Response({'error': 'Code required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            chariot = Chariot.objects.get(code_chariot=code)
+            return Response(self.get_serializer(chariot).data)
+        except Chariot.DoesNotExist:
+            return Response({'error': 'Chariot not found'}, status=status.HTTP_404_NOT_FOUND)
+
     @action(detail=True, methods=['post'])
     def assign_chariot(self, request, id_chariot=None):
         """POST /chariots/{id}/assign_chariot/ - Assign chariot to operation"""
         chariot = self.get_object()
+        if chariot.statut != 'AVAILABLE':
+            return Response({'error': f'Chariot is {chariot.statut}'}, status=status.HTTP_400_BAD_REQUEST)
+        
         chariot.statut = 'IN_USE'
         chariot.save()
+        
+        # Log operation
+        ChariotOperation.objects.create(
+            id_chariot_operation=f"OP_{chariot.id_chariot}_{timezone.now().strftime('%Y%m%d%H%M%S')}",
+            id_chariot=chariot,
+            id_emplacement_courant=chariot.id_emplacement_courant
+        )
+        
         serializer = self.get_serializer(chariot)
         return Response(serializer.data)
 
@@ -385,8 +462,23 @@ class ChariotViewSet(viewsets.ModelViewSet):
         chariot = self.get_object()
         chariot.statut = 'AVAILABLE'
         chariot.save()
+        
+        # Close last operation
+        last_op = chariot.operations.filter(date_liberation__isnull=True).last()
+        if last_op:
+            last_op.date_liberation = timezone.now()
+            last_op.save()
+            
         serializer = self.get_serializer(chariot)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def set_maintenance(self, request, id_chariot=None):
+        """POST /chariots/{id}/set_maintenance/"""
+        chariot = self.get_object()
+        chariot.statut = 'MAINTENANCE'
+        chariot.save()
+        return Response(self.get_serializer(chariot).data)
 
 
 class ChariotOperationViewSet(viewsets.ModelViewSet):

@@ -26,30 +26,37 @@ const VrackManagement = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-
-  const [newVrack, setNewVrack] = useState({
-    id_entrepot_id: '',
-    id_produit_id: '',
-    quantite: '0'
+  const [locations, setLocations] = useState([]);
+  const [transferModalVisible, setTransferModalVisible] = useState(false);
+  const [selectedVrack, setSelectedVrack] = useState(null);
+  const [transferData, setTransferData] = useState({
+    destination_location_id: '',
+    quantity: '',
+    notes: ''
   });
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [vrackData, warehouseData, productData] = await Promise.all([
+      const [vrackData, warehouseData, productData, locationData] = await Promise.all([
         warehouseService.getVracks(),
         warehouseService.getWarehouses(),
-        productService.getProducts()
+        productService.getProducts(),
+        warehouseService.getLocations()
       ]);
       setVracks(vrackData);
       setWarehouses(warehouseData);
       setProducts(productData);
+      setLocations(locationData.filter(l => l.statut === 'AVAILABLE'));
       
       if (warehouseData.length > 0 && !newVrack.id_entrepot_id) {
         setNewVrack(prev => ({ ...prev, id_entrepot_id: warehouseData[0].id_entrepot }));
       }
       if (productData.length > 0 && !newVrack.id_produit_id) {
         setNewVrack(prev => ({ ...prev, id_produit_id: productData[0].id_produit }));
+      }
+      if (locationData.length > 0) {
+        setTransferData(prev => ({ ...prev, destination_location_id: locationData[0].id_emplacement }));
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -143,6 +150,37 @@ const VrackManagement = () => {
   const closeModal = () => {
     setModalVisible(false);
     setIsEditing(false);
+    setTransferModalVisible(false);
+  };
+
+  const openTransferModal = (vrack) => {
+    setSelectedVrack(vrack);
+    setTransferData({
+      destination_location_id: locations.length > 0 ? locations[0].id_emplacement : '',
+      quantity: '',
+      notes: ''
+    });
+    setTransferModalVisible(true);
+  };
+
+  const handleTransfer = async () => {
+    if (!transferData.destination_location_id || !transferData.quantity) {
+      Alert.alert('Erreur', 'Veuillez remplir la destination et la quantité');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      await warehouseService.transferFromVrack(selectedVrack.id_vrack, transferData);
+      Alert.alert('Succès', 'Transfert effectué avec succès');
+      closeModal();
+      fetchData();
+    } catch (error) {
+      console.error('Error transferring from vrack:', error);
+      Alert.alert('Erreur', `Échec du transfert: ${error.response?.data?.error || 'Erreur serveur'}`);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const renderVrackItem = ({ item }) => (
@@ -159,6 +197,12 @@ const VrackManagement = () => {
       </View>
       
       <View style={styles.actionButtons}>
+        <TouchableOpacity 
+          style={[styles.actionButton, { backgroundColor: '#E3F2FD' }]} 
+          onPress={() => openTransferModal(item)}
+        >
+          <Feather name="log-out" size={18} color="#2196F3" />
+        </TouchableOpacity>
         <TouchableOpacity 
           style={styles.actionButton} 
           onPress={() => openEditModal(item)}
@@ -277,6 +321,79 @@ const VrackManagement = () => {
                   <ActivityIndicator color="white" size="small" />
                 ) : (
                   <Text style={styles.saveButtonText}>{isEditing ? 'Mettre à jour' : 'Enregistrer'}</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Transfer Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={transferModalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Sortie de Vrack</Text>
+            <Text style={styles.subtitle}>
+              {selectedVrack?.id_produit?.nom_produit} ({selectedVrack?.quantite} dispos)
+            </Text>
+            
+            <ScrollView style={styles.form}>
+              <Text style={styles.label}>Emplacement Destination *</Text>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={transferData.destination_location_id}
+                  onValueChange={(val) => setTransferData({...transferData, destination_location_id: val})}
+                >
+                  {locations.map(l => (
+                    <Picker.Item 
+                      key={l.id_emplacement} 
+                      label={`${l.code_emplacement} (${l.id_niveau})`} 
+                      value={l.id_emplacement} 
+                    />
+                  ))}
+                </Picker>
+              </View>
+
+              <Text style={styles.label}>Quantité à déplacer *</Text>
+              <TextInput
+                style={styles.input}
+                value={transferData.quantity}
+                onChangeText={(t) => setTransferData({...transferData, quantity: t})}
+                placeholder="0.00"
+                keyboardType="numeric"
+              />
+
+              <Text style={styles.label}>Notes</Text>
+              <TextInput
+                style={[styles.input, { height: 60 }]}
+                value={transferData.notes}
+                onChangeText={(t) => setTransferData({...transferData, notes: t})}
+                placeholder="Raison du transfert..."
+                multiline
+              />
+            </ScrollView>
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.cancelButton]} 
+                onPress={closeModal}
+              >
+                <Text style={styles.cancelButtonText}>Annuler</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.modalButton, styles.saveButton]} 
+                onPress={handleTransfer}
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <ActivityIndicator color="white" size="small" />
+                ) : (
+                  <Text style={styles.saveButtonText}>Confirmer Transfert</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -406,8 +523,14 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 8,
     textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 16,
   },
   form: {
     marginBottom: 24,

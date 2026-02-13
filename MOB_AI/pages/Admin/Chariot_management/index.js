@@ -14,6 +14,7 @@ import {
 import { Feather } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { warehouseService } from '../../../services/warehouseService';
+import { chariotService } from '../../../services/chariotService';
 
 const ChariotManagement = () => {
   const [chariots, setChariots] = useState([]);
@@ -36,7 +37,7 @@ const ChariotManagement = () => {
     try {
       setLoading(true);
       const [chariotsData, warehousesData] = await Promise.all([
-        warehouseService.getChariots(),
+        chariotService.getChariots(),
         warehouseService.getWarehouses()
       ]);
       setChariots(chariotsData);
@@ -68,10 +69,10 @@ const ChariotManagement = () => {
     try {
       setSubmitting(true);
       if (isEditing) {
-        await warehouseService.updateChariot(editingId, newChariot);
+        await chariotService.updateChariot(editingId, newChariot);
         Alert.alert('Success', 'Chariot updated successfully');
       } else {
-        await warehouseService.createChariot(newChariot);
+        await chariotService.createChariot(newChariot);
         Alert.alert('Success', 'Chariot added successfully');
       }
       closeModal();
@@ -81,6 +82,26 @@ const ChariotManagement = () => {
       Alert.alert('Error', `Failed to ${isEditing ? 'update' : 'add'} chariot`);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleMaintenance = async (id) => {
+    try {
+      await chariotService.setMaintenance(id);
+      Alert.alert('Success', 'Chariot set to maintenance');
+      fetchData();
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update status');
+    }
+  };
+
+  const handleRelease = async (id) => {
+    try {
+      await chariotService.releaseChariot(id);
+      Alert.alert('Success', 'Chariot released');
+      fetchData();
+    } catch (error) {
+      Alert.alert('Error', 'Failed to release chariot');
     }
   };
 
@@ -95,7 +116,7 @@ const ChariotManagement = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await warehouseService.deleteChariot(id);
+              await chariotService.deleteChariot(id);
               Alert.alert('Success', 'Chariot deleted successfully');
               fetchData();
             } catch (error) {
@@ -165,6 +186,22 @@ const ChariotManagement = () => {
       </View>
       
       <View style={styles.actionButtons}>
+        {item.statut === 'IN_USE' && (
+          <TouchableOpacity 
+            style={styles.actionButton} 
+            onPress={() => handleRelease(item.id_chariot)}
+          >
+            <Feather name="unlock" size={18} color="#4CAF50" />
+          </TouchableOpacity>
+        )}
+        {item.statut === 'AVAILABLE' && (
+          <TouchableOpacity 
+            style={styles.actionButton} 
+            onPress={() => handleMaintenance(item.id_chariot)}
+          >
+            <Feather name="tool" size={18} color="#FF9800" />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity 
           style={styles.actionButton} 
           onPress={() => openEditModal(item)}

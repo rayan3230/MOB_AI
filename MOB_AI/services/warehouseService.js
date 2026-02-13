@@ -106,5 +106,14 @@ export const warehouseService = {
 
     getVrackByWarehouse: async (warehouseId) => {
         return await apiCall(`/api/warehouse/vracks/by_warehouse/?warehouse_id=${warehouseId}`, 'GET');
+    },
+
+    adjustVrackQuantity: async (vrackId, delta) => {
+        return await apiCall(`/api/warehouse/vracks/${vrackId}/adjust_quantity/`, 'POST', { delta });
+    },
+
+    transferFromVrack: async (vrackId, transferData) => {
+        // transferData: { destination_location_id, quantity, notes }
+        return await apiCall(`/api/warehouse/vracks/${vrackId}/transfer_to_shelf/`, 'POST', transferData);
     }
 };
