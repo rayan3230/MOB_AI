@@ -83,7 +83,15 @@ class ForecastDecisionLayer:
         std_val = float(sku_data.get('std_dev', 0.0))
         vol_val = sku_data.get('volatility', 'stable')
         safety_val = float(sku_data.get('safety_stock', 0.0))
+        yoy_seasonal = float(sku_data.get('yoy_seasonal', 0.0))
+        yoy_pattern = bool(sku_data.get('yoy_pattern_detected', False))
         lower_limit, upper_limit = self._compute_guardrail_bounds(sku_data)
+
+        yoy_info = ""
+        if yoy_pattern and yoy_seasonal > 0:
+            yoy_info = f"\n        - Year-over-Year Seasonal Pattern: DETECTED (avg demand on same day/month: {yoy_seasonal:.2f})"
+        elif yoy_seasonal > 0:
+            yoy_info = f"\n        - Year-over-Year Data: Available but insufficient pattern (avg: {yoy_seasonal:.2f})"
 
         prompt = f"""
         TASK: Select or adjust the next-day demand forecast for the following SKU.
@@ -93,7 +101,7 @@ class ForecastDecisionLayer:
         - Regression forecast: {reg_val:.2f}
         - Trend slope: {slope_val:.4f} ({trend_val})
         - Volatility: {std_val:.2f} ({vol_val})
-        - Safety stock: {safety_val:.2f}
+        - Safety stock: {safety_val:.2f}{yoy_info}
 
         INSTRUCTIONS:
         1. Analyze the trend, volatility, and provided forecasts.
@@ -101,12 +109,13 @@ class ForecastDecisionLayer:
         3. If high volatility -> add safety buffer.
         4. If stable demand -> prefer SMA.
         5. If decreasing -> reduce forecast slightly.
-        6. Return JSON only.
-        7. Return a numeric "final_forecast".
-        8. Include a short "explanation".
-        9. No extra text.
-        10. final_forecast MUST stay inside [{lower_limit:.2f}, {upper_limit:.2f}].
-        11. Do not add exaggerated safety buffers outside this range.
+        6. If Year-over-Year seasonal pattern detected -> consider historical demand from same date in previous years.
+        7. Return JSON only.
+        8. Return a numeric "final_forecast".
+        9. Include a short "explanation".
+        10. No extra text.
+        11. final_forecast MUST stay inside [{lower_limit:.2f}, {upper_limit:.2f}].
+        12. Do not add exaggerated safety buffers outside this range.
         
         FORMAT:
         {{

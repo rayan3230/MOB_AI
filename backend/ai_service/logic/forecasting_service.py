@@ -261,7 +261,50 @@ class DeterministicForecastModel:
             z = 1.0
         return float(max(0.0, z * std_dev))
 
-    def predict(self, history, product_id, regression_model):
+    def get_yoy_seasonal_demand(self, history, product_id, target_date=None):
+        """
+        Year-over-Year Seasonality: Check demand from the same day/month in previous years.
+        This captures annual patterns (holidays, seasonal effects, etc.)
+        """
+        product_history = history[history['id_produit'] == product_id].copy()
+        if product_history.empty:
+            return {'yoy_avg': 0.0, 'yoy_count': 0, 'has_pattern': False}
+        
+        # Use today if no target date specified
+        if target_date is None:
+            target_date = datetime.now()
+        
+        target_day = target_date.day
+        target_month = target_date.month
+        
+        # Find all records matching same day/month from previous years
+        product_history['day'] = product_history['date'].dt.day
+        product_history['month'] = product_history['date'].dt.month
+        product_history['year'] = product_history['date'].dt.year
+        
+        yoy_matches = product_history[
+            (product_history['day'] == target_day) & 
+            (product_history['month'] == target_month) &
+            (product_history['year'] < target_date.year)
+        ]
+        
+        if len(yoy_matches) > 0:
+            yoy_avg = float(yoy_matches['quantite_demande'].mean())
+            yoy_count = len(yoy_matches)
+            has_pattern = yoy_count >= 2  # At least 2 years of history
+            
+            logger.debug(f"YoY Seasonality for SKU {product_id}: Found {yoy_count} matches "
+                        f"for {target_month}/{target_day}, avg demand: {yoy_avg:.2f}")
+            
+            return {
+                'yoy_avg': yoy_avg,
+                'yoy_count': yoy_count,
+                'has_pattern': has_pattern
+            }
+        
+        return {'yoy_avg': 0.0, 'yoy_count': 0, 'has_pattern': False}
+
+    def predict(self, history, product_id, regression_model, target_date=None):
         prepared = self._prepare_series(history, product_id)
         if prepared.empty:
             return {
@@ -269,6 +312,7 @@ class DeterministicForecastModel:
                 'wma': 0.0,
                 'ses': 0.0,
                 'regression': 0.0,
+                'yoy_seasonal': 0.0,
                 'trend': 'stable',
                 'volatility': 'stable',
                 'trend_strength': 0.0,
@@ -291,16 +335,34 @@ class DeterministicForecastModel:
         trend_significant = bool(reg_results.get('trend_significant', False))
         volatility = reg_results.get('volatility', 'stable')
 
-        # Deterministic, explainable blending
-        if demand_class == 'slow_mover':
-            forecast = 0.65 * ses + 0.35 * wma
-            rationale = 'Slow mover: smoothing-focused blend (SES+WMA).'
-        elif trend_significant:
-            forecast = 0.45 * ses + 0.25 * wma + 0.30 * reg_pred
-            rationale = 'Fast mover with significant trend: include guarded regression.'
+        # Year-over-Year Seasonality Check
+        yoy_data = self.get_yoy_seasonal_demand(history, product_id, target_date)
+        yoy_seasonal = yoy_data['yoy_avg']
+        has_seasonal_pattern = yoy_data['has_pattern']
+
+        # Deterministic, explainable blending with YoY seasonality
+        if has_seasonal_pattern and yoy_seasonal > 0:
+            # If we have strong seasonal pattern (2+ years), blend it in
+            if demand_class == 'slow_mover':
+                forecast = 0.50 * ses + 0.25 * wma + 0.25 * yoy_seasonal
+                rationale = f'Slow mover with YoY pattern: SES+WMA+Seasonal (YoY avg: {yoy_seasonal:.1f}).'
+            elif trend_significant:
+                forecast = 0.35 * ses + 0.20 * wma + 0.25 * reg_pred + 0.20 * yoy_seasonal
+                rationale = f'Fast mover with trend & YoY pattern: SES+WMA+Reg+Seasonal (YoY avg: {yoy_seasonal:.1f}).'
+            else:
+                forecast = 0.45 * ses + 0.35 * wma + 0.20 * yoy_seasonal
+                rationale = f'Fast mover with YoY pattern: SES+WMA+Seasonal (YoY avg: {yoy_seasonal:.1f}).'
         else:
-            forecast = 0.55 * ses + 0.45 * wma
-            rationale = 'No significant trend: ignore regression and use SES+WMA.'
+            # Original logic without seasonality
+            if demand_class == 'slow_mover':
+                forecast = 0.65 * ses + 0.35 * wma
+                rationale = 'Slow mover: smoothing-focused blend (SES+WMA).'
+            elif trend_significant:
+                forecast = 0.45 * ses + 0.25 * wma + 0.30 * reg_pred
+                rationale = 'Fast mover with significant trend: include guarded regression.'
+            else:
+                forecast = 0.55 * ses + 0.45 * wma
+                rationale = 'No significant trend: ignore regression and use SES+WMA.'
 
         safety_stock = self.compute_safety_stock(series, demand_class)
         forecast = float(max(0.0, forecast))
@@ -310,6 +372,8 @@ class DeterministicForecastModel:
             'wma': float(wma),
             'ses': float(ses),
             'regression': float(reg_pred),
+            'yoy_seasonal': float(yoy_seasonal),
+            'yoy_pattern_detected': has_seasonal_pattern,
             'trend': trend,
             'volatility': volatility,
             'trend_strength': float(trend_strength),
@@ -431,6 +495,7 @@ class ForecastingService:
             test_range = range(holdout_start, len(history) - horizon + 1)
             for t in test_range:
                 train_data = history.iloc[:t]
+                test_date = history.iloc[t]['date'] if t < len(history) else datetime.now()
                 actual_value = float(history.iloc[t:t + horizon]['quantite_demande'].sum())
 
                 # Candidate models (deterministic, explainable)
@@ -438,11 +503,13 @@ class ForecastingService:
                 reg_results = self.regression.analyze(train_data, pid)
                 reg_pred = float(reg_results.get('prediction', sma_pred / horizon)) * horizon
 
-                deterministic = self.deterministic.predict(train_data, pid, self.regression)
+                deterministic = self.deterministic.predict(train_data, pid, self.regression, target_date=test_date)
                 hybrid_input = {
                     'id': pid,
                     'sma': deterministic['wma'],
                     'prediction': deterministic['regression'],
+                    'yoy_seasonal': deterministic.get('yoy_seasonal', 0.0),
+                    'yoy_pattern_detected': deterministic.get('yoy_pattern_detected', False),
                     'trend': deterministic['trend'],
                     'volatility': deterministic['volatility'],
                     'safety_stock': deterministic['safety_stock'],
@@ -537,7 +604,7 @@ class ForecastingService:
             return None
         
         # 1. Deterministic engine outputs
-        deterministic = self.deterministic.predict(history, int(pid), self.regression)
+        deterministic = self.deterministic.predict(history, int(pid), self.regression, target_date=None)
         reg_results = self.regression.analyze(history, int(pid))
 
         # 2. Guarded hybrid decision (LLM cannot freely drift)
@@ -545,6 +612,8 @@ class ForecastingService:
             'id': int(pid),
             'sma': deterministic['wma'],
             'prediction': deterministic['regression'],
+            'yoy_seasonal': deterministic.get('yoy_seasonal', 0.0),
+            'yoy_pattern_detected': deterministic.get('yoy_pattern_detected', False),
             'trend': deterministic['trend'],
             'volatility': deterministic['volatility'],
             'safety_stock': deterministic['safety_stock'],
@@ -564,6 +633,8 @@ class ForecastingService:
             'wma': float(deterministic['wma']),
             'ses': float(deterministic['ses']),
             'regression': float(deterministic['regression']),
+            'yoy_seasonal': float(deterministic.get('yoy_seasonal', 0.0)),
+            'yoy_pattern_detected': bool(deterministic.get('yoy_pattern_detected', False)),
             'safety_stock': float(deterministic.get('safety_stock', 0)),
             'trend': str(deterministic.get('trend', 'unknown')),
             'volatility': str(deterministic.get('volatility', 'unknown')),
@@ -590,12 +661,14 @@ class ForecastingService:
             if len(history) < 2: continue
             
             # 1. Deterministic Engine Outputs
-            deterministic = self.deterministic.predict(history, int(pid), self.regression)
+            deterministic = self.deterministic.predict(history, int(pid), self.regression, target_date=None)
             reg_results = self.regression.analyze(history, int(pid))
             guarded_input = {
                 'id': int(pid),
                 'sma': deterministic['wma'],
                 'prediction': deterministic['regression'],
+                'yoy_seasonal': deterministic.get('yoy_seasonal', 0.0),
+                'yoy_pattern_detected': deterministic.get('yoy_pattern_detected', False),
                 'trend': deterministic['trend'],
                 'volatility': deterministic['volatility'],
                 'safety_stock': deterministic['safety_stock'],
