@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import (
-    Entrepot, NiveauStockage, Emplacement, Stock, MouvementStock,
+    Entrepot, NiveauStockage, NiveauPicking, Emplacement, Stock, Vrack, MouvementStock,
     Chariot, ChariotOperation, Commande, LigneCommande, ResultatLivraison,
     Operation, PrevisionIA, AssignmentStockageIA, RoutePickingIA,
     Override, JournalAudit, OperationOffline, AnomalieDetection
@@ -38,10 +38,58 @@ class NiveauStockageSerializer(serializers.ModelSerializer):
     class Meta:
         model = NiveauStockage
         fields = [
-            'id_niveau', 'code_niveau', 'description',
+            'id_niveau', 'code_niveau', 'type_niveau', 'description',
             'id_entrepot', 'id_entrepot_id', 'cree_le'
         ]
-        read_only_fields = ['cree_le']
+        read_only_fields = ['id_niveau', 'cree_le']
+
+    def validate(self, data):
+        """
+        Validate business rules:
+        - Max 4 Stocking Floors
+        """
+        entrepot = data.get('id_entrepot')
+        # Get instance if updating
+        instance_id = self.instance.id_niveau if self.instance else None
+
+        stocking_count = NiveauStockage.objects.filter(
+            id_entrepot=entrepot, 
+            type_niveau='STOCK'
+        ).exclude(id_niveau=instance_id).count()
+        if stocking_count >= 4:
+            raise serializers.ValidationError("A warehouse cannot have more than 4 stocking floors.")
+
+        return data
+
+
+class NiveauPickingSerializer(serializers.ModelSerializer):
+    """Picking Floor serializer"""
+    id_entrepot = EntrepotSerializer(read_only=True)
+    id_entrepot_id = serializers.PrimaryKeyRelatedField(
+        queryset=Entrepot.objects.all(),
+        source='id_entrepot',
+        write_only=True
+    )
+    type_niveau = serializers.SerializerMethodField()
+
+    class Meta:
+        model = NiveauPicking
+        fields = [
+            'id_niveau_picking', 'code_niveau', 'type_niveau', 'description',
+            'id_entrepot', 'id_entrepot_id', 'cree_le'
+        ]
+        read_only_fields = ['id_niveau_picking', 'cree_le']
+
+    def get_type_niveau(self, obj):
+        return "PICKING"
+
+    def validate(self, data):
+        entrepot = data.get('id_entrepot')
+        instance_id = self.instance.id_niveau_picking if self.instance else None
+        
+        if NiveauPicking.objects.filter(id_entrepot=entrepot).exclude(id_niveau_picking=instance_id).exists():
+            raise serializers.ValidationError("A warehouse can only have one picking floor.")
+        return data
 
 
 class EmplacementSerializer(serializers.ModelSerializer):
@@ -59,13 +107,22 @@ class EmplacementSerializer(serializers.ModelSerializer):
         write_only=True,
         required=False
     )
+    id_niveau_picking = NiveauPickingSerializer(read_only=True)
+    id_niveau_picking_id = serializers.PrimaryKeyRelatedField(
+        queryset=NiveauPicking.objects.all(),
+        source='id_niveau_picking',
+        write_only=True,
+        required=False,
+        allow_null=True
+    )
 
     class Meta:
         model = Emplacement
         fields = [
             'id_emplacement', 'code_emplacement', 'zone', 'type_emplacement',
             'statut', 'actif', 'cree_le', 'mise_a_jour_le',
-            'id_entrepot', 'id_entrepot_id', 'id_niveau', 'id_niveau_id'
+            'id_entrepot', 'id_entrepot_id', 'id_niveau', 'id_niveau_id',
+            'id_niveau_picking', 'id_niveau_picking_id'
         ]
         read_only_fields = ['cree_le', 'mise_a_jour_le']
 
@@ -97,6 +154,30 @@ class StockSerializer(serializers.ModelSerializer):
             'id_produit', 'id_produit_id', 'id_emplacement', 'id_emplacement_id'
         ]
         read_only_fields = ['mise_a_jour_le']
+
+
+class VrackSerializer(serializers.ModelSerializer):
+    """Vrack Storage serializer"""
+    id_produit = ProduitSerializer(read_only=True)
+    id_produit_id = serializers.PrimaryKeyRelatedField(
+        queryset=Produit.objects.all(),
+        source='id_produit',
+        write_only=True
+    )
+    id_entrepot = EntrepotSerializer(read_only=True)
+    id_entrepot_id = serializers.PrimaryKeyRelatedField(
+        queryset=Entrepot.objects.all(),
+        source='id_entrepot',
+        write_only=True
+    )
+
+    class Meta:
+        model = Vrack
+        fields = [
+            'id_vrack', 'id_entrepot', 'id_entrepot_id', 
+            'id_produit', 'id_produit_id', 'quantite', 'mise_a_jour_le'
+        ]
+        read_only_fields = ['id_vrack', 'mise_a_jour_le']
 
 
 class MouvementStockSerializer(serializers.ModelSerializer):

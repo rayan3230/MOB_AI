@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db.models import Sum, Q
 from django.utils import timezone
 
@@ -46,7 +46,7 @@ class ProduitViewSet(viewsets.ModelViewSet):
     queryset = Produit.objects.all()
     serializer_class = ProduitSerializer
     lookup_field = 'id_produit'
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     # -----------------------------------------------------------------------
     # CREATE OPERATIONS
@@ -127,13 +127,22 @@ class ProduitViewSet(viewsets.ModelViewSet):
         """
         GET /produits/
         List all SKUs
-        Query params: actif (true/false)
+        Query params: actif (true/false), search (SKU or Name)
         """
+        queryset = self.get_queryset()
         actif = request.query_params.get('actif')
-        if actif is not None:
-            self.queryset = self.queryset.filter(actif=actif.lower() == 'true')
+        search = request.query_params.get('search')
 
-        return super().list(request, *args, **kwargs)
+        if actif is not None:
+            queryset = queryset.filter(actif=actif.lower() == 'true')
+        
+        if search:
+            queryset = queryset.filter(
+                Q(sku__icontains=search) | Q(nom_produit__icontains=search)
+            )
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -162,6 +171,25 @@ class ProduitViewSet(viewsets.ModelViewSet):
         barcodes = CodeBarresProduit.objects.filter(id_produit=produit)
         serializer = CodeBarresProduitSerializer(barcodes, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def vrack_info(self, request, id_produit=None):
+        """
+        GET /produits/{id}/vrack_info/
+        Get Vrack quantities across all warehouses for this product
+        """
+        produit = self.get_object()
+        vracks = produit.vracks.all()
+        data = []
+        for v in vracks:
+            data.append({
+                'id_vrack': v.id_vrack,
+                'id_entrepot': v.id_entrepot_id,
+                'nom_entrepot': v.id_entrepot.nom_entrepot,
+                'quantite': v.quantite,
+                'mise_a_jour_le': v.mise_a_jour_le
+            })
+        return Response(data)
 
     @action(detail=True, methods=['get'])
     def demand_history(self, request, id_produit=None):

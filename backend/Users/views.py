@@ -49,7 +49,7 @@ def user_list_create(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
 @permission_classes([AllowAny])
 def user_detail(request, pk):
     try:
@@ -61,7 +61,7 @@ def user_detail(request, pk):
         serializer = UtilisateurSerializer(user)
         return Response(serializer.data)
 
-    elif request.method == 'PUT':
+    elif request.method in ['PUT', 'PATCH']:
         serializer = UtilisateurSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()

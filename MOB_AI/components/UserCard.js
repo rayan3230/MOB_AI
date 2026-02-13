@@ -19,7 +19,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const UserCard = ({ user, currentUserRole, onToggleStatus, onEdit }) => {
+const UserCard = ({ user, currentUserRole, onToggleStatus, onEdit, onDelete }) => {
   const [expanded, setExpanded] = useState(false);
   const animation = useRef(new Animated.Value(0)).current;
 
@@ -154,7 +154,7 @@ const UserCard = ({ user, currentUserRole, onToggleStatus, onEdit }) => {
                 onPress={() => onEdit(user)}
               >
                 <Feather name="edit-2" size={16} color="#00a3ff" />
-                <Text style={styles.editButtonText}>Edit Profile</Text>
+                <Text style={styles.editButtonText}>Edit</Text>
               </TouchableOpacity>
 
               {canBan() && (
@@ -167,11 +167,15 @@ const UserCard = ({ user, currentUserRole, onToggleStatus, onEdit }) => {
                     size={16} 
                     color="#FFF" 
                   />
-                  <Text style={styles.banButtonText}>
-                    {user.is_banned ? "Unban User" : "Ban User"}
-                  </Text>
                 </TouchableOpacity>
               )}
+
+              <TouchableOpacity 
+                style={styles.deleteButton} 
+                onPress={() => onDelete(user)}
+              >
+                <Feather name="trash-2" size={16} color="#FF3B30" />
+              </TouchableOpacity>
             </View>
           </View>
         )}
@@ -330,11 +334,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   banButton: {
-    flex: 1,
+    width: 50,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FF3B30',
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  deleteButton: {
+    width: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFE5E5',
     paddingVertical: 12,
     borderRadius: 12,
   },
