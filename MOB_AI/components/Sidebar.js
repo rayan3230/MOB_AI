@@ -122,7 +122,7 @@ const Sidebar = ({ role, user, activePage = 'User_managment', onNavigate, onClos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     paddingTop: 60,
     borderRightWidth: 1,
     borderRightColor: '#f0f0f0',

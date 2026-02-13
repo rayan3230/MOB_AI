@@ -19,6 +19,7 @@ import { COLORS } from '../../../constants/theme.js';
 import { authService } from '../../../services/authService';
 import Logo from '../../../components/Logo';
 import { useNavigation } from '@react-navigation/native';
+import { Alert } from 'react-native';
 
 const Signin = () => {
   const navigation = useNavigation();
@@ -66,8 +67,16 @@ const Signin = () => {
       
     } catch (err) {
       console.error('Auth error:', err);
-      const errorMsg = err.non_field_errors?.[0] || err.detail || 'Authentication failed';
-      setError(errorMsg);
+      if (err.banned) {
+        Alert.alert(
+          "Access Denied",
+          err.banned,
+          [{ text: "OK" }]
+        );
+      } else {
+        const errorMsg = err.non_field_errors?.[0] || err.detail || 'Authentication failed';
+        setError(errorMsg);
+      }
     } finally {
       setLoading(false);
     }

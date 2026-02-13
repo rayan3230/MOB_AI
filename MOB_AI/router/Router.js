@@ -161,7 +161,7 @@ const RoleDashboardLayout = ({ role, navigation, route }) => {
         <SafeAreaView style={styles.topSection}>
             <View style={{ paddingHorizontal: 25, paddingVertical: 10 }}>
                 <Text style={styles.roleLabel}>{role?.toUpperCase()}</Text>
-                <Text style={styles.dashboardTitle}>{activePage}</Text>
+                <Text style={styles.dashboardTitle}>{activePage.replace(/_/g, ' ')}</Text>
             </View>
         </SafeAreaView>
 
