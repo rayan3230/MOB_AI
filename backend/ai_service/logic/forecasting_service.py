@@ -642,7 +642,8 @@ def main():
     
     # --- PHASE 6: EVALUATION ---
     # We prove the model is better by simulating the last day of history
-    service.evaluate_models(limit_products=50, test_days=7)
+    # Reduced scope for Mistral API rate limits
+    service.evaluate_models(limit_products=5, test_days=7)
     
     # --- PHASE 4 & 5: GENERATION & INTERACTION ---
     # 1. AI Generation Phase

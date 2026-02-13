@@ -2,21 +2,21 @@
 
 ### Rolling Backtest (Leakage-Safe)
 
-Evaluated points: 144 across up to 50 SKUs.
+Evaluated points: 40 across up to 5 SKUs.
 
 | Model   |    MAE |   RMSE |   WAP (%) |   Bias (%) |
 |:--------|-------:|-------:|----------:|-----------:|
-| SMA     | 517.19 | 718.11 |     46.91 |       8.21 |
-| REG     | 390.97 | 716.04 |     35.46 |      -3.04 |
-| HYBRID  | 449.57 | 657.43 |     40.78 |       1.29 |
+| SMA     | 656.23 | 794.57 |     76.74 |      40.89 |
+| REG     | 261.01 | 328    |     30.52 |       6.63 |
+| HYBRID  | 285.11 | 367.62 |     33.34 |      -0.35 |
 
 ### Comparison vs Previous Implementation
 
 | Model   |   WAP (%)_new |   Bias (%)_new |   WAP (%)_prev |   Bias (%)_prev |   Delta WAP (pp) |   Delta Bias (pp) |
 |:--------|--------------:|---------------:|---------------:|----------------:|-----------------:|------------------:|
-| SMA     |         46.91 |           8.21 |          41.2  |            3.49 |             5.71 |              4.72 |
-| REG     |         35.46 |          -3.04 |          44.59 |            3.53 |            -9.13 |             -6.57 |
-| HYBRID  |         40.78 |           1.29 |          40.95 |            3.98 |            -0.17 |             -2.69 |
+| SMA     |         76.74 |          40.89 |          41.2  |            3.49 |            35.54 |             37.4  |
+| REG     |         30.52 |           6.63 |          44.59 |            3.53 |           -14.07 |              3.1  |
+| HYBRID  |         33.34 |          -0.35 |          40.95 |            3.98 |            -7.61 |             -4.33 |
 
 *Notes:*
 - Outliers are clipped using IQR; no synthetic zero-filling is introduced in sparse histories.

@@ -3157,3 +3157,780 @@ Final Items Sent to Warehouse:
   31348     61.23            61.23              0           Trend significant: calibrated regression selected (deterministic gate).                   NaN               NaN                                                                   NaN         NaN
   31352     47.67            47.67              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
   31353    124.00           124.00              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 19:18:37,949 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 19:18:37,949 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 19:18:52,856 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 19:18:53,070 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 19:19:35,409 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 19:19:35,411 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 19:19:49,144 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 19:19:49,348 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 19:37:39,797 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 19:37:59,219 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 19:37:59,432 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 19:37:59,434 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 19:38:00,365 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:00,369 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 195.02 > 149.48571428571427. Clipping.
+2026-02-13 19:38:01,061 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:01,064 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 172.0 > 122.05714285714285. Clipping.
+2026-02-13 19:38:01,820 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:01,822 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 159.0 > 97.45496861843237. Clipping.
+2026-02-13 19:38:02,455 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:02,457 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 137.0 > 96.71413803689207. Clipping.
+2026-02-13 19:38:03,249 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:03,251 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 120.0 > 96.33828172806916. Clipping.
+2026-02-13 19:38:04,357 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:04,360 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 120.0 > 95.391757470836. Clipping.
+2026-02-13 19:38:05,042 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:05,671 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:06,385 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:06,387 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 192.09 > 146.74285714285713. Clipping.
+2026-02-13 19:38:07,021 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:07,024 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 196.0 > 152.22857142857143. Clipping.
+2026-02-13 19:38:07,642 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:08,352 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:09,062 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:09,065 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 120.0 > 98.51959989639391. Clipping.
+2026-02-13 19:38:09,717 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:09,719 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 100.0 > 97.44248504791032. Clipping.
+2026-02-13 19:38:10,431 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:11,143 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:11,146 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 143.0 > 99.64810628329873. Clipping.
+2026-02-13 19:38:14,995 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:15,604 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:16,476 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:16,478 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 198.0 > 131.90919680424207. Clipping.
+2026-02-13 19:38:17,644 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:17,646 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 160.0 > 130.5113162554094. Clipping.
+2026-02-13 19:38:18,402 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:19,136 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:19,793 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:20,414 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:20,416 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 180.0 > 130.8917285225575. Clipping.
+2026-02-13 19:38:21,171 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:21,833 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:22,477 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:22,479 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 80.0 > 53.67631765991491. Clipping.
+2026-02-13 19:38:23,410 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:24,185 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:24,965 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:26,629 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:26,631 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 123.18 > 103.45226586595646. Clipping.
+2026-02-13 19:38:27,864 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:27,867 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 137.13 > 117.6439728128717. Clipping.
+2026-02-13 19:38:28,637 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:28,639 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 412.61 > 336.0. Clipping.
+2026-02-13 19:38:29,293 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:29,296 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 300.0 > 272.1428571428571. Clipping.
+2026-02-13 19:38:30,092 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:30,095 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 392.36 > 293.1428571428571. Clipping.
+2026-02-13 19:38:30,857 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:30,859 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 248.0 > 230.14285714285714. Clipping.
+2026-02-13 19:38:31,453 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:32,300 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:33,328 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:33,330 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 292.88 > 190.2857142857143. Clipping.
+2026-02-13 19:38:33,948 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:34,932 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:34,938 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 39.0 > 36.01726488309831. Clipping.
+2026-02-13 19:38:38,364 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:38,979 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:38,980 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 40.0 > 31.285714285714285. Clipping.
+2026-02-13 19:38:39,705 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:40,667 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:41,460 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:42,056 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:42,058 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 80.0 > 60.51727160256749. Clipping.
+2026-02-13 19:38:42,644 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:42,647 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 70.0 > 68.63228252833956. Clipping.
+2026-02-13 19:38:43,393 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:44,183 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:44,185 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 277.0 > 181.00714285714287. Clipping.
+2026-02-13 19:38:44,868 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:46,115 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:46,117 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 383.0 > 321.92242723146256. Clipping.
+2026-02-13 19:38:47,023 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:47,026 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 426.32 > 380.98177482331323. Clipping.
+2026-02-13 19:38:47,791 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:47,793 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 373.7 > 282.1607142857143. Clipping.
+2026-02-13 19:38:48,628 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:48,631 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 250.0 > 243.77142857142854. Clipping.
+2026-02-13 19:38:49,320 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:49,321 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 375.0 > 283.1892857142857. Clipping.
+2026-02-13 19:38:50,401 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:50,403 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 289.0 > 209.3726742255325. Clipping.
+2026-02-13 19:38:51,050 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:51,655 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:52,254 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:38:52,417 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:52,418 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:52,590 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:52,591 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:52,782 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:52,783 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:52,971 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:52,972 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:53,151 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:53,151 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:53,313 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:53,314 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:53,485 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:53,486 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:53,673 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:53,674 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:53,873 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:53,874 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:54,065 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:54,065 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:54,467 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:54,468 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:54,631 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:54,632 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:54,788 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:54,789 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:54,981 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:54,982 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:55,153 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:55,154 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:55,315 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:55,316 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:55,476 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:55,477 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:55,650 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:55,651 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:55,832 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:55,833 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:56,014 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:56,015 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:56,202 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:56,202 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:56,363 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:56,363 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:56,531 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:56,532 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:56,716 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:56,717 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:56,892 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:56,893 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:57,103 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:57,104 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:57,265 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:57,266 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:57,431 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:57,432 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:57,599 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:57,600 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:57,779 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:57,780 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:58,258 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:58,259 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:58,428 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:58,429 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:58,638 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:58,639 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:58,827 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:58,829 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:59,012 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:59,013 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:59,191 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:59,192 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:59,365 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:59,366 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:59,559 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:59,560 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:38:59,817 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:38:59,818 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:00,412 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:00,651 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:00,652 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:00,838 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:00,840 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:01,480 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:01,482 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 419.45 > 347.8347318324542. Clipping.
+2026-02-13 19:39:01,651 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:01,651 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:01,830 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:01,831 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:02,530 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:02,532 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 505.07 > 394.3181228029965. Clipping.
+2026-02-13 19:39:02,701 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:02,702 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:03,943 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:03,945 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 407.0 > 284.5178571428571. Clipping.
+2026-02-13 19:39:05,149 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:05,152 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 492.67 > 372.046682006625. Clipping.
+2026-02-13 19:39:06,043 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:06,046 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 503.0 > 408.81189522519963. Clipping.
+2026-02-13 19:39:06,822 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:06,824 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 390.0 > 377.8639475068572. Clipping.
+2026-02-13 19:39:07,462 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:07,629 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:07,630 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:07,809 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:07,810 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:08,643 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:08,822 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:08,822 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:11,588 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:11,591 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 121.0 < 234.38841673800516. Clipping.
+2026-02-13 19:39:12,418 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:12,421 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 200.0 < 234.04775573252974. Clipping.
+2026-02-13 19:39:13,106 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:13,110 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 375.0 > 259.92857142857144. Clipping.
+2026-02-13 19:39:13,973 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:13,979 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 348.17 > 229.5. Clipping.
+2026-02-13 19:39:14,686 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:14,690 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 220.0 > 204.75. Clipping.
+2026-02-13 19:39:15,637 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:15,639 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 234.0 > 221.67857142857142. Clipping.
+2026-02-13 19:39:16,322 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:16,348 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 390.0 > 295.85484908301436. Clipping.
+2026-02-13 19:39:16,954 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:18,532 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:18,534 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 383.87 > 290.4720913201841. Clipping.
+2026-02-13 19:39:19,322 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:19,324 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 390.0 > 289.60685935811966. Clipping.
+2026-02-13 19:39:19,918 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:19,920 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 442.95 > 364.6444585827778. Clipping.
+2026-02-13 19:39:21,077 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:22,025 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:22,027 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 300.0 > 264.85714285714283. Clipping.
+2026-02-13 19:39:22,693 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:23,583 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:23,846 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:23,848 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:24,444 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:24,621 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:24,622 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:24,832 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:24,833 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:25,736 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:26,568 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:26,749 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:26,750 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:29,713 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:29,716 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 158.0 > 100.46509926228318. Clipping.
+2026-02-13 19:39:30,373 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:30,376 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 157.0 > 98.36760431126851. Clipping.
+2026-02-13 19:39:31,422 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:31,424 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 160.0 > 104.47672546174594. Clipping.
+2026-02-13 19:39:32,466 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:33,297 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:34,016 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:34,018 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 165.0 > 108.0. Clipping.
+2026-02-13 19:39:34,037 - ForecastingService - INFO - 
+========================================
+2026-02-13 19:39:34,037 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 19:39:34,038 - ForecastingService - INFO - ========================================
+2026-02-13 19:39:34,060 - ForecastingService - INFO - 
+ Model    MAE   RMSE  WAP (%)  Bias (%)
+   SMA 517.19 718.11    46.91      8.21
+   REG 390.97 716.04    35.46     -3.04
+HYBRID 431.07 637.83    39.10      3.35
+2026-02-13 19:39:34,060 - ForecastingService - INFO - ========================================
+2026-02-13 19:39:34,219 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 19:39:34,297 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 19:39:34,301 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 19:39:35,379 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:35,381 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 152.0 > 96.49300926187927. Clipping.
+2026-02-13 19:39:35,381 - ForecastingService - INFO - Product 31334 | WMA: 75.50 | SES: 65.47 | Reg: 80.41
+2026-02-13 19:39:35,381 - ForecastingService - INFO - Decision: 96.49 | Reason: [CLIPPED] High volatility (0.00) suggests significant fluctuation; adding safety stock buffer (71.76) to the higher of the two forecasts (regression: 80.41). Final forecast adjusted to 80.41 + 71.76 = 152.
+2026-02-13 19:39:36,057 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:36,060 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 155.0 > 101.57142857142857. Clipping.
+2026-02-13 19:39:36,060 - ForecastingService - INFO - Product 31335 | WMA: 84.64 | SES: 77.65 | Reg: 84.33
+2026-02-13 19:39:36,060 - ForecastingService - INFO - Decision: 101.57 | Reason: [CLIPPED] High volatility (0.00) indicates significant fluctuation; adding safety buffer of ~70 to SMA (84.64) to mitigate risk, resulting in a conservative forecast of 155.
+2026-02-13 19:39:36,833 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:36,850 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 254.0 > 184.37142857142857. Clipping.
+2026-02-13 19:39:36,851 - ForecastingService - INFO - Product 31336 | WMA: 153.64 | SES: 138.53 | Reg: 114.48
+2026-02-13 19:39:36,856 - ForecastingService - INFO - Decision: 184.37 | Reason: [CLIPPED] High volatility (0.00) and stable trend (0.0000) suggest using SMA as base (153.64) but adding safety buffer (100.63) to account for fluctuations, resulting in a conservative forecast of 254.
+2026-02-13 19:39:37,634 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:37,636 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 108.0 > 88.67574264687188. Clipping.
+2026-02-13 19:39:37,636 - ForecastingService - INFO - Product 31337 | WMA: 64.71 | SES: 73.90 | Reg: 53.39
+2026-02-13 19:39:37,636 - ForecastingService - INFO - Decision: 88.68 | Reason: [CLIPPED] High volatility (0.00) suggests significant fluctuation; adding safety stock buffer (47.47) to the higher SMA forecast (64.71) to mitigate risk. Trend is stable (0.0000), so no adjustment for trend.
+2026-02-13 19:39:38,479 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:38,481 - ForecastingService - INFO - Product 31338 | WMA: 73.00 | SES: 69.69 | Reg: 152.22
+2026-02-13 19:39:38,481 - ForecastingService - INFO - Decision: 125.0 | Reason: High volatility (0.00) suggests significant fluctuation; SMA (73.00) is conservative but may underestimate peak demand. Regression (152.22) accounts for potential growth, but trend slope (0.00) indicates stability. Applied a moderate buffer (~25% of SMA) to mitigate volatility risk, balancing over/under-forecasting.
+2026-02-13 19:39:39,601 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:39,603 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 108.0 > 83.60466326591988. Clipping.
+2026-02-13 19:39:39,603 - ForecastingService - INFO - Product 31339 | WMA: 65.18 | SES: 69.67 | Reg: 42.39
+2026-02-13 19:39:39,604 - ForecastingService - INFO - Decision: 83.6 | Reason: [CLIPPED] High volatility (0.00) and stable trend (0.0000) suggest incorporating safety stock (42.74) into the higher of the two forecasts (SMA: 65.18 vs. Regression: 42.39). Added buffer of 42.74 to SMA forecast (65.18 + 42.74 = 107.92, rounded to 108).
+2026-02-13 19:39:40,184 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:40,186 - ForecastingService - INFO - Product 31340 | WMA: 4.12 | SES: 3.65 | Reg: 3.01
+2026-02-13 19:39:40,187 - ForecastingService - INFO - Decision: 4.12 | Reason: Demand is stable with no trend (slope: 0.00) and zero volatility. Preferring the SMA forecast of 4.12.
+2026-02-13 19:39:40,804 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:40,808 - ForecastingService - INFO - Product 31341 | WMA: 42.86 | SES: 41.06 | Reg: 47.46
+2026-02-13 19:39:40,811 - ForecastingService - INFO - Decision: 50.0 | Reason: High volatility (0.00) suggests significant fluctuation; adjusted regression forecast (47.46) upward by 2.54 to account for safety buffer, resulting in a final forecast of 50.
+2026-02-13 19:39:41,476 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:41,478 - ForecastingService - INFO - Product 31342 | WMA: 141.54 | SES: 137.77 | Reg: 152.22
+2026-02-13 19:39:41,478 - ForecastingService - INFO - Decision: 170.0 | Reason: High volatility (0.00) suggests significant fluctuation; added safety buffer to SMA (141.54) and regression (152.22) forecasts, preferring regression due to stable trend but accounting for volatility.
+2026-02-13 19:39:41,661 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:41,662 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:41,662 - ForecastingService - INFO - Product 31343 | WMA: 123.68 | SES: 116.24 | Reg: 117.03
+2026-02-13 19:39:41,662 - ForecastingService - INFO - Decision: 146.9 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 19:39:41,832 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:41,832 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:41,833 - ForecastingService - INFO - Product 31344 | WMA: 130.89 | SES: 139.53 | Reg: 107.77
+2026-02-13 19:39:41,833 - ForecastingService - INFO - Decision: 169.81 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 19:39:42,501 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:42,506 - ForecastingService - INFO - Product 31347 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 19:39:42,506 - ForecastingService - INFO - Decision: 100.0 | Reason: Demand is stable with no trend (slope: 0.00) and zero volatility. SMA forecast aligns with regression, so no adjustment is needed.
+2026-02-13 19:39:42,687 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:42,688 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:42,689 - ForecastingService - INFO - Product 31348 | WMA: 82.21 | SES: 81.30 | Reg: 58.88
+2026-02-13 19:39:42,689 - ForecastingService - INFO - Decision: 61.23 | Reason: Trend significant: calibrated regression selected (deterministic gate).
+2026-02-13 19:39:43,389 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:43,392 - ForecastingService - INFO - Product 31349 | WMA: 189.73 | SES: 186.84 | Reg: 179.43
+2026-02-13 19:39:43,392 - ForecastingService - INFO - Decision: 220.0 | Reason: High volatility (0.00) suggests significant fluctuation; added safety buffer (~30 units) to the SMA forecast (189.73) to account for uncertainty. Trend is stable, so regression (179.43) is not prioritized.
+2026-02-13 19:39:43,574 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:43,574 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:43,575 - ForecastingService - INFO - Product 31350 | WMA: 77.25 | SES: 85.17 | Reg: 38.79
+2026-02-13 19:39:43,575 - ForecastingService - INFO - Decision: 40.34 | Reason: Trend significant: calibrated regression selected (deterministic gate).
+2026-02-13 19:39:43,795 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:43,796 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:43,796 - ForecastingService - INFO - Product 31351 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 19:39:43,796 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 19:39:44,578 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:44,580 - ForecastingService - INFO - Product 31352 | WMA: 37.09 | SES: 39.03 | Reg: 29.53
+2026-02-13 19:39:44,581 - ForecastingService - INFO - Decision: 45.0 | Reason: High volatility (0.00 fluctuation) suggests significant demand unpredictability. While the trend is stable, the SMA forecast (37.09) is higher than regression (29.53). Adding a safety buffer to the SMA forecast accounts for volatility, resulting in a final forecast of 45.
+2026-02-13 19:39:44,750 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2026-02-13 19:39:44,750 - DecisionLayer - ERROR - Mistral API Error: API error occurred: Status 429. Body: {"object":"error","message":"Rate limit exceeded","type":"rate_limited","param":null,"code":"1300"}
+2026-02-13 19:39:44,750 - ForecastingService - INFO - Product 31353 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 19:39:44,751 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 19:39:47,955 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:47,961 - ForecastingService - INFO - Product 31354 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 19:39:47,961 - ForecastingService - INFO - Decision: 100.0 | Reason: Demand is stable with no trend (slope: 0.00) and zero volatility. SMA forecast aligns with regression, so no adjustment needed.
+2026-02-13 19:39:48,801 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:39:48,804 - ForecastingService - INFO - Product 31355 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 19:39:48,804 - ForecastingService - INFO - Decision: 100.0 | Reason: Demand is stable with no trend (slope: 0.00) and zero volatility. SMA forecast aligns with regression, so no adjustment is needed.
+2026-02-13 19:39:48,805 - ForecastingService - INFO - 
+==================================================
+2026-02-13 19:39:48,806 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 19:39:48,806 - ForecastingService - INFO - ==================================================
+2026-02-13 19:39:48,806 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-3D129D55
+2026-02-13 19:39:48,808 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 19:39:48,811 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    101.57           101.57              0
+  31336    184.37           184.37              0
+  31342    170.00           170.00              0
+  31344    169.81           169.81              0
+  31348     61.23            61.23              0
+  31352     45.00            45.00              0
+  31353    124.00           124.00              0
+2026-02-13 19:39:48,812 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 19:39:48,812 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-3D129D55 | SKU: 31335 | Changed from 101.57 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 19:39:48,812 - ForecastingService - INFO - ORDER PREP-3D129D55 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 19:39:48,813 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 19:39:48,813 - ForecastingService - INFO - Order ID: PREP-3D129D55
+2026-02-13 19:39:48,813 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 19:39:48,819 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                                                                                                                                                                                                                        reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           101.57              0                                                                                                    [CLIPPED] High volatility (0.00) indicates significant fluctuation; adding safety buffer of ~70 to SMA (84.64) to mitigate risk, resulting in a conservative forecast of 155.                101.57              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    184.37           184.37              0                                                                        [CLIPPED] High volatility (0.00) and stable trend (0.0000) suggest using SMA as base (153.64) but adding safety buffer (100.63) to account for fluctuations, resulting in a conservative forecast of 254.                   NaN               NaN                                                                   NaN         NaN
+  31342    170.00           170.00              0                                                                         High volatility (0.00) suggests significant fluctuation; added safety buffer to SMA (141.54) and regression (152.22) forecasts, preferring regression due to stable trend but accounting for volatility.                   NaN               NaN                                                                   NaN         NaN
+  31344    169.81           169.81              0                                                                                                                                                                                                Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31348     61.23            61.23              0                                                                                                                                                                                                          Trend significant: calibrated regression selected (deterministic gate).                   NaN               NaN                                                                   NaN         NaN
+  31352     45.00            45.00              0 High volatility (0.00 fluctuation) suggests significant demand unpredictability. While the trend is stable, the SMA forecast (37.09) is higher than regression (29.53). Adding a safety buffer to the SMA forecast accounts for volatility, resulting in a final forecast of 45.                   NaN               NaN                                                                   NaN         NaN
+  31353    124.00           124.00              0                                                                                                                                                                                                Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 19:39:56,331 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 19:40:16,242 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 19:40:16,458 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 19:40:17,601 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:17,604 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 3315.71 < 5644.469063627258. Clipping.
+2026-02-13 19:40:18,555 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:18,557 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 5300.0 < 5667.821495437284. Clipping.
+2026-02-13 19:40:19,461 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:19,463 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 11664.25 > 8485.641495038273. Clipping.
+2026-02-13 19:40:20,227 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:20,229 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 5300.0 < 5631.277074890644. Clipping.
+2026-02-13 19:40:21,178 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:21,180 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 5315.0 < 5594.4477436426005. Clipping.
+2026-02-13 19:40:22,078 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:22,080 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 4314.1 < 5574.276836458422. Clipping.
+2026-02-13 19:40:22,935 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:22,937 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 3341.09 < 5533.854919733472. Clipping.
+2026-02-13 19:40:26,045 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:26,047 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 5328.82 < 5535.848087851866. Clipping.
+2026-02-13 19:40:27,070 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:27,072 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 4239.06 < 5515.812268559611. Clipping.
+2026-02-13 19:40:27,711 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:27,713 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 4347.26 < 5498.470909692198. Clipping.
+2026-02-13 19:40:28,589 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:28,592 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 4341.18 < 5477.396572425458. Clipping.
+2026-02-13 19:40:29,435 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:29,438 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 3621.0 < 5441.616707882077. Clipping.
+2026-02-13 19:40:30,299 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:30,301 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 4200.0 < 5417.180002221935. Clipping.
+2026-02-13 19:40:31,323 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:31,325 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 3117.18 < 5387.286694668608. Clipping.
+2026-02-13 19:40:32,364 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:32,366 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 4500.0 < 5383.400464126883. Clipping.
+2026-02-13 19:40:33,237 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:33,239 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 3337.88 < 5347.296590118909. Clipping.
+2026-02-13 19:40:34,272 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:35,193 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:35,194 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 15114.11 > 12013.4087069391. Clipping.
+2026-02-13 19:40:35,999 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:36,001 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 13649.8 > 8485.714285714286. Clipping.
+2026-02-13 19:40:36,653 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:36,655 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 14302.94 > 9287.142857142857. Clipping.
+2026-02-13 19:40:37,500 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:37,502 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 16929.42 > 13012.942366143152. Clipping.
+2026-02-13 19:40:38,462 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:39,230 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:39,233 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 2019.0 < 3187.144265892504. Clipping.
+2026-02-13 19:40:39,975 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:39,976 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 6030.61 > 4811.049149183092. Clipping.
+2026-02-13 19:40:40,648 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:41,487 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:41,490 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 6618.56 > 4772.121277616316. Clipping.
+2026-02-13 19:40:42,526 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:42,527 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 6500.0 > 4756.206505854764. Clipping.
+2026-02-13 19:40:43,439 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:43,442 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 2388.0 < 3148.940937489666. Clipping.
+2026-02-13 19:40:44,331 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:44,334 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 2000.0 < 3129.837102262544. Clipping.
+2026-02-13 19:40:45,647 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:46,387 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:47,111 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:48,200 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:48,950 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:49,812 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:49,814 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 2366.74 < 3074.3546511688955. Clipping.
+2026-02-13 19:40:50,604 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:51,549 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:52,310 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:52,313 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 7390.14 > 4665.294947220253. Clipping.
+2026-02-13 19:40:53,157 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:53,159 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 9571.32 > 7925.441715693163. Clipping.
+2026-02-13 19:40:53,980 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:53,982 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 8698.0 > 5768.571428571428. Clipping.
+2026-02-13 19:40:54,907 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:55,634 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:55,637 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 11913.77 > 10031.574431172236. Clipping.
+2026-02-13 19:40:56,790 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:58,017 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:40:58,020 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 6809.0 > 4835.320571033731. Clipping.
+2026-02-13 19:40:58,769 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:00,007 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:00,760 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:01,658 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:02,493 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:02,496 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 2080.68 < 2428.258441354456. Clipping.
+2026-02-13 19:41:03,477 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:03,479 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 1721.51 < 2412.338743512932. Clipping.
+2026-02-13 19:41:04,336 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:04,339 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 1358.87 < 2393.877681846896. Clipping.
+2026-02-13 19:41:05,107 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:05,109 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 1303.8 < 2373.4484081626188. Clipping.
+2026-02-13 19:41:05,762 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:06,421 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:09,878 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:09,881 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 7623.86 > 5850.307266985307. Clipping.
+2026-02-13 19:41:10,724 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:11,576 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:12,179 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:13,058 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:13,950 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:14,716 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:14,718 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 9000.0 > 7953.297425878907. Clipping.
+2026-02-13 19:41:15,811 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:15,814 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 9315.51 > 7857.6433268212895. Clipping.
+2026-02-13 19:41:16,548 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:41:16,551 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 9226.34 > 7302.857142857142. Clipping.
+2026-02-13 19:41:49,453 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 19:42:08,064 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 19:42:08,331 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 19:42:08,333 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 19:42:09,817 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:09,819 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 195.0 > 149.48571428571427. Clipping.
+2026-02-13 19:42:11,055 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:11,056 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 172.0 > 122.05714285714285. Clipping.
+2026-02-13 19:42:12,303 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:12,305 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 159.0 > 97.45496861843237. Clipping.
+2026-02-13 19:42:13,563 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:13,565 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 137.0 > 96.71413803689207. Clipping.
+2026-02-13 19:42:15,819 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:22,721 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:22,724 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 120.0 > 95.391757470836. Clipping.
+2026-02-13 19:42:23,844 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:25,464 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:26,613 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:26,614 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 150.0 > 146.74285714285713. Clipping.
+2026-02-13 19:42:27,760 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:27,762 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 196.71 > 152.22857142857143. Clipping.
+2026-02-13 19:42:28,915 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:29,981 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:31,072 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:31,074 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 120.0 > 98.51959989639391. Clipping.
+2026-02-13 19:42:32,427 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:32,429 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 100.0 > 97.44248504791032. Clipping.
+2026-02-13 19:42:33,658 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:34,838 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:34,842 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 100.0 > 99.64810628329873. Clipping.
+2026-02-13 19:42:36,069 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:36,072 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 200.0 > 183.77142857142857. Clipping.
+2026-02-13 19:42:37,224 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:38,811 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:38,813 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 198.0 > 131.90919680424207. Clipping.
+2026-02-13 19:42:40,040 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:40,043 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 160.0 > 130.5113162554094. Clipping.
+2026-02-13 19:42:43,210 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:43,212 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 212.0 > 162.8386330151262. Clipping.
+2026-02-13 19:42:44,421 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:45,871 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:47,237 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:47,239 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 180.0 > 130.8917285225575. Clipping.
+2026-02-13 19:42:48,667 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:50,100 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:50,102 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 80.0 > 53.86552679634578. Clipping.
+2026-02-13 19:42:51,375 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:51,377 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 80.0 > 53.67631765991491. Clipping.
+2026-02-13 19:42:53,474 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:55,315 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:56,497 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:58,108 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:58,110 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 123.18 > 103.45226586595646. Clipping.
+2026-02-13 19:42:59,449 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:42:59,452 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 138.0 > 117.6439728128717. Clipping.
+2026-02-13 19:43:00,772 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:00,774 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 412.83 > 336.0. Clipping.
+2026-02-13 19:43:02,156 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:03,766 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:03,768 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 392.36 > 293.1428571428571. Clipping.
+2026-02-13 19:43:04,891 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:04,895 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 248.0 > 230.14285714285714. Clipping.
+2026-02-13 19:43:05,989 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:07,320 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:08,596 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:08,598 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 193.0 > 190.2857142857143. Clipping.
+2026-02-13 19:43:10,072 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:10,080 - ForecastingService - INFO - 
+========================================
+2026-02-13 19:43:10,080 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 19:43:10,080 - ForecastingService - INFO - ========================================
+2026-02-13 19:43:10,084 - ForecastingService - INFO - 
+ Model    MAE   RMSE  WAP (%)  Bias (%)
+   SMA 656.23 794.57    76.74     40.89
+   REG 261.01 328.00    30.52      6.63
+HYBRID 406.03 490.11    47.48      8.44
+2026-02-13 19:43:10,085 - ForecastingService - INFO - ========================================
+2026-02-13 19:43:10,103 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 19:43:10,151 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 19:43:10,154 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 19:43:11,691 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:11,694 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 157.0 > 96.49300926187927. Clipping.
+2026-02-13 19:43:11,694 - ForecastingService - INFO - Product 31334 | WMA: 75.50 | SES: 65.47 | Reg: 80.41
+2026-02-13 19:43:11,696 - ForecastingService - INFO - Decision: 96.49 | Reason: [CLIPPED] High volatility (0.00 indicates high fluctuation) and stable trend (0.0000 slope) suggest adding a safety buffer to the SMA forecast. Using safety stock (71.76) as buffer: 75.50 + 71.76 = 147.26, rounded up to 157 for safety.
+2026-02-13 19:43:13,493 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:13,495 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 155.0 > 101.57142857142857. Clipping.
+2026-02-13 19:43:13,495 - ForecastingService - INFO - Product 31335 | WMA: 84.64 | SES: 77.65 | Reg: 84.33
+2026-02-13 19:43:14,672 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:14,674 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 200.0 > 184.37142857142857. Clipping.
+2026-02-13 19:43:14,674 - ForecastingService - INFO - Product 31336 | WMA: 153.64 | SES: 138.53 | Reg: 114.48
+2026-02-13 19:43:14,674 - ForecastingService - INFO - Decision: 184.37 | Reason: [CLIPPED] High volatility (0.00) indicates significant fluctuation; added safety buffer to SMA forecast (153.64) to mitigate risk, resulting in a conservative increase.
+2026-02-13 19:43:15,917 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:15,921 - ForecastingService - INFO - Product 31337 | WMA: 64.71 | SES: 73.90 | Reg: 53.39
+2026-02-13 19:43:15,921 - ForecastingService - INFO - Decision: 70.0 | Reason: High volatility (0.00) and stable trend (0.0000) suggest incorporating a safety buffer. Using SMA (64.71) as base and adding safety stock (47.47) adjusted for volatility, rounded to 70.0.
+2026-02-13 19:43:17,562 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:17,565 - ForecastingService - INFO - Product 31338 | WMA: 73.00 | SES: 69.69 | Reg: 152.22
+2026-02-13 19:43:17,565 - ForecastingService - INFO - Decision: 125.0 | Reason: High volatility (0.00) suggests significant fluctuation; SMA (73.00) is conservative but may underestimate peak demand. Regression (152.22) accounts for potential growth, but trend is stable (0.0000). Applied a moderate buffer (~25% of SMA) to balance risk, resulting in a forecast between both methods.
+2026-02-13 19:43:19,199 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:19,201 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 108.0 > 83.60466326591988. Clipping.
+2026-02-13 19:43:19,201 - ForecastingService - INFO - Product 31339 | WMA: 65.18 | SES: 69.67 | Reg: 42.39
+2026-02-13 19:43:19,201 - ForecastingService - INFO - Decision: 83.6 | Reason: [CLIPPED] High volatility (0.00) and stable trend (0.0000) suggest incorporating safety stock (42.74) into the higher of the two forecasts (SMA 65.18 vs. Regression 42.39). Adding safety buffer to SMA forecast results in 65.18 + 42.74 = 107.92, rounded to 108.
+2026-02-13 19:43:20,320 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:20,322 - ForecastingService - INFO - Product 31340 | WMA: 4.12 | SES: 3.65 | Reg: 3.01
+2026-02-13 19:43:20,322 - ForecastingService - INFO - Decision: 4.12 | Reason: Demand is stable (trend slope: 0.00, volatility: 0.00) and SMA forecast aligns with observed stability. Preferring SMA over regression for consistency.
+2026-02-13 19:43:21,411 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:21,414 - ForecastingService - INFO - Product 31341 | WMA: 42.86 | SES: 41.06 | Reg: 47.46
+2026-02-13 19:43:21,414 - ForecastingService - INFO - Decision: 50.0 | Reason: High volatility (0.00 volatility value indicates high fluctuation) justifies adding a buffer to the regression forecast (47.46), resulting in a final forecast of 50.
+2026-02-13 19:43:22,730 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:22,732 - ForecastingService - INFO - Product 31342 | WMA: 141.54 | SES: 137.77 | Reg: 152.22
+2026-02-13 19:43:22,732 - ForecastingService - INFO - Decision: 170.0 | Reason: High volatility (0.00) suggests significant fluctuation; added a safety buffer to the higher regression forecast (152.22) to mitigate risk.
+2026-02-13 19:43:24,080 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:24,083 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 240.71 > 148.4142857142857. Clipping.
+2026-02-13 19:43:24,084 - ForecastingService - INFO - Product 31343 | WMA: 123.68 | SES: 116.24 | Reg: 117.03
+2026-02-13 19:43:24,084 - ForecastingService - INFO - Decision: 148.41 | Reason: [CLIPPED] High volatility (0.00) indicates significant fluctuation; adding safety stock (116.86) as a buffer to the higher SMA forecast (123.68) to mitigate risk. Trend is stable (0.0000), so no adjustment for trend is applied.
+2026-02-13 19:43:25,185 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:25,187 - ForecastingService - INFO - Product 31344 | WMA: 130.89 | SES: 139.53 | Reg: 107.77
+2026-02-13 19:43:25,187 - ForecastingService - INFO - Decision: 150.0 | Reason: High volatility (0.00) suggests significant fluctuation; added safety buffer (~13 units) to the SMA forecast (130.89) to mitigate risk, resulting in a conservative adjustment.
+2026-02-13 19:43:26,355 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:26,357 - ForecastingService - INFO - Product 31347 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 19:43:26,358 - ForecastingService - INFO - Decision: 100.0 | Reason: Demand is stable with no trend (slope: 0.00) and zero volatility. SMA forecast aligns with regression, so no adjustment is needed.
+2026-02-13 19:43:27,517 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:27,518 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 130.0 > 98.65714285714284. Clipping.
+2026-02-13 19:43:27,518 - ForecastingService - INFO - Product 31348 | WMA: 82.21 | SES: 81.30 | Reg: 58.88
+2026-02-13 19:43:27,519 - ForecastingService - INFO - Decision: 98.66 | Reason: [CLIPPED] High volatility (0.00) and stable trend (0.0000) suggest incorporating a safety buffer. Adding safety stock (60.72) to the higher SMA forecast (82.21) yields a conservative estimate of 130.
+2026-02-13 19:43:29,056 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:29,057 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 230.0 > 227.67857142857142. Clipping.
+2026-02-13 19:43:29,058 - ForecastingService - INFO - Product 31349 | WMA: 189.73 | SES: 186.84 | Reg: 179.43
+2026-02-13 19:43:29,058 - ForecastingService - INFO - Decision: 227.68 | Reason: [CLIPPED] High volatility (0.00 indicates high fluctuation) and stable trend (0.0000) suggest adding a safety buffer to the SMA forecast (189.73). Adjusted by adding safety stock (41.03) and rounding up for volatility.
+2026-02-13 19:43:30,295 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:30,298 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 65.0 < 68.1328755276004. Clipping.
+2026-02-13 19:43:30,298 - ForecastingService - INFO - Product 31350 | WMA: 77.25 | SES: 85.17 | Reg: 38.79
+2026-02-13 19:43:30,298 - ForecastingService - INFO - Decision: 68.13 | Reason: [CLIPPED] The trend is decreasing (slope: 0.0000) and volatility is high (0.00). Adjusted the SMA forecast (77.25) downward by ~15% to account for the decreasing trend and added a buffer for volatility, resulting in a final forecast of 65.
+2026-02-13 19:43:31,427 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:31,430 - ForecastingService - INFO - Product 31351 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 19:43:31,430 - ForecastingService - INFO - Decision: 100.0 | Reason: Demand is stable with no trend (slope: 0.00) and zero volatility. Both forecasts (SMA and regression) align at 100.00, and no adjustments are required.
+2026-02-13 19:43:32,508 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:32,511 - ForecastingService - INFO - Product 31352 | WMA: 37.09 | SES: 39.03 | Reg: 29.53
+2026-02-13 19:43:32,511 - ForecastingService - INFO - Decision: 45.0 | Reason: High volatility (0.00) suggests significant fluctuation; added safety buffer to SMA forecast (37.09) to mitigate risk, resulting in a conservative adjustment.
+2026-02-13 19:43:33,583 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:33,585 - ForecastingService - INFO - Product 31353 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 19:43:33,586 - ForecastingService - INFO - Decision: 100.0 | Reason: Demand is stable with no trend (slope: 0.00) and zero volatility. SMA forecast aligns with regression, so no adjustment is needed.
+2026-02-13 19:43:34,690 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:34,693 - ForecastingService - INFO - Product 31354 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 19:43:34,693 - ForecastingService - INFO - Decision: 100.0 | Reason: Demand is stable with no trend (slope: 0.00) and zero volatility. SMA forecast aligns with regression, so no adjustment needed.
+2026-02-13 19:43:35,748 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:43:35,751 - ForecastingService - INFO - Product 31355 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 19:43:35,751 - ForecastingService - INFO - Decision: 100.0 | Reason: Demand is stable with no trend (slope: 0.00) and zero volatility. SMA forecast aligns with regression, so no adjustment is needed.
+2026-02-13 19:43:35,751 - ForecastingService - INFO - 
+==================================================
+2026-02-13 19:43:35,753 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 19:43:35,753 - ForecastingService - INFO - ==================================================
+2026-02-13 19:43:35,753 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-D13B1FC4
+2026-02-13 19:43:35,753 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 19:43:35,756 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    101.57           101.57              0
+  31336    184.37           184.37              0
+  31342    170.00           170.00              0
+  31344    150.00           150.00              0
+  31348     98.66            98.66              0
+  31352     45.00            45.00              0
+  31353    100.00           100.00              0
+2026-02-13 19:43:35,757 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 19:43:35,757 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-D13B1FC4 | SKU: 31335 | Changed from 101.57 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 19:43:35,758 - ForecastingService - INFO - ORDER PREP-D13B1FC4 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 19:43:35,758 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 19:43:35,758 - ForecastingService - INFO - Order ID: PREP-D13B1FC4
+2026-02-13 19:43:35,759 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 19:43:42,967 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 19:44:00,643 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 19:44:00,853 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 19:44:02,715 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:02,728 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 3313.0 < 5644.469063627258. Clipping.
+2026-02-13 19:44:04,004 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:04,006 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 5200.0 < 5667.821495437284. Clipping.
+2026-02-13 19:44:05,453 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:05,455 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 11664.25 > 8485.641495038273. Clipping.
+2026-02-13 19:44:07,131 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:09,097 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:09,099 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 5315.24 < 5594.4477436426005. Clipping.
+2026-02-13 19:44:11,056 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:11,059 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 4314.1 < 5574.276836458422. Clipping.
+2026-02-13 19:44:12,453 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:12,455 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 3341.09 < 5533.854919733472. Clipping.
+2026-02-13 19:44:14,001 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:14,002 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 4495.64 < 5535.848087851866. Clipping.
+2026-02-13 19:44:15,532 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:15,534 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 4239.06 < 5515.812268559611. Clipping.
+2026-02-13 19:44:17,186 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:17,188 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 4346.66 < 5498.470909692198. Clipping.
+2026-02-13 19:44:18,933 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:18,936 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 4341.18 < 5477.396572425458. Clipping.
+2026-02-13 19:44:20,285 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:20,287 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 3621.0 < 5441.616707882077. Clipping.
+2026-02-13 19:44:21,570 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:21,572 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 4200.0 < 5417.180002221935. Clipping.
+2026-02-13 19:44:22,892 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:22,895 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 3137.18 < 5387.286694668608. Clipping.
+2026-02-13 19:44:27,068 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:27,070 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 4500.0 < 5383.400464126883. Clipping.
+2026-02-13 19:44:28,481 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:28,484 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 3337.88 < 5347.296590118909. Clipping.
+2026-02-13 19:44:29,998 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:30,000 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 5343.81 < 5374.179880387281. Clipping.
+2026-02-13 19:44:31,313 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:31,315 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 15114.07 > 12013.4087069391. Clipping.
+2026-02-13 19:44:32,861 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:32,863 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 13649.8 > 8485.714285714286. Clipping.
+2026-02-13 19:44:34,322 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:34,323 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 14302.94 > 9287.142857142857. Clipping.
+2026-02-13 19:44:35,965 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:35,968 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 16929.42 > 13012.942366143152. Clipping.
+2026-02-13 19:44:37,668 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:37,670 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 2516.69 < 3207.621287090863. Clipping.
+2026-02-13 19:44:38,876 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:38,877 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 2019.0 < 3187.144265892504. Clipping.
+2026-02-13 19:44:40,260 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:41,888 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:43,288 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:44,938 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:44,940 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 6500.0 > 4756.206505854764. Clipping.
+2026-02-13 19:44:46,931 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:46,933 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 2388.0 < 3148.940937489666. Clipping.
+2026-02-13 19:44:48,343 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:48,346 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 2000.0 < 3129.837102262544. Clipping.
+2026-02-13 19:44:49,528 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:50,790 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:52,035 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:53,175 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:54,535 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:56,344 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:44:56,346 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 2366.74 < 3074.3546511688955. Clipping.
+2026-02-13 19:44:58,060 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:45:05,568 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:45:06,743 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:45:06,746 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 7390.14 > 4665.294947220253. Clipping.
+2026-02-13 19:45:07,987 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:45:07,989 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 9571.32 > 7925.441715693163. Clipping.
+2026-02-13 19:45:09,171 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:45:09,173 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 8698.0 > 5768.571428571428. Clipping.
+2026-02-13 19:45:10,352 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:45:12,023 - httpx - INFO - HTTP Request: POST https://api.mistral.ai/v1/chat/completions "HTTP/1.1 200 OK"
+2026-02-13 19:45:12,025 - DecisionLayer - WARNING - LLM forecast out of deterministic guardrail: 11913.79 > 10031.574431172236. Clipping.
+2026-02-13 19:58:12,874 - ForecastingService - INFO - Loading data from C:/Users/PC/Desktop/Studies/MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 19:58:26,175 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 19:58:26,384 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 19:59:34,946 - ForecastingService - INFO - Loading data from C:/Users/PC/Desktop/Studies/MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 19:59:49,037 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 19:59:49,245 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 20:07:30,017 - ForecastingService - INFO - Loading data from C:/Users/PC/Desktop/Studies/MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 20:07:44,878 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 20:07:45,095 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 20:08:11,424 - ForecastingService - INFO - Loading data from C:/Users/PC/Desktop/Studies/MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 20:08:25,368 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 20:08:25,586 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 20:09:03,262 - ForecastingService - INFO - Loading data from C:/Users/PC/Desktop/Studies/MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 20:09:16,204 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 20:09:16,417 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 20:09:42,381 - ForecastingService - INFO - Loading data from C:/Users/PC/Desktop/Studies/MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 20:09:56,994 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 20:09:57,199 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 20:09:57,201 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 20:09:57,648 - ForecastingService - INFO - 
+========================================
+2026-02-13 20:09:57,649 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 20:09:57,649 - ForecastingService - INFO - ========================================
+2026-02-13 20:09:57,667 - ForecastingService - INFO - 
+ Model    MAE   RMSE  WAP (%)  Bias (%)
+   SMA 656.23 794.57    76.74     40.89
+   REG 261.01 328.00    30.52      6.63
+HYBRID 309.40 386.45    36.18    -25.46
+2026-02-13 20:09:57,667 - ForecastingService - INFO - ========================================
+2026-02-13 20:10:16,229 - ForecastingService - INFO - Loading data from C:/Users/PC/Desktop/Studies/MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 20:10:30,465 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 20:10:30,689 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 20:10:50,158 - ForecastingService - INFO - Loading data from C:/Users/PC/Desktop/Studies/MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 20:11:04,102 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 20:11:04,308 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 20:11:04,309 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 20:11:04,740 - ForecastingService - INFO - 
+========================================
+2026-02-13 20:11:04,740 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 20:11:04,740 - ForecastingService - INFO - ========================================
+2026-02-13 20:11:04,744 - ForecastingService - INFO - 
+ Model    MAE   RMSE  WAP (%)  Bias (%)
+   SMA 656.23 794.57    76.74     40.89
+   REG 261.01 328.00    30.52      6.63
+HYBRID 285.11 367.62    33.34     -0.35
+2026-02-13 20:11:04,744 - ForecastingService - INFO - ========================================

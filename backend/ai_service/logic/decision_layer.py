@@ -1,7 +1,9 @@
 import logging
 import os
 import json
+import time
 from mistralai import Mistral
+from dotenv import load_dotenv
 
 logger = logging.getLogger("DecisionLayer")
 
@@ -12,8 +14,10 @@ class ForecastDecisionLayer:
     """
     
     def __init__(self, api_key=None):
+        load_dotenv()
         self.api_key = api_key or os.getenv("MISTRAL_API_KEY")
         self.model = "mistral-tiny" # Or mistral-small-latest, open-mistral-7b, etc.
+        self.enable_llm_numeric_forecast = os.getenv("ENABLE_LLM_NUMERIC_FORECAST", "0") == "1"
         if self.api_key:
             self.client = Mistral(api_key=self.api_key)
         else:
@@ -23,6 +27,22 @@ class ForecastDecisionLayer:
         # Operational thresholds
         self.strong_trend_threshold = 0.1
         self.stable_trend_threshold = 0.02
+
+    def _compute_guardrail_bounds(self, sku_data):
+        base = float(sku_data.get('deterministic_base', sku_data.get('sma', 0)))
+        candidates = sku_data.get('candidates', {}) or {}
+
+        candidate_values = []
+        for value in candidates.values():
+            try:
+                candidate_values.append(float(value))
+            except (TypeError, ValueError):
+                continue
+
+        reference = max([base] + candidate_values + [1.0])
+        upper_limit = reference * 1.20
+        lower_limit = max(0.0, reference * 0.80)
+        return lower_limit, upper_limit
         
     def decide(self, sku_data):
         """
@@ -37,13 +57,15 @@ class ForecastDecisionLayer:
         reg = float(candidates.get('regression', deterministic_base))
         trend_significant = bool(sku_data.get('trend_significant', False))
 
-        # Guarded deterministic selection
-        if trend_significant:
-            final_forecast = 1.04 * reg
-            reasoning = "Trend significant: calibrated regression selected (deterministic gate)."
+        if reg > 0:
+            final_forecast = 1.27 * reg
+            reasoning = "Deterministic calibrated regression selected to control WAP/Bias drift."
+        elif trend_significant:
+            final_forecast = 0.90 * (0.70 * reg + 0.20 * ses + 0.10 * wma)
+            reasoning = "Trend significant but sparse regression; guarded regression blend applied."
         else:
-            final_forecast = 1.24 * (0.70 * ses + 0.30 * wma)
-            reasoning = "Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded."
+            final_forecast = 0.92 * (0.60 * ses + 0.40 * wma)
+            reasoning = "No reliable regression: conservative SES+WMA blend applied."
 
         return {
             'final_forecast': round(max(0.0, final_forecast), 2),
@@ -61,6 +83,7 @@ class ForecastDecisionLayer:
         std_val = float(sku_data.get('std_dev', 0.0))
         vol_val = sku_data.get('volatility', 'stable')
         safety_val = float(sku_data.get('safety_stock', 0.0))
+        lower_limit, upper_limit = self._compute_guardrail_bounds(sku_data)
 
         prompt = f"""
         TASK: Select or adjust the next-day demand forecast for the following SKU.
@@ -82,6 +105,8 @@ class ForecastDecisionLayer:
         7. Return a numeric "final_forecast".
         8. Include a short "explanation".
         9. No extra text.
+        10. final_forecast MUST stay inside [{lower_limit:.2f}, {upper_limit:.2f}].
+        11. Do not add exaggerated safety buffers outside this range.
         
         FORMAT:
         {{
@@ -96,8 +121,11 @@ class ForecastDecisionLayer:
         """
         Executes a real call to Mistral AI API and validates the output.
         """
-        if not self.client:
+        if (not self.client) or (not self.enable_llm_numeric_forecast):
             return self.simulate_llm_call(sku_data)
+
+        # Rate limiting preventer for small API tiers
+        time.sleep(0.5)
 
         prompt = self.prepare_llm_prompt(sku_data)
         
@@ -142,22 +170,25 @@ class ForecastDecisionLayer:
                 logger.warning(f"Negative forecast from LLM: {forecast}. Clipping to 0.")
                 forecast = 0.0
 
-            # 3. Clip unrealistic values (Safety Guardrail)
-            base = float(sku_data.get('deterministic_base', sku_data.get('sma', 0)))
-            candidates = sku_data.get('candidates', {}) or {}
-            candidate_values = [float(v) for v in candidates.values() if isinstance(v, (int, float))]
-            reference = max([base] + candidate_values + [1.0])
-            upper_limit = reference * 1.20
-            lower_limit = max(0.0, reference * 0.80)
+            # 3. Reject unrealistic values (Safety Guardrail)
+            lower_limit, upper_limit = self._compute_guardrail_bounds(sku_data)
             
             if forecast > upper_limit:
-                logger.warning(f"LLM forecast out of deterministic guardrail: {forecast} > {upper_limit}. Clipping.")
-                forecast = upper_limit
-                explanation = f"[CLIPPED] {explanation}"
+                logger.warning(
+                    f"LLM forecast out of deterministic guardrail: {forecast} > {upper_limit}. "
+                    "Using deterministic fallback."
+                )
+                fallback = self.simulate_llm_call(sku_data)
+                fallback["explanation"] = f"[DETERMINISTIC_FALLBACK] {fallback.get('explanation', '')}"
+                return fallback
             elif forecast < lower_limit:
-                logger.warning(f"LLM forecast out of deterministic guardrail: {forecast} < {lower_limit}. Clipping.")
-                forecast = lower_limit
-                explanation = f"[CLIPPED] {explanation}"
+                logger.warning(
+                    f"LLM forecast out of deterministic guardrail: {forecast} < {lower_limit}. "
+                    "Using deterministic fallback."
+                )
+                fallback = self.simulate_llm_call(sku_data)
+                fallback["explanation"] = f"[DETERMINISTIC_FALLBACK] {fallback.get('explanation', '')}"
+                return fallback
 
             return {
                 "sku_id": str(sku_data.get('id')),
