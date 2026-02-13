@@ -4,3 +4,9 @@ django-cors-headers==4.6.0
 python-decouple==3.8
 python-dotenv==1.0.0
 psycopg2-binary==2.9.10
+scikit-learn==1.8.0
+pandas==3.0.0
+numpy==1.26.4
+matplotlib==3.7.2
+scipy==1.17.0
+mistralai==1.12.2

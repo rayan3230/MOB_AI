@@ -3934,6 +3934,7 @@ HYBRID 309.40 386.45    36.18    -25.46
    REG 261.01 328.00    30.52      6.63
 HYBRID 285.11 367.62    33.34     -0.35
 2026-02-13 20:11:04,744 - ForecastingService - INFO - ========================================
+<<<<<<< HEAD
 2026-02-13 21:28:52,898 - ForecastingService - INFO - Loading data from c:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
 2026-02-13 21:29:09,434 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
 2026-02-13 21:29:09,673 - ForecastingService - INFO - Data loaded and cleaned successfully.
@@ -5210,3 +5211,6 @@ Final Items Sent to Warehouse:
   31348     79.35            79.35              0 Using calibrated deterministic forecast (trend-aware, REG-dominant).                   NaN               NaN                                                                   NaN         NaN
   31352     39.37            39.37              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
   31353    127.00           127.00              0  Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+=======
+2026-02-13 21:58:54,196 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\Users\serializers.py changed, reloading.
+>>>>>>> 4eb8c305d7fb64037f8f6408632c3861add80b29
