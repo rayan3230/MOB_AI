@@ -43,7 +43,7 @@ const VrackManagement = () => {
       const [vrackData, warehouseData, productData, locationData] = await Promise.all([
         warehouseService.getVracks(activeWhId),
         warehouseService.getWarehouses(),
-        productService.getProducts(),
+        productService.getProductsPaged({ limit: 20, offset: 0 }).then((res) => res?.results || []),
         warehouseService.getLocations(activeWhId)
       ]);
       setVracks(vrackData);

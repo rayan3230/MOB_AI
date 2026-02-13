@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -15,10 +15,16 @@ import {
 import { Feather } from '@expo/vector-icons';
 import { productService } from '../../../services/productService';
 
+const PAGE_SIZE = 20;
+const PRELOAD_INDEX = 13;
+
 const StockingUnitManagement = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [currentOffset, setCurrentOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -35,11 +41,36 @@ const StockingUnitManagement = () => {
     actif: true
   });
 
+  const paginationStateRef = useRef({
+    loading: true,
+    refreshing: false,
+    loadingMore: false,
+    hasMore: false,
+    currentOffset: 0,
+    productsLength: 0,
+  });
+  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 40 });
+
+  paginationStateRef.current = {
+    loading,
+    refreshing,
+    loadingMore,
+    hasMore,
+    currentOffset,
+    productsLength: products.length,
+  };
+
   const fetchData = async () => {
     try {
       setLoading(true);
-      const data = await productService.getProducts();
-      setProducts(data);
+      const response = await productService.getProductsPaged({
+        limit: PAGE_SIZE,
+        offset: 0,
+      });
+      const firstPage = Array.isArray(response?.results) ? response.results : [];
+      setProducts(firstPage);
+      setCurrentOffset(firstPage.length);
+      setHasMore(Boolean(response?.has_more));
     } catch (error) {
       console.error('Error fetching products:', error);
       Alert.alert('Error', 'Failed to load products');
@@ -57,6 +88,51 @@ const StockingUnitManagement = () => {
     setRefreshing(true);
     fetchData();
   };
+
+  const loadMoreProducts = useCallback(async () => {
+    const state = paginationStateRef.current;
+    if (state.loading || state.refreshing || state.loadingMore || !state.hasMore) {
+      return;
+    }
+
+    try {
+      setLoadingMore(true);
+      const response = await productService.getProductsPaged({
+        limit: PAGE_SIZE,
+        offset: state.currentOffset,
+      });
+
+      const nextPage = Array.isArray(response?.results) ? response.results : [];
+      if (nextPage.length > 0) {
+        setProducts((prev) => [...prev, ...nextPage]);
+        setCurrentOffset((prev) => prev + nextPage.length);
+      }
+      setHasMore(Boolean(response?.has_more));
+    } catch (error) {
+      console.error('Error loading more products:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, []);
+
+  const handleViewableItemsChanged = useCallback(({ viewableItems }) => {
+    const state = paginationStateRef.current;
+    if (!viewableItems?.length || !state.hasMore || state.loadingMore) {
+      return;
+    }
+
+    const maxVisibleIndex = viewableItems.reduce((maxIdx, viewableItem) => {
+      if (typeof viewableItem.index === 'number') {
+        return Math.max(maxIdx, viewableItem.index);
+      }
+      return maxIdx;
+    }, -1);
+
+    const preloadTrigger = Math.max(PRELOAD_INDEX, state.productsLength - (PAGE_SIZE - PRELOAD_INDEX));
+    if (maxVisibleIndex >= preloadTrigger) {
+      loadMoreProducts();
+    }
+  }, [loadMoreProducts]);
 
   const handleSubmitProduct = async () => {
     if (!newProduct.sku || !newProduct.nom_produit) {
@@ -219,10 +295,19 @@ const StockingUnitManagement = () => {
       ) : (
         <FlatList
           data={products}
-          keyExtractor={(item) => item.id_produit}
+          keyExtractor={(item) => String(item.id_produit)}
           renderItem={renderProductItem}
           onRefresh={onRefresh}
           refreshing={refreshing}
+          onViewableItemsChanged={handleViewableItemsChanged}
+          viewabilityConfig={viewabilityConfig.current}
+          ListFooterComponent={
+            loadingMore ? (
+              <View style={styles.footerLoader}>
+                <ActivityIndicator size="small" color="#2196F3" />
+              </View>
+            ) : null
+          }
           contentContainerStyle={styles.listContainer}
         />
       )}
@@ -339,7 +424,7 @@ const StockingUnitManagement = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#ffffff',
     padding: 16,
   },
   centered: {
@@ -524,6 +609,9 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: '#495057',
     fontWeight: 'bold',
+  },
+  footerLoader: {
+    paddingVertical: 12,
   },
 });
 

@@ -127,11 +127,13 @@ class ProduitViewSet(viewsets.ModelViewSet):
         """
         GET /produits/
         List all SKUs
-        Query params: actif (true/false), search (SKU or Name)
+        Query params: actif (true/false), search (SKU or Name), limit, offset
         """
-        queryset = self.get_queryset()
+        queryset = self.get_queryset().order_by('id_produit')
         actif = request.query_params.get('actif')
         search = request.query_params.get('search')
+        limit_param = request.query_params.get('limit')
+        offset_param = request.query_params.get('offset')
 
         if actif is not None:
             queryset = queryset.filter(actif=actif.lower() == 'true')
@@ -141,8 +143,36 @@ class ProduitViewSet(viewsets.ModelViewSet):
                 Q(sku__icontains=search) | Q(nom_produit__icontains=search)
             )
 
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        if limit_param is None and offset_param is None:
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+
+        try:
+            limit = int(limit_param) if limit_param is not None else 20
+            offset = int(offset_param) if offset_param is not None else 0
+        except ValueError:
+            return Response(
+                {'error': 'limit and offset must be integers'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if limit <= 0 or offset < 0:
+            return Response(
+                {'error': 'limit must be > 0 and offset must be >= 0'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        total_count = queryset.count()
+        paged_queryset = queryset[offset:offset + limit]
+        serializer = self.get_serializer(paged_queryset, many=True)
+
+        return Response({
+            'count': total_count,
+            'limit': limit,
+            'offset': offset,
+            'has_more': (offset + limit) < total_count,
+            'results': serializer.data,
+        })
 
     def retrieve(self, request, *args, **kwargs):
         """
