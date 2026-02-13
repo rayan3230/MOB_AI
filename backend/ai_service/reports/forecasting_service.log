@@ -2581,3 +2581,579 @@ Final Items Sent to Warehouse:
   31348     69.27            69.27              0 Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
   31352     39.73            39.73              0 Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
   31353    125.52           125.52              0     Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 10:52:27,031 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:52:27,031 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:52:42,300 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:52:42,539 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:52:42,540 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 10:52:44,467 - ForecastingService - INFO - 
+========================================
+2026-02-13 10:52:44,467 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 10:52:44,467 - ForecastingService - INFO - ========================================
+2026-02-13 10:52:44,488 - ForecastingService - INFO - 
+ Model    MAE   RMSE  WAP (%)  Bias (%)
+   SMA 117.05 206.01    77.17     -0.96
+   REG 109.01 196.79    71.87     -2.80
+HYBRID 149.03 258.59    98.25    -96.56
+2026-02-13 10:52:44,489 - ForecastingService - INFO - ========================================
+2026-02-13 10:52:44,542 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 10:52:44,611 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 10:52:44,613 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 10:52:44,629 - ForecastingService - INFO - Product 31334 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,631 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,655 - ForecastingService - INFO - Product 31335 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,655 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,676 - ForecastingService - INFO - Product 31336 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,677 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,695 - ForecastingService - INFO - Product 31337 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,696 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,715 - ForecastingService - INFO - Product 31338 | WMA: 0.62 | SES: 0.57 | Reg: 0.71
+2026-02-13 10:52:44,715 - ForecastingService - INFO - Decision: 0.59 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,728 - ForecastingService - INFO - Product 31339 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,729 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,745 - ForecastingService - INFO - Product 31340 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,746 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,765 - ForecastingService - INFO - Product 31341 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,766 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,782 - ForecastingService - INFO - Product 31342 | WMA: 12.19 | SES: 14.20 | Reg: 14.01
+2026-02-13 10:52:44,782 - ForecastingService - INFO - Decision: 13.4 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,805 - ForecastingService - INFO - Product 31343 | WMA: 0.98 | SES: 0.88 | Reg: 0.75
+2026-02-13 10:52:44,806 - ForecastingService - INFO - Decision: 0.92 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,843 - ForecastingService - INFO - Product 31344 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,844 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,877 - ForecastingService - INFO - Product 31347 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,877 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,901 - ForecastingService - INFO - Product 31348 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,902 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,922 - ForecastingService - INFO - Product 31349 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,923 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,939 - ForecastingService - INFO - Product 31350 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,939 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,959 - ForecastingService - INFO - Product 31351 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,959 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,971 - ForecastingService - INFO - Product 31352 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,972 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:44,983 - ForecastingService - INFO - Product 31353 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:44,984 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:45,000 - ForecastingService - INFO - Product 31354 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:45,000 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:45,013 - ForecastingService - INFO - Product 31355 | WMA: 0.00 | SES: 0.00 | Reg: 0.00
+2026-02-13 10:52:45,013 - ForecastingService - INFO - Decision: 0.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:52:45,013 - ForecastingService - INFO - 
+==================================================
+2026-02-13 10:52:45,015 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 10:52:45,015 - ForecastingService - INFO - ==================================================
+2026-02-13 10:52:45,015 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-2C13C3DD
+2026-02-13 10:52:45,015 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 10:52:45,019 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31342      13.4             13.4              0
+2026-02-13 10:52:45,019 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31342...
+2026-02-13 10:52:45,020 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-2C13C3DD | SKU: 31342 | Changed from 13.4 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 10:52:45,021 - ForecastingService - INFO - ORDER PREP-2C13C3DD VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 10:52:45,021 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 10:52:45,021 - ForecastingService - INFO - Order ID: PREP-2C13C3DD
+2026-02-13 10:52:45,021 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 10:52:45,026 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                  reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31342      50.0             13.4              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                  13.4              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+2026-02-13 10:53:12,891 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:53:12,892 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:53:26,564 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:53:26,770 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:53:26,771 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 10:53:28,144 - ForecastingService - INFO - 
+========================================
+2026-02-13 10:53:28,144 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 10:53:28,145 - ForecastingService - INFO - ========================================
+2026-02-13 10:53:28,148 - ForecastingService - INFO - 
+ Model    MAE   RMSE  WAP (%)  Bias (%)
+   SMA 117.05 206.01    77.17     -0.96
+   REG 109.01 196.79    71.87     -2.80
+HYBRID 106.75 208.71    70.38    -18.69
+2026-02-13 10:53:28,148 - ForecastingService - INFO - ========================================
+2026-02-13 10:53:28,163 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 10:53:28,206 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 10:53:28,208 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 10:53:28,218 - ForecastingService - INFO - Product 31334 | WMA: 75.50 | SES: 65.47 | Reg: 80.41
+2026-02-13 10:53:28,219 - ForecastingService - INFO - Decision: 69.48 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,231 - ForecastingService - INFO - Product 31335 | WMA: 84.64 | SES: 77.65 | Reg: 84.33
+2026-02-13 10:53:28,231 - ForecastingService - INFO - Decision: 80.45 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,241 - ForecastingService - INFO - Product 31336 | WMA: 153.64 | SES: 138.53 | Reg: 114.48
+2026-02-13 10:53:28,241 - ForecastingService - INFO - Decision: 144.58 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,256 - ForecastingService - INFO - Product 31337 | WMA: 64.71 | SES: 73.90 | Reg: 53.39
+2026-02-13 10:53:28,256 - ForecastingService - INFO - Decision: 70.22 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,269 - ForecastingService - INFO - Product 31338 | WMA: 73.00 | SES: 69.69 | Reg: 152.22
+2026-02-13 10:53:28,269 - ForecastingService - INFO - Decision: 71.02 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,279 - ForecastingService - INFO - Product 31339 | WMA: 65.18 | SES: 69.67 | Reg: 42.39
+2026-02-13 10:53:28,279 - ForecastingService - INFO - Decision: 67.87 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,292 - ForecastingService - INFO - Product 31340 | WMA: 4.12 | SES: 3.65 | Reg: 3.01
+2026-02-13 10:53:28,292 - ForecastingService - INFO - Decision: 3.83 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,305 - ForecastingService - INFO - Product 31341 | WMA: 42.86 | SES: 41.06 | Reg: 47.46
+2026-02-13 10:53:28,305 - ForecastingService - INFO - Decision: 41.78 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,315 - ForecastingService - INFO - Product 31342 | WMA: 141.54 | SES: 137.77 | Reg: 152.22
+2026-02-13 10:53:28,316 - ForecastingService - INFO - Decision: 139.28 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,327 - ForecastingService - INFO - Product 31343 | WMA: 123.68 | SES: 116.24 | Reg: 117.03
+2026-02-13 10:53:28,327 - ForecastingService - INFO - Decision: 119.22 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,337 - ForecastingService - INFO - Product 31344 | WMA: 130.89 | SES: 139.53 | Reg: 107.77
+2026-02-13 10:53:28,337 - ForecastingService - INFO - Decision: 136.08 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,349 - ForecastingService - INFO - Product 31347 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 10:53:28,349 - ForecastingService - INFO - Decision: 100.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,358 - ForecastingService - INFO - Product 31348 | WMA: 82.21 | SES: 81.30 | Reg: 58.88
+2026-02-13 10:53:28,358 - ForecastingService - INFO - Decision: 81.67 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,369 - ForecastingService - INFO - Product 31349 | WMA: 189.73 | SES: 186.84 | Reg: 179.43
+2026-02-13 10:53:28,369 - ForecastingService - INFO - Decision: 188.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,380 - ForecastingService - INFO - Product 31350 | WMA: 77.25 | SES: 85.17 | Reg: 38.79
+2026-02-13 10:53:28,380 - ForecastingService - INFO - Decision: 82.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,391 - ForecastingService - INFO - Product 31351 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 10:53:28,391 - ForecastingService - INFO - Decision: 100.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,401 - ForecastingService - INFO - Product 31352 | WMA: 37.09 | SES: 39.03 | Reg: 29.53
+2026-02-13 10:53:28,401 - ForecastingService - INFO - Decision: 38.25 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,412 - ForecastingService - INFO - Product 31353 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 10:53:28,412 - ForecastingService - INFO - Decision: 100.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,422 - ForecastingService - INFO - Product 31354 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 10:53:28,423 - ForecastingService - INFO - Decision: 100.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,433 - ForecastingService - INFO - Product 31355 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 10:53:28,433 - ForecastingService - INFO - Decision: 100.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:53:28,434 - ForecastingService - INFO - 
+==================================================
+2026-02-13 10:53:28,434 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 10:53:28,434 - ForecastingService - INFO - ==================================================
+2026-02-13 10:53:28,435 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-7918E92F
+2026-02-13 10:53:28,435 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 10:53:28,438 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     80.45            80.45              0
+  31336    144.58           144.58              0
+  31342    139.28           139.28              0
+  31344    136.08           136.08              0
+  31348     81.67            81.67              0
+  31352     38.25            38.25              0
+  31353    100.00           100.00              0
+2026-02-13 10:53:28,439 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 10:53:28,439 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-7918E92F | SKU: 31335 | Changed from 80.45 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 10:53:28,439 - ForecastingService - INFO - ORDER PREP-7918E92F VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 10:53:28,440 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 10:53:28,440 - ForecastingService - INFO - Order ID: PREP-7918E92F
+2026-02-13 10:53:28,440 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 10:53:28,445 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                  reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            80.45              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                 80.45              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    144.58           144.58              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31342    139.28           139.28              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31344    136.08           136.08              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31348     81.67            81.67              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31352     38.25            38.25              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31353    100.00           100.00              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 10:53:48,565 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:53:48,565 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:54:02,341 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:54:02,630 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:54:15,271 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:54:15,271 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:54:31,859 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:54:32,092 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:54:48,109 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:54:48,110 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:55:04,953 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:55:05,191 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:55:30,067 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:55:30,067 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:55:45,561 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:55:45,789 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:55:45,790 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 10:55:47,220 - ForecastingService - INFO - 
+========================================
+2026-02-13 10:55:47,221 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 10:55:47,221 - ForecastingService - INFO - ========================================
+2026-02-13 10:55:47,226 - ForecastingService - INFO - 
+ Model    MAE   RMSE  WAP (%)  Bias (%)
+   SMA 517.19 718.11    46.91      8.21
+   REG 390.97 716.04    35.46     -3.04
+HYBRID 437.43 667.41    39.68    -18.20
+2026-02-13 10:55:47,226 - ForecastingService - INFO - ========================================
+2026-02-13 10:55:47,242 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 10:55:47,291 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 10:55:47,294 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 10:55:47,305 - ForecastingService - INFO - Product 31334 | WMA: 75.50 | SES: 65.47 | Reg: 80.41
+2026-02-13 10:55:47,305 - ForecastingService - INFO - Decision: 69.48 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,320 - ForecastingService - INFO - Product 31335 | WMA: 84.64 | SES: 77.65 | Reg: 84.33
+2026-02-13 10:55:47,321 - ForecastingService - INFO - Decision: 80.45 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,336 - ForecastingService - INFO - Product 31336 | WMA: 153.64 | SES: 138.53 | Reg: 114.48
+2026-02-13 10:55:47,337 - ForecastingService - INFO - Decision: 144.58 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,350 - ForecastingService - INFO - Product 31337 | WMA: 64.71 | SES: 73.90 | Reg: 53.39
+2026-02-13 10:55:47,350 - ForecastingService - INFO - Decision: 70.22 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,363 - ForecastingService - INFO - Product 31338 | WMA: 73.00 | SES: 69.69 | Reg: 152.22
+2026-02-13 10:55:47,364 - ForecastingService - INFO - Decision: 71.02 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,379 - ForecastingService - INFO - Product 31339 | WMA: 65.18 | SES: 69.67 | Reg: 42.39
+2026-02-13 10:55:47,379 - ForecastingService - INFO - Decision: 67.87 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,395 - ForecastingService - INFO - Product 31340 | WMA: 4.12 | SES: 3.65 | Reg: 3.01
+2026-02-13 10:55:47,395 - ForecastingService - INFO - Decision: 3.83 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,409 - ForecastingService - INFO - Product 31341 | WMA: 42.86 | SES: 41.06 | Reg: 47.46
+2026-02-13 10:55:47,409 - ForecastingService - INFO - Decision: 41.78 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,423 - ForecastingService - INFO - Product 31342 | WMA: 141.54 | SES: 137.77 | Reg: 152.22
+2026-02-13 10:55:47,423 - ForecastingService - INFO - Decision: 139.28 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,435 - ForecastingService - INFO - Product 31343 | WMA: 123.68 | SES: 116.24 | Reg: 117.03
+2026-02-13 10:55:47,435 - ForecastingService - INFO - Decision: 119.22 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,448 - ForecastingService - INFO - Product 31344 | WMA: 130.89 | SES: 139.53 | Reg: 107.77
+2026-02-13 10:55:47,448 - ForecastingService - INFO - Decision: 136.08 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,461 - ForecastingService - INFO - Product 31347 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 10:55:47,461 - ForecastingService - INFO - Decision: 100.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,473 - ForecastingService - INFO - Product 31348 | WMA: 82.21 | SES: 81.30 | Reg: 58.88
+2026-02-13 10:55:47,474 - ForecastingService - INFO - Decision: 81.67 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,486 - ForecastingService - INFO - Product 31349 | WMA: 189.73 | SES: 186.84 | Reg: 179.43
+2026-02-13 10:55:47,486 - ForecastingService - INFO - Decision: 188.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,497 - ForecastingService - INFO - Product 31350 | WMA: 77.25 | SES: 85.17 | Reg: 38.79
+2026-02-13 10:55:47,498 - ForecastingService - INFO - Decision: 82.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,509 - ForecastingService - INFO - Product 31351 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 10:55:47,509 - ForecastingService - INFO - Decision: 100.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,522 - ForecastingService - INFO - Product 31352 | WMA: 37.09 | SES: 39.03 | Reg: 29.53
+2026-02-13 10:55:47,522 - ForecastingService - INFO - Decision: 38.25 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,535 - ForecastingService - INFO - Product 31353 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 10:55:47,535 - ForecastingService - INFO - Decision: 100.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,549 - ForecastingService - INFO - Product 31354 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 10:55:47,550 - ForecastingService - INFO - Decision: 100.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,562 - ForecastingService - INFO - Product 31355 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 10:55:47,562 - ForecastingService - INFO - Decision: 100.0 | Reason: Trend not significant: deterministic blend (SES+WMA), regression excluded.
+2026-02-13 10:55:47,562 - ForecastingService - INFO - 
+==================================================
+2026-02-13 10:55:47,563 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 10:55:47,563 - ForecastingService - INFO - ==================================================
+2026-02-13 10:55:47,563 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-04F74256
+2026-02-13 10:55:47,563 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 10:55:47,567 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     80.45            80.45              0
+  31336    144.58           144.58              0
+  31342    139.28           139.28              0
+  31344    136.08           136.08              0
+  31348     81.67            81.67              0
+  31352     38.25            38.25              0
+  31353    100.00           100.00              0
+2026-02-13 10:55:47,567 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 10:55:47,568 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-04F74256 | SKU: 31335 | Changed from 80.45 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 10:55:47,568 - ForecastingService - INFO - ORDER PREP-04F74256 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 10:55:47,569 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 10:55:47,569 - ForecastingService - INFO - Order ID: PREP-04F74256
+2026-02-13 10:55:47,569 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 10:55:47,576 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                  reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            80.45              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                 80.45              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    144.58           144.58              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31342    139.28           139.28              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31344    136.08           136.08              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31348     81.67            81.67              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31352     38.25            38.25              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31353    100.00           100.00              0 Trend not significant: deterministic blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 10:56:07,146 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:56:07,146 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:56:25,026 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:56:25,304 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:57:01,511 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:57:01,511 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:57:19,700 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:57:20,007 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:57:39,380 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:57:39,380 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:57:54,480 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:57:54,691 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:58:21,299 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:58:21,300 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:58:36,678 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:58:36,893 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 11:00:11,952 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 11:00:11,953 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 11:00:26,004 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 11:00:26,214 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 11:00:54,139 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 11:00:54,139 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 11:01:10,194 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 11:01:10,431 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 11:01:10,433 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 11:01:12,295 - ForecastingService - INFO - 
+========================================
+2026-02-13 11:01:12,295 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 11:01:12,295 - ForecastingService - INFO - ========================================
+2026-02-13 11:01:12,301 - ForecastingService - INFO - 
+ Model    MAE   RMSE  WAP (%)  Bias (%)
+   SMA 517.19 718.11    46.91      8.21
+   REG 390.97 716.04    35.46     -3.04
+HYBRID 449.57 657.43    40.78      1.29
+2026-02-13 11:01:12,301 - ForecastingService - INFO - ========================================
+2026-02-13 11:01:12,321 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 11:01:12,379 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 11:01:12,381 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 11:01:12,397 - ForecastingService - INFO - Product 31334 | WMA: 75.50 | SES: 65.47 | Reg: 80.41
+2026-02-13 11:01:12,398 - ForecastingService - INFO - Decision: 84.91 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,418 - ForecastingService - INFO - Product 31335 | WMA: 84.64 | SES: 77.65 | Reg: 84.33
+2026-02-13 11:01:12,419 - ForecastingService - INFO - Decision: 98.89 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,436 - ForecastingService - INFO - Product 31336 | WMA: 153.64 | SES: 138.53 | Reg: 114.48
+2026-02-13 11:01:12,436 - ForecastingService - INFO - Decision: 177.4 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,451 - ForecastingService - INFO - Product 31337 | WMA: 64.71 | SES: 73.90 | Reg: 53.39
+2026-02-13 11:01:12,451 - ForecastingService - INFO - Decision: 88.22 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,466 - ForecastingService - INFO - Product 31338 | WMA: 73.00 | SES: 69.69 | Reg: 152.22
+2026-02-13 11:01:12,468 - ForecastingService - INFO - Decision: 87.65 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,481 - ForecastingService - INFO - Product 31339 | WMA: 65.18 | SES: 69.67 | Reg: 42.39
+2026-02-13 11:01:12,482 - ForecastingService - INFO - Decision: 84.72 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,494 - ForecastingService - INFO - Product 31340 | WMA: 4.12 | SES: 3.65 | Reg: 3.01
+2026-02-13 11:01:12,494 - ForecastingService - INFO - Decision: 4.7 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,506 - ForecastingService - INFO - Product 31341 | WMA: 42.86 | SES: 41.06 | Reg: 47.46
+2026-02-13 11:01:12,506 - ForecastingService - INFO - Decision: 51.58 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,519 - ForecastingService - INFO - Product 31342 | WMA: 141.54 | SES: 137.77 | Reg: 152.22
+2026-02-13 11:01:12,520 - ForecastingService - INFO - Decision: 172.24 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,533 - ForecastingService - INFO - Product 31343 | WMA: 123.68 | SES: 116.24 | Reg: 117.03
+2026-02-13 11:01:12,534 - ForecastingService - INFO - Decision: 146.9 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,547 - ForecastingService - INFO - Product 31344 | WMA: 130.89 | SES: 139.53 | Reg: 107.77
+2026-02-13 11:01:12,547 - ForecastingService - INFO - Decision: 169.81 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,558 - ForecastingService - INFO - Product 31347 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:01:12,559 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,571 - ForecastingService - INFO - Product 31348 | WMA: 82.21 | SES: 81.30 | Reg: 58.88
+2026-02-13 11:01:12,571 - ForecastingService - INFO - Decision: 61.23 | Reason: Trend significant: calibrated regression selected (deterministic gate).
+2026-02-13 11:01:12,583 - ForecastingService - INFO - Product 31349 | WMA: 189.73 | SES: 186.84 | Reg: 179.43
+2026-02-13 11:01:12,583 - ForecastingService - INFO - Decision: 232.76 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,600 - ForecastingService - INFO - Product 31350 | WMA: 77.25 | SES: 85.17 | Reg: 38.79
+2026-02-13 11:01:12,600 - ForecastingService - INFO - Decision: 40.34 | Reason: Trend significant: calibrated regression selected (deterministic gate).
+2026-02-13 11:01:12,614 - ForecastingService - INFO - Product 31351 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:01:12,615 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,631 - ForecastingService - INFO - Product 31352 | WMA: 37.09 | SES: 39.03 | Reg: 29.53
+2026-02-13 11:01:12,632 - ForecastingService - INFO - Decision: 47.67 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,649 - ForecastingService - INFO - Product 31353 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:01:12,649 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,665 - ForecastingService - INFO - Product 31354 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:01:12,666 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,681 - ForecastingService - INFO - Product 31355 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:01:12,681 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:01:12,681 - ForecastingService - INFO - 
+==================================================
+2026-02-13 11:01:12,683 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 11:01:12,683 - ForecastingService - INFO - ==================================================
+2026-02-13 11:01:12,683 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-206DA273
+2026-02-13 11:01:12,684 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 11:01:12,688 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     98.89            98.89              0
+  31336    177.40           177.40              0
+  31342    172.24           172.24              0
+  31344    169.81           169.81              0
+  31348     61.23            61.23              0
+  31352     47.67            47.67              0
+  31353    124.00           124.00              0
+2026-02-13 11:01:12,689 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 11:01:12,689 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-206DA273 | SKU: 31335 | Changed from 98.89 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 11:01:12,690 - ForecastingService - INFO - ORDER PREP-206DA273 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 11:01:12,690 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 11:01:12,690 - ForecastingService - INFO - Order ID: PREP-206DA273
+2026-02-13 11:01:12,691 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 11:01:12,696 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                         reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            98.89              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                 98.89              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    177.40           177.40              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31342    172.24           172.24              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31344    169.81           169.81              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31348     61.23            61.23              0           Trend significant: calibrated regression selected (deterministic gate).                   NaN               NaN                                                                   NaN         NaN
+  31352     47.67            47.67              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31353    124.00           124.00              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 11:01:46,176 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 11:01:46,176 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 11:02:02,831 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 11:02:03,043 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 11:02:42,527 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 11:02:42,528 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 11:02:56,183 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 11:02:56,401 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 11:02:56,402 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 11:02:57,927 - ForecastingService - INFO - 
+========================================
+2026-02-13 11:02:57,928 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 11:02:57,928 - ForecastingService - INFO - ========================================
+2026-02-13 11:02:57,932 - ForecastingService - INFO - 
+ Model    MAE   RMSE  WAP (%)  Bias (%)
+   SMA 517.19 718.11    46.91      8.21
+   REG 390.97 716.04    35.46     -3.04
+HYBRID 449.57 657.43    40.78      1.29
+2026-02-13 11:02:57,932 - ForecastingService - INFO - ========================================
+2026-02-13 11:02:57,946 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 11:02:57,992 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 11:02:57,994 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 11:02:58,006 - ForecastingService - INFO - Product 31334 | WMA: 75.50 | SES: 65.47 | Reg: 80.41
+2026-02-13 11:02:58,007 - ForecastingService - INFO - Decision: 84.91 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,019 - ForecastingService - INFO - Product 31335 | WMA: 84.64 | SES: 77.65 | Reg: 84.33
+2026-02-13 11:02:58,019 - ForecastingService - INFO - Decision: 98.89 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,036 - ForecastingService - INFO - Product 31336 | WMA: 153.64 | SES: 138.53 | Reg: 114.48
+2026-02-13 11:02:58,037 - ForecastingService - INFO - Decision: 177.4 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,053 - ForecastingService - INFO - Product 31337 | WMA: 64.71 | SES: 73.90 | Reg: 53.39
+2026-02-13 11:02:58,053 - ForecastingService - INFO - Decision: 88.22 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,068 - ForecastingService - INFO - Product 31338 | WMA: 73.00 | SES: 69.69 | Reg: 152.22
+2026-02-13 11:02:58,068 - ForecastingService - INFO - Decision: 87.65 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,081 - ForecastingService - INFO - Product 31339 | WMA: 65.18 | SES: 69.67 | Reg: 42.39
+2026-02-13 11:02:58,081 - ForecastingService - INFO - Decision: 84.72 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,095 - ForecastingService - INFO - Product 31340 | WMA: 4.12 | SES: 3.65 | Reg: 3.01
+2026-02-13 11:02:58,095 - ForecastingService - INFO - Decision: 4.7 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,112 - ForecastingService - INFO - Product 31341 | WMA: 42.86 | SES: 41.06 | Reg: 47.46
+2026-02-13 11:02:58,112 - ForecastingService - INFO - Decision: 51.58 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,124 - ForecastingService - INFO - Product 31342 | WMA: 141.54 | SES: 137.77 | Reg: 152.22
+2026-02-13 11:02:58,125 - ForecastingService - INFO - Decision: 172.24 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,140 - ForecastingService - INFO - Product 31343 | WMA: 123.68 | SES: 116.24 | Reg: 117.03
+2026-02-13 11:02:58,140 - ForecastingService - INFO - Decision: 146.9 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,151 - ForecastingService - INFO - Product 31344 | WMA: 130.89 | SES: 139.53 | Reg: 107.77
+2026-02-13 11:02:58,152 - ForecastingService - INFO - Decision: 169.81 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,163 - ForecastingService - INFO - Product 31347 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:02:58,163 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,175 - ForecastingService - INFO - Product 31348 | WMA: 82.21 | SES: 81.30 | Reg: 58.88
+2026-02-13 11:02:58,176 - ForecastingService - INFO - Decision: 61.23 | Reason: Trend significant: calibrated regression selected (deterministic gate).
+2026-02-13 11:02:58,188 - ForecastingService - INFO - Product 31349 | WMA: 189.73 | SES: 186.84 | Reg: 179.43
+2026-02-13 11:02:58,188 - ForecastingService - INFO - Decision: 232.76 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,199 - ForecastingService - INFO - Product 31350 | WMA: 77.25 | SES: 85.17 | Reg: 38.79
+2026-02-13 11:02:58,199 - ForecastingService - INFO - Decision: 40.34 | Reason: Trend significant: calibrated regression selected (deterministic gate).
+2026-02-13 11:02:58,210 - ForecastingService - INFO - Product 31351 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:02:58,210 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,222 - ForecastingService - INFO - Product 31352 | WMA: 37.09 | SES: 39.03 | Reg: 29.53
+2026-02-13 11:02:58,222 - ForecastingService - INFO - Decision: 47.67 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,234 - ForecastingService - INFO - Product 31353 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:02:58,234 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,246 - ForecastingService - INFO - Product 31354 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:02:58,246 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,258 - ForecastingService - INFO - Product 31355 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:02:58,258 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:02:58,258 - ForecastingService - INFO - 
+==================================================
+2026-02-13 11:02:58,258 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 11:02:58,258 - ForecastingService - INFO - ==================================================
+2026-02-13 11:02:58,258 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-5D991387
+2026-02-13 11:02:58,260 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 11:02:58,263 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     98.89            98.89              0
+  31336    177.40           177.40              0
+  31342    172.24           172.24              0
+  31344    169.81           169.81              0
+  31348     61.23            61.23              0
+  31352     47.67            47.67              0
+  31353    124.00           124.00              0
+2026-02-13 11:02:58,264 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 11:02:58,264 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-5D991387 | SKU: 31335 | Changed from 98.89 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 11:02:58,264 - ForecastingService - INFO - ORDER PREP-5D991387 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 11:02:58,264 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 11:02:58,265 - ForecastingService - INFO - Order ID: PREP-5D991387
+2026-02-13 11:02:58,265 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 11:02:58,271 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                         reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            98.89              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                 98.89              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    177.40           177.40              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31342    172.24           172.24              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31344    169.81           169.81              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31348     61.23            61.23              0           Trend significant: calibrated regression selected (deterministic gate).                   NaN               NaN                                                                   NaN         NaN
+  31352     47.67            47.67              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31353    124.00           124.00              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 11:03:17,956 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 11:03:17,956 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 11:03:32,715 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 11:03:32,924 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 11:03:32,925 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---
+2026-02-13 11:03:35,560 - ForecastingService - INFO - 
+========================================
+2026-02-13 11:03:35,560 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 11:03:35,561 - ForecastingService - INFO - ========================================
+2026-02-13 11:03:35,564 - ForecastingService - INFO - 
+ Model    MAE   RMSE  WAP (%)  Bias (%)
+   SMA 517.19 718.11    46.91      8.21
+   REG 390.97 716.04    35.46     -3.04
+HYBRID 449.57 657.43    40.78      1.29
+2026-02-13 11:03:35,565 - ForecastingService - INFO - ========================================
+2026-02-13 11:03:35,587 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 11:03:35,640 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 11:03:35,643 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 11:03:35,657 - ForecastingService - INFO - Product 31334 | WMA: 75.50 | SES: 65.47 | Reg: 80.41
+2026-02-13 11:03:35,658 - ForecastingService - INFO - Decision: 84.91 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,674 - ForecastingService - INFO - Product 31335 | WMA: 84.64 | SES: 77.65 | Reg: 84.33
+2026-02-13 11:03:35,674 - ForecastingService - INFO - Decision: 98.89 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,692 - ForecastingService - INFO - Product 31336 | WMA: 153.64 | SES: 138.53 | Reg: 114.48
+2026-02-13 11:03:35,692 - ForecastingService - INFO - Decision: 177.4 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,707 - ForecastingService - INFO - Product 31337 | WMA: 64.71 | SES: 73.90 | Reg: 53.39
+2026-02-13 11:03:35,708 - ForecastingService - INFO - Decision: 88.22 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,723 - ForecastingService - INFO - Product 31338 | WMA: 73.00 | SES: 69.69 | Reg: 152.22
+2026-02-13 11:03:35,723 - ForecastingService - INFO - Decision: 87.65 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,738 - ForecastingService - INFO - Product 31339 | WMA: 65.18 | SES: 69.67 | Reg: 42.39
+2026-02-13 11:03:35,738 - ForecastingService - INFO - Decision: 84.72 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,755 - ForecastingService - INFO - Product 31340 | WMA: 4.12 | SES: 3.65 | Reg: 3.01
+2026-02-13 11:03:35,756 - ForecastingService - INFO - Decision: 4.7 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,769 - ForecastingService - INFO - Product 31341 | WMA: 42.86 | SES: 41.06 | Reg: 47.46
+2026-02-13 11:03:35,769 - ForecastingService - INFO - Decision: 51.58 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,781 - ForecastingService - INFO - Product 31342 | WMA: 141.54 | SES: 137.77 | Reg: 152.22
+2026-02-13 11:03:35,782 - ForecastingService - INFO - Decision: 172.24 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,800 - ForecastingService - INFO - Product 31343 | WMA: 123.68 | SES: 116.24 | Reg: 117.03
+2026-02-13 11:03:35,800 - ForecastingService - INFO - Decision: 146.9 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,813 - ForecastingService - INFO - Product 31344 | WMA: 130.89 | SES: 139.53 | Reg: 107.77
+2026-02-13 11:03:35,813 - ForecastingService - INFO - Decision: 169.81 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,826 - ForecastingService - INFO - Product 31347 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:03:35,826 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,840 - ForecastingService - INFO - Product 31348 | WMA: 82.21 | SES: 81.30 | Reg: 58.88
+2026-02-13 11:03:35,841 - ForecastingService - INFO - Decision: 61.23 | Reason: Trend significant: calibrated regression selected (deterministic gate).
+2026-02-13 11:03:35,854 - ForecastingService - INFO - Product 31349 | WMA: 189.73 | SES: 186.84 | Reg: 179.43
+2026-02-13 11:03:35,854 - ForecastingService - INFO - Decision: 232.76 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,867 - ForecastingService - INFO - Product 31350 | WMA: 77.25 | SES: 85.17 | Reg: 38.79
+2026-02-13 11:03:35,867 - ForecastingService - INFO - Decision: 40.34 | Reason: Trend significant: calibrated regression selected (deterministic gate).
+2026-02-13 11:03:35,882 - ForecastingService - INFO - Product 31351 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:03:35,882 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,894 - ForecastingService - INFO - Product 31352 | WMA: 37.09 | SES: 39.03 | Reg: 29.53
+2026-02-13 11:03:35,895 - ForecastingService - INFO - Decision: 47.67 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,906 - ForecastingService - INFO - Product 31353 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:03:35,906 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,919 - ForecastingService - INFO - Product 31354 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:03:35,919 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,932 - ForecastingService - INFO - Product 31355 | WMA: 100.00 | SES: 100.00 | Reg: 100.00
+2026-02-13 11:03:35,932 - ForecastingService - INFO - Decision: 124.0 | Reason: Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.
+2026-02-13 11:03:35,933 - ForecastingService - INFO - 
+==================================================
+2026-02-13 11:03:35,933 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 11:03:35,933 - ForecastingService - INFO - ==================================================
+2026-02-13 11:03:35,934 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-C280A46F
+2026-02-13 11:03:35,934 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 11:03:35,937 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     98.89            98.89              0
+  31336    177.40           177.40              0
+  31342    172.24           172.24              0
+  31344    169.81           169.81              0
+  31348     61.23            61.23              0
+  31352     47.67            47.67              0
+  31353    124.00           124.00              0
+2026-02-13 11:03:35,939 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 11:03:35,939 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-C280A46F | SKU: 31335 | Changed from 98.89 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 11:03:35,939 - ForecastingService - INFO - ORDER PREP-C280A46F VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 11:03:35,940 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 11:03:35,940 - ForecastingService - INFO - Order ID: PREP-C280A46F
+2026-02-13 11:03:35,940 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 11:03:35,944 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                         reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            98.89              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                 98.89              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    177.40           177.40              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31342    172.24           172.24              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31344    169.81           169.81              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31348     61.23            61.23              0           Trend significant: calibrated regression selected (deterministic gate).                   NaN               NaN                                                                   NaN         NaN
+  31352     47.67            47.67              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN
+  31353    124.00           124.00              0 Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded.                   NaN               NaN                                                                   NaN         NaN

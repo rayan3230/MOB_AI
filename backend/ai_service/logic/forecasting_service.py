@@ -121,8 +121,17 @@ class RegressionModel:
 
     def analyze(self, history, product_id):
         product_history = history[history['id_produit'] == product_id].copy()
-        if len(product_history) < 2:
-            return {'prediction': 0, 'slope': 0, 'trend': 'stable'}
+        if len(product_history) < 3:
+            return {
+                'prediction': 0,
+                'slope': 0,
+                'trend': 'stable',
+                'std_dev': 0,
+                'volatility': 'stable',
+                'safety_stock': 0,
+                'trend_strength': 0,
+                'trend_significant': False
+            }
             
         # Convert dates to numeric (days since first date)
         first_date = product_history['date'].min()
@@ -130,77 +139,184 @@ class RegressionModel:
         y = product_history['quantite_demande'].values
         
         self.model.fit(X, y)
+        r2_score = float(self.model.score(X, y)) if len(y) >= 3 else 0.0
         
         slope = self.model.coef_[0]
         next_day_num = (product_history['date'].max() - first_date).days + 1
         prediction = max(0, self.model.predict([[next_day_num]])[0])
         
         # 3️⃣ Compute Volatility (Standard Deviation)
-        std_dev = product_history['quantite_demande'].std()
-        if std_dev < 10: # Threshold for stability
+        std_dev = float(product_history['quantite_demande'].std()) if len(product_history) > 1 else 0.0
+        if np.isnan(std_dev):
+            std_dev = 0.0
+
+        if std_dev < 10:
             volatility = "stable"
         else:
             volatility = "high fluctuation"
 
         # 4️⃣ Compute Safety Stock (95% Service Level)
-        safety_stock = 1.65 * std_dev if not pd.isna(std_dev) else 0
+        safety_stock = 1.65 * std_dev
 
-        if slope > 0.05:
+        # Trend significance: only trust regression when slope is meaningful vs mean demand
+        mean_demand = float(product_history['quantite_demande'].mean())
+        demand_scale = max(mean_demand, 1.0)
+        trend_strength = abs(float(slope)) / demand_scale
+        trend_significant = (trend_strength >= 0.001) and (r2_score >= 0.10) and (len(product_history) >= 14)
+
+        if trend_significant and slope > 0:
             trend = "increasing"
-        elif slope < -0.05:
+        elif trend_significant and slope < 0:
             trend = "decreasing"
         else:
             trend = "stable"
             
         return {
-            'prediction': prediction,
-            'slope': slope,
+            'prediction': float(prediction),
+            'slope': float(slope),
             'trend': trend,
-            'std_dev': std_dev,
+            'std_dev': float(std_dev),
             'volatility': volatility,
-            'safety_stock': safety_stock
+            'safety_stock': float(safety_stock),
+            'trend_strength': float(trend_strength),
+            'trend_significant': bool(trend_significant),
+            'r2_score': float(r2_score)
         }
 
-class ImprovedModel:
-    """Predict next-day demand using an XGBoost model."""
+class DeterministicForecastModel:
+    """
+    Inventory-oriented deterministic forecaster using:
+    - Weighted Moving Average (WMA)
+    - Exponential Smoothing (SES)
+    - Guarded Linear Regression (only when trend is significant)
+    """
     def __init__(self):
-        from xgboost import XGBRegressor
-        self.model = XGBRegressor(n_estimators=100, learning_rate=0.1, max_depth=5)
-    
-    def prepare_features(self, history, product_id):
-        product_history = history[history['id_produit'] == product_id].copy()
-        if len(product_history) < 5:
-            return None
-            
-        # Feature engineering: Lag features, day of week, rolling mean
-        product_history['day_of_week'] = product_history['date'].dt.dayofweek
-        product_history['rolling_mean_3'] = product_history['quantite_demande'].rolling(window=3).mean()
-        product_history['lag_1'] = product_history['quantite_demande'].shift(1)
-        
-        # Drop NaN from shifting/rolling
-        train_data = product_history.dropna()
-        if train_data.empty: return None
-        
-        X = train_data[['day_of_week', 'rolling_mean_3', 'lag_1']]
-        y = train_data['quantite_demande']
-        return X, y, product_history.iloc[-1]
+        self.default_alpha_fast = 0.35
+        self.default_alpha_slow = 0.20
 
-    def predict(self, history, product_id):
-        features = self.prepare_features(history, product_id)
-        if features is None:
-            return BaselineModel().predict(history, product_id) # Fallback
-            
-        X, y, last_row = features
-        self.model.fit(X, y)
-        
-        # Predict for "next day" (simplified: using last known features shifted)
-        next_features = np.array([[
-            (last_row['date'] + timedelta(days=1)).dayofweek,
-            history[history['id_produit'] == product_id]['quantite_demande'].tail(3).mean(),
-            last_row['quantite_demande']
-        ]])
-        
-        return max(0, self.model.predict(next_features)[0])
+    def _prepare_series(self, history, product_id):
+        product_history = history[history['id_produit'] == product_id].sort_values('date').copy()
+        if product_history.empty:
+            return product_history
+
+        # Keep observed transaction days only (avoid creating artificial zero-demand days)
+        product_history['quantite_demande'] = pd.to_numeric(product_history['quantite_demande'], errors='coerce').fillna(0.0)
+
+        # Outlier handling (IQR clipping) on historical values only
+        q1 = product_history['quantite_demande'].quantile(0.25)
+        q3 = product_history['quantite_demande'].quantile(0.75)
+        iqr = q3 - q1
+        lower = max(0.0, q1 - 1.5 * iqr)
+        upper = q3 + 1.5 * iqr if iqr > 0 else max(q3, 0.0)
+        product_history['quantite_demande'] = product_history['quantite_demande'].clip(lower=lower, upper=upper)
+
+        # Zero-demand smoothing for fast movers only (keeps intermittents untouched)
+        avg = float(product_history['quantite_demande'].mean())
+        zero_ratio = float((product_history['quantite_demande'] == 0).mean())
+        if avg >= 5 and zero_ratio < 0.4:
+            roll3 = product_history['quantite_demande'].rolling(3, min_periods=1).mean()
+            mask_zero = product_history['quantite_demande'] == 0
+            product_history.loc[mask_zero, 'quantite_demande'] = roll3[mask_zero] * 0.35
+
+        return product_history
+
+    def classify_demand(self, series):
+        if len(series) == 0:
+            return 'slow_mover'
+        mean_demand = float(series.mean())
+        zero_ratio = float((series == 0).mean())
+        cv = float(series.std() / max(mean_demand, 1.0))
+
+        if zero_ratio >= 0.5 or mean_demand < 3:
+            return 'slow_mover'
+        if cv > 1.2:
+            return 'volatile_fast'
+        return 'fast_mover'
+
+    def weighted_moving_average(self, series, window=7):
+        values = series.tail(window).values
+        if len(values) == 0:
+            return 0.0
+        weights = np.arange(1, len(values) + 1, dtype=float)
+        return float(np.dot(values, weights) / weights.sum())
+
+    def simple_exponential_smoothing(self, series, alpha=0.3):
+        values = series.values
+        if len(values) == 0:
+            return 0.0
+        smoothed = float(values[0])
+        for val in values[1:]:
+            smoothed = alpha * float(val) + (1 - alpha) * smoothed
+        return max(0.0, smoothed)
+
+    def compute_safety_stock(self, series, demand_class):
+        std_dev = float(series.std()) if len(series) > 1 else 0.0
+        if np.isnan(std_dev):
+            std_dev = 0.0
+        if demand_class == 'volatile_fast':
+            z = 1.65
+        elif demand_class == 'fast_mover':
+            z = 1.28
+        else:
+            z = 1.0
+        return float(max(0.0, z * std_dev))
+
+    def predict(self, history, product_id, regression_model):
+        prepared = self._prepare_series(history, product_id)
+        if prepared.empty:
+            return {
+                'forecast': 0.0,
+                'wma': 0.0,
+                'ses': 0.0,
+                'regression': 0.0,
+                'trend': 'stable',
+                'volatility': 'stable',
+                'trend_strength': 0.0,
+                'demand_class': 'slow_mover',
+                'safety_stock': 0.0,
+                'reasoning': 'No history available.'
+            }
+
+        series = prepared['quantite_demande'].astype(float)
+        demand_class = self.classify_demand(series)
+
+        wma = self.weighted_moving_average(series, window=7)
+        alpha = self.default_alpha_fast if demand_class != 'slow_mover' else self.default_alpha_slow
+        ses = self.simple_exponential_smoothing(series, alpha=alpha)
+
+        reg_results = regression_model.analyze(prepared, product_id)
+        reg_pred = float(reg_results.get('prediction', 0.0))
+        trend = reg_results.get('trend', 'stable')
+        trend_strength = float(reg_results.get('trend_strength', 0.0))
+        trend_significant = bool(reg_results.get('trend_significant', False))
+        volatility = reg_results.get('volatility', 'stable')
+
+        # Deterministic, explainable blending
+        if demand_class == 'slow_mover':
+            forecast = 0.65 * ses + 0.35 * wma
+            rationale = 'Slow mover: smoothing-focused blend (SES+WMA).'
+        elif trend_significant:
+            forecast = 0.45 * ses + 0.25 * wma + 0.30 * reg_pred
+            rationale = 'Fast mover with significant trend: include guarded regression.'
+        else:
+            forecast = 0.55 * ses + 0.45 * wma
+            rationale = 'No significant trend: ignore regression and use SES+WMA.'
+
+        safety_stock = self.compute_safety_stock(series, demand_class)
+        forecast = float(max(0.0, forecast))
+
+        return {
+            'forecast': forecast,
+            'wma': float(wma),
+            'ses': float(ses),
+            'regression': float(reg_pred),
+            'trend': trend,
+            'volatility': volatility,
+            'trend_strength': float(trend_strength),
+            'demand_class': demand_class,
+            'safety_stock': float(safety_stock),
+            'reasoning': rationale
+        }
 
 class PreparationOrderService:
     def generate_order_advanced(self, forecast_data, current_stock):
@@ -280,82 +396,116 @@ class ForecastingService:
         self.loader = DataLoader(excel_path)
         self.baseline = BaselineModel()
         self.regression = RegressionModel()
+        self.deterministic = DeterministicForecastModel()
         self.decision_layer = ForecastDecisionLayer()
-        self.improved = ImprovedModel()
         self.order_service = PreparationOrderService()
 
     def evaluate_models(self, limit_products=50, test_days=1):
         """
-        PHASE 6 — Evaluation
-        Step 2 — Compute Metrics (WAP, Bias)
-        Calculates for: SMA, Regression, and Hybrid (LLM decision)
+        Leakage-safe evaluation with train/test split + rolling one-step forecast.
+        Reports MAE, RMSE, WAP, and Bias for SMA, REG, and HYBRID.
         """
         self.loader.load_and_clean()
         all_products = self.loader.demand_history['id_produit'].unique()
-        evaluation_results = []
+        rolling_rows = []
 
-        logger.info(f"--- MODEL EVALUATION PHASE (WAP & Bias for SMA, Reg, Hybrid | Horizon={test_days} day(s)) ---")
+        logger.info("--- MODEL EVALUATION PHASE (rolling backtest, leakage-safe) ---")
 
         for pid in all_products[:limit_products]:
-            history = self.loader.demand_history[self.loader.demand_history['id_produit'] == pid].sort_values('date')
-            if len(history) < max(10, test_days + 7):
+            history = self.loader.demand_history[
+                self.loader.demand_history['id_produit'] == pid
+            ].sort_values('date').reset_index(drop=True)
+
+            # Need enough points for robust split + rolling windows
+            if len(history) < 35:
                 continue
 
-            # Split Point: reserve last `test_days` as holdout period
-            train_data = history.iloc[:-test_days]
-            actual_value = history.iloc[-test_days:]['quantite_demande'].sum()
+            # Train/Test split: first 80% train, last 20% test
+            split_idx = int(len(history) * 0.8)
+            split_idx = max(split_idx, 21)
+            if split_idx >= len(history) - 5:
+                continue
 
-            # 1. Baseline Prediction (SMA-7)
-            baseline_daily = self.baseline.predict(train_data, pid)
-            baseline_pred = baseline_daily * test_days
+            horizon = max(int(test_days), 1)
+            holdout_start = max(split_idx, len(history) - max(horizon * 2, 10))
+            test_range = range(holdout_start, len(history) - horizon + 1)
+            for t in test_range:
+                train_data = history.iloc[:t]
+                actual_value = float(history.iloc[t:t + horizon]['quantite_demande'].sum())
 
-            # 2. Regression Prediction (Statistical Model)
-            reg_results = self.regression.analyze(train_data, pid)
-            reg_daily = reg_results['prediction']
-            reg_pred = reg_daily * test_days
-            
-            # 3. Hybrid Model Prediction (LLM Logic)
-            reg_results['sma'] = baseline_daily
-            reg_results['id'] = pid
-            ai_decision = self.decision_layer.call_mistral_api(reg_results)
-            hybrid_daily = ai_decision.get('final_forecast', baseline_daily)
-            hybrid_pred = hybrid_daily * test_days
+                # Candidate models (deterministic, explainable)
+                sma_pred = float(self.baseline.predict(train_data, pid, window=7)) * horizon
+                reg_results = self.regression.analyze(train_data, pid)
+                reg_pred = float(reg_results.get('prediction', sma_pred / horizon)) * horizon
 
-            evaluation_results.append({
-                'sku_id': pid,
-                'actual': actual_value,
-                'sma': baseline_pred,
-                'reg': reg_pred,
-                'hybrid': hybrid_pred
-            })
+                deterministic = self.deterministic.predict(train_data, pid, self.regression)
+                hybrid_input = {
+                    'id': pid,
+                    'sma': deterministic['wma'],
+                    'prediction': deterministic['regression'],
+                    'trend': deterministic['trend'],
+                    'volatility': deterministic['volatility'],
+                    'safety_stock': deterministic['safety_stock'],
+                    'trend_significant': bool(reg_results.get('trend_significant', False)),
+                    'deterministic_base': deterministic['forecast'],
+                    'candidates': {
+                        'wma': deterministic['wma'],
+                        'ses': deterministic['ses'],
+                        'regression': deterministic['regression']
+                    }
+                }
+                hybrid_out = self.decision_layer.call_mistral_api(hybrid_input)
+                hybrid_pred = float(hybrid_out.get('final_forecast', deterministic['forecast'])) * horizon
 
-        if not evaluation_results:
+                rolling_rows.append({
+                    'sku_id': pid,
+                    'actual': actual_value,
+                    'sma': max(0.0, sma_pred),
+                    'reg': max(0.0, reg_pred),
+                    'hybrid': max(0.0, hybrid_pred)
+                })
+
+        if not rolling_rows:
             logger.warning("No products reached evaluation criteria.")
             return None
 
-        eval_df = pd.DataFrame(evaluation_results)
+        eval_df = pd.DataFrame(rolling_rows)
         
         # Calculate Metrics
         metrics = []
         for model in ['sma', 'reg', 'hybrid']:
-            # Calculate WAP (Weighted Absolute Percentage - standard in supply chain)
-            # WAP = Sum(|Actual - Forecast|) / Sum(Actual)
+            mae = float((eval_df[model] - eval_df['actual']).abs().mean())
+            rmse = float(np.sqrt(((eval_df[model] - eval_df['actual']) ** 2).mean()))
+
             total_abs_error = (eval_df[model] - eval_df['actual']).abs().sum()
             total_actual = eval_df['actual'].sum()
             wap = (total_abs_error / total_actual) * 100 if total_actual > 0 else 0
             
-            # Forecast Bias (%) - identifies over/under forecasting percentage
-            # Goal: 0-5% is ideal for high-performing models.
             total_forecast = eval_df[model].sum()
             bias_pct = ((total_forecast - total_actual) / total_actual) * 100 if total_actual > 0 else 0
             
             metrics.append({
                 'Model': model.upper(),
+                'MAE': round(mae, 2),
+                'RMSE': round(rmse, 2),
                 'WAP (%)': round(wap, 2),
                 'Bias (%)': round(bias_pct, 2)
             })
 
         metrics_df = pd.DataFrame(metrics)
+
+        previous_reference = pd.DataFrame([
+            {'Model': 'SMA', 'WAP (%)': 41.20, 'Bias (%)': 3.49},
+            {'Model': 'REG', 'WAP (%)': 44.59, 'Bias (%)': 3.53},
+            {'Model': 'HYBRID', 'WAP (%)': 40.95, 'Bias (%)': 3.98},
+        ])
+        comparison_df = metrics_df[['Model', 'WAP (%)', 'Bias (%)']].merge(
+            previous_reference,
+            on='Model',
+            suffixes=('_new', '_prev')
+        )
+        comparison_df['Delta WAP (pp)'] = (comparison_df['WAP (%)_new'] - comparison_df['WAP (%)_prev']).round(2)
+        comparison_df['Delta Bias (pp)'] = (comparison_df['Bias (%)_new'] - comparison_df['Bias (%)_prev']).round(2)
         
         # --- Mandatory Final Deliverable: Comparison Table ---
         logger.info("\n" + "="*40)
@@ -368,9 +518,15 @@ class ForecastingService:
         metrics_df.to_csv(os.path.join(REPORT_DIR, "model_comparison_results.csv"), index=False)
         with open(os.path.join(REPORT_DIR, "EVALUATION_REPORT.md"), "w", encoding='utf-8') as f:
             f.write("# Model Performance Evaluation\n\n")
-            f.write("### Performance Comparison Table\n\n")
+            f.write("### Rolling Backtest (Leakage-Safe)\n\n")
+            f.write(f"Evaluated points: {len(eval_df)} across up to {limit_products} SKUs.\n\n")
             f.write(metrics_df.to_markdown(index=False))
-            f.write("\n\n*Note: HYBRID model includes reasoned logic adjustments and risk-aware buffering.*")
+            f.write("\n\n### Comparison vs Previous Implementation\n\n")
+            f.write(comparison_df.to_markdown(index=False))
+            f.write("\n\n*Notes:*\n")
+            f.write("- Outliers are clipped using IQR; no synthetic zero-filling is introduced in sparse histories.\n")
+            f.write("- Regression is used only when trend strength is statistically meaningful.\n")
+            f.write("- LLM output is constrained by deterministic guardrails to prevent accuracy degradation.\n")
 
         return eval_df
 
@@ -385,23 +541,40 @@ class ForecastingService:
         if len(history) < 2:
             return None
         
-        # 1. Statistical Engine Outputs
-        sma_forecast = self.baseline.predict(history, pid)
-        reg_results = self.regression.analyze(history, pid)
-        reg_results['sma'] = sma_forecast
-        reg_results['id'] = pid
-        
-        # 2. Decision Layer (LLM Logic)
-        llm_decision = self.decision_layer.call_mistral_api(reg_results)
+        # 1. Deterministic engine outputs
+        deterministic = self.deterministic.predict(history, int(pid), self.regression)
+        reg_results = self.regression.analyze(history, int(pid))
+
+        # 2. Guarded hybrid decision (LLM cannot freely drift)
+        llm_input = {
+            'id': int(pid),
+            'sma': deterministic['wma'],
+            'prediction': deterministic['regression'],
+            'trend': deterministic['trend'],
+            'volatility': deterministic['volatility'],
+            'safety_stock': deterministic['safety_stock'],
+            'trend_significant': bool(reg_results.get('trend_significant', False)),
+            'deterministic_base': deterministic['forecast'],
+            'candidates': {
+                'wma': deterministic['wma'],
+                'ses': deterministic['ses'],
+                'regression': deterministic['regression']
+            }
+        }
+        llm_decision = self.decision_layer.call_mistral_api(llm_input)
         
         result = {
             'pid': int(pid),
-            'sma': float(sma_forecast),
-            'regression': float(reg_results['prediction']),
-            'safety_stock': float(reg_results.get('safety_stock', 0)),
-            'trend': str(reg_results.get('trend', 'unknown')),
-            'volatility': str(reg_results.get('volatility', 'unknown')),
-            'final_forecast': float(llm_decision.get('final_forecast', 0)),
+            'sma': float(self.baseline.predict(history, int(pid), window=7)),
+            'wma': float(deterministic['wma']),
+            'ses': float(deterministic['ses']),
+            'regression': float(deterministic['regression']),
+            'safety_stock': float(deterministic.get('safety_stock', 0)),
+            'trend': str(deterministic.get('trend', 'unknown')),
+            'volatility': str(deterministic.get('volatility', 'unknown')),
+            'demand_class': str(deterministic.get('demand_class', 'unknown')),
+            'trend_strength': float(deterministic.get('trend_strength', 0.0)),
+            'final_forecast': float(llm_decision.get('final_forecast', deterministic['forecast'])),
             'explanation': str(llm_decision.get('explanation', "No explanation provided")),
             'current_stock': float(current_stock.get(int(pid), 0))
         }
@@ -421,27 +594,39 @@ class ForecastingService:
             history = self.loader.demand_history[self.loader.demand_history['id_produit'] == pid]
             if len(history) < 2: continue
             
-            # 1. Statistical Engine Outputs
-            sma_forecast = self.baseline.predict(history, pid)
-            reg_results = self.regression.analyze(history, pid)
-            reg_results['sma'] = sma_forecast
-            reg_results['id'] = pid
+            # 1. Deterministic Engine Outputs
+            deterministic = self.deterministic.predict(history, int(pid), self.regression)
+            reg_results = self.regression.analyze(history, int(pid))
+            guarded_input = {
+                'id': int(pid),
+                'sma': deterministic['wma'],
+                'prediction': deterministic['regression'],
+                'trend': deterministic['trend'],
+                'volatility': deterministic['volatility'],
+                'safety_stock': deterministic['safety_stock'],
+                'trend_significant': bool(reg_results.get('trend_significant', False)),
+                'deterministic_base': deterministic['forecast'],
+                'candidates': {
+                    'wma': deterministic['wma'],
+                    'ses': deterministic['ses'],
+                    'regression': deterministic['regression']
+                }
+            }
             
             # 2. Decision Layer (LLM Logic)
-            # Step 2: Prepare Structured Prompt
-            llm_prompt = self.decision_layer.prepare_llm_prompt(reg_results)
+            llm_prompt = self.decision_layer.prepare_llm_prompt(guarded_input)
             logger.debug(f"Prompt for SKU {pid}:\n{llm_prompt}")
             
             # Use Mistral API
-            llm_decision = self.decision_layer.call_mistral_api(reg_results)
+            llm_decision = self.decision_layer.call_mistral_api(guarded_input)
             
-            logger.info(f"Product {pid} | SMA: {sma_forecast:.2f} | Reg: {reg_results['prediction']:.2f}")
+            logger.info(f"Product {pid} | WMA: {deterministic['wma']:.2f} | SES: {deterministic['ses']:.2f} | Reg: {deterministic['regression']:.2f}")
             logger.info(f"Decision: {llm_decision.get('final_forecast')} | Reason: {llm_decision.get('explanation')}")
             
             # Format combined results for Order Service
             forecast_metadata[pid] = {
-                'prediction': float(llm_decision.get('final_forecast', 0)),
-                'safety_stock': float(reg_results.get('safety_stock', 0)), 
+                'prediction': float(llm_decision.get('final_forecast', deterministic['forecast'])),
+                'safety_stock': float(deterministic.get('safety_stock', 0)), 
                 'reasoning': str(llm_decision.get('explanation', "Error in LLM response"))
             }
 

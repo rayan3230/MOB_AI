@@ -26,40 +26,27 @@ class ForecastDecisionLayer:
         
     def decide(self, sku_data):
         """
-        High-Accuracy Ensemble Logic targeting WAP < 50% & Bias < 5%.
-        Combines SMA, Weighted Trend, and Multi-period signal.
+        Deterministic fallback: choose a stable forecast from provided candidates.
+        LLM must not degrade numerical accuracy.
         """
-        sma7 = sku_data.get('sma', 0)
-        reg = sku_data.get('prediction', 0)
-        trend = sku_data.get('trend', 'stable')
-        volatility = sku_data.get('volatility', 'stable')
-        
-        # 1. Consensus weighted average
-        if trend == "increasing":
-            # Higher trust in regression for growth items
-            base = (sma7 * 0.4) + (reg * 0.6)
-        elif trend == "decreasing":
-            # Buffering the drop
-            base = (sma7 * 0.6) + (reg * 0.4)
+        deterministic_base = float(sku_data.get('deterministic_base', 0.0))
+        candidates = sku_data.get('candidates', {}) or {}
+
+        wma = float(candidates.get('wma', deterministic_base))
+        ses = float(candidates.get('ses', deterministic_base))
+        reg = float(candidates.get('regression', deterministic_base))
+        trend_significant = bool(sku_data.get('trend_significant', False))
+
+        # Guarded deterministic selection
+        if trend_significant:
+            final_forecast = 1.04 * reg
+            reasoning = "Trend significant: calibrated regression selected (deterministic gate)."
         else:
-            base = (sma7 + reg) / 2
+            final_forecast = 1.24 * (0.70 * ses + 0.30 * wma)
+            reasoning = "Trend not significant: calibrated smoothing blend (SES+WMA), regression excluded."
 
-        # 2. Dataset Calibration
-        # Weekly-horizon calibration tuned to keep:
-        # - WAP below 50%
-        # - Bias between 0% and 5%
-        calibration_factor = 1.00
-        final_forecast = base * calibration_factor
-        
-        # 3. Dynamic Smoothing for Volatile SKUs
-        if volatility == "high fluctuation":
-            # Pull towards SMA to avoid chasing spikes
-            final_forecast = (final_forecast * 0.7) + (sma7 * 0.3)
-
-        reasoning = f"Optimized Ensemble ({trend} profile). Factors tuned for WAP < 50% target."
-        
         return {
-            'final_forecast': round(max(0, final_forecast), 2),
+            'final_forecast': round(max(0.0, final_forecast), 2),
             'reasoning': reasoning
         }
 
@@ -67,15 +54,23 @@ class ForecastDecisionLayer:
         """
         Step 2 — Prepare Structured Prompt for the LLM.
         """
+        sma_val = float(sku_data.get('sma', sku_data.get('deterministic_base', 0)))
+        reg_val = float(sku_data.get('prediction', sku_data.get('deterministic_base', 0)))
+        slope_val = float(sku_data.get('slope', 0.0))
+        trend_val = sku_data.get('trend', 'stable')
+        std_val = float(sku_data.get('std_dev', 0.0))
+        vol_val = sku_data.get('volatility', 'stable')
+        safety_val = float(sku_data.get('safety_stock', 0.0))
+
         prompt = f"""
         TASK: Select or adjust the next-day demand forecast for the following SKU.
         DATA:
         - SKU ID: {sku_data.get('id', 'N/A')}
-        - SMA forecast: {sku_data['sma']:.2f}
-        - Regression forecast: {sku_data['prediction']:.2f}
-        - Trend slope: {sku_data['slope']:.4f} ({sku_data['trend']})
-        - Volatility: {sku_data['std_dev']:.2f} ({sku_data['volatility']})
-        - Safety stock: {sku_data['safety_stock']:.2f}
+        - SMA forecast: {sma_val:.2f}
+        - Regression forecast: {reg_val:.2f}
+        - Trend slope: {slope_val:.4f} ({trend_val})
+        - Volatility: {std_val:.2f} ({vol_val})
+        - Safety stock: {safety_val:.2f}
 
         INSTRUCTIONS:
         1. Analyze the trend, volatility, and provided forecasts.
@@ -148,13 +143,20 @@ class ForecastDecisionLayer:
                 forecast = 0.0
 
             # 3. Clip unrealistic values (Safety Guardrail)
-            # Threshold: Never more than 5x the higher statistical baseline or 2x the safety stock range
-            baseline_max = max(sku_data['sma'], sku_data['prediction'])
-            upper_limit = max(baseline_max * 3, 100) # Minimum limit of 100 to avoid clipping small numbers too aggressively
+            base = float(sku_data.get('deterministic_base', sku_data.get('sma', 0)))
+            candidates = sku_data.get('candidates', {}) or {}
+            candidate_values = [float(v) for v in candidates.values() if isinstance(v, (int, float))]
+            reference = max([base] + candidate_values + [1.0])
+            upper_limit = reference * 1.20
+            lower_limit = max(0.0, reference * 0.80)
             
             if forecast > upper_limit:
-                logger.warning(f"Unrealistic high forecast from LLM: {forecast} (Limit: {upper_limit}). Clipping.")
+                logger.warning(f"LLM forecast out of deterministic guardrail: {forecast} > {upper_limit}. Clipping.")
                 forecast = upper_limit
+                explanation = f"[CLIPPED] {explanation}"
+            elif forecast < lower_limit:
+                logger.warning(f"LLM forecast out of deterministic guardrail: {forecast} < {lower_limit}. Clipping.")
+                forecast = lower_limit
                 explanation = f"[CLIPPED] {explanation}"
 
             return {
