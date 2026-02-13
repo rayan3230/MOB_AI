@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image, ActivityIndicator, RefreshControl } from 'react-native';
 import { Feather, FontAwesome, Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Svg, { Circle, G } from 'react-native-svg';
 import TopHeader from '../../components/AdminHeader';
 import Logo from '../../components/Logo';
@@ -12,10 +13,13 @@ const DashboardContent = ({ navigation }) => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [warehouseId, setWarehouseId] = useState(null);
 
   const fetchStats = async () => {
     try {
-      const data = await warehouseService.getDashboardStats();
+      const activeWhId = await AsyncStorage.getItem('activeWarehouseId');
+      setWarehouseId(activeWhId);
+      const data = await warehouseService.getDashboardStats(activeWhId);
       setStats(data);
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
@@ -71,8 +75,13 @@ const DashboardContent = ({ navigation }) => {
         {/* Main Stat Card */}
         <View style={styles.mainCard}>
           <View>
-            <Text style={styles.mainCardTitle}>Total Warehouses</Text>
-            <Text style={styles.mainCardValue}>{stats?.warehouse?.count || 0}</Text>
+            <Text style={styles.mainCardTitle}>
+              {warehouseId ? `Warehouse: ${warehouseId}` : 'Total Warehouses'}
+            </Text>
+            <Text style={styles.mainCardValue}>
+              {warehouseId ? (stats?.warehouse?.locations || 0) : (stats?.warehouse?.count || 0)}
+            </Text>
+            {warehouseId && <Text style={styles.mainCardSubtitle}>Locations managed</Text>}
           </View>
           <View style={styles.mainCardIcon}>
             <Logo width={120} height={120} color="rgba(255,255,255,0.2)" />

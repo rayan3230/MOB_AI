@@ -44,6 +44,53 @@ class EntrepotViewSet(viewsets.ModelViewSet):
     lookup_field = 'id_entrepot'
     permission_classes = [AllowAny] # Changed from IsAuthenticated for development
 
+    def perform_create(self, serializer):
+        # The save() method of Entrepot handles floor creation,
+        # but we call it explicitly here just in case.
+        warehouse = serializer.save()
+        return warehouse
+
+    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post'])
+    def initialize_structure(self, request, id_entrepot=None):
+        """POST /warehouses/{id}/initialize_structure/ - Manually trigger auto-generation"""
+        warehouse = self.get_object()
+        
+        # Trigger create logic manually even if not 'is_new'
+        from .models import NiveauPicking, NiveauStockage, Vrack
+        from Produit.models import Produit
+        
+        np, created = NiveauPicking.objects.get_or_create(
+            id_entrepot=warehouse,
+            code_niveau='PICKING',
+            defaults={'description': 'Main Picking Floor (A-X)'}
+        )
+        
+        # Create only the first storage floor (N1) manually if it doesn't exist
+        floors = []
+        ns, created = NiveauStockage.objects.get_or_create(
+            id_entrepot=warehouse,
+            code_niveau='N1',
+            defaults={'type_niveau': 'STOCK', 'description': 'Storage Floor 1'}
+        )
+        floors.append(ns)
+        
+        # Ensure Vracks exist
+        for produit in Produit.objects.all():
+            Vrack.objects.get_or_create(
+                id_entrepot=warehouse,
+                id_produit=produit,
+                defaults={'quantite': 0}
+            )
+
+        return Response({
+            'status': 'Structure initialized',
+            'floors_created': [f.code_niveau for f in floors],
+            'picking_floor': np.code_niveau
+        })
+            
+        return Response({'status': 'Structure initialized/verified'})
+
     def destroy(self, request, *args, **kwargs):
         """Warehouse deletion with validation"""
         warehouse = self.get_object()
@@ -80,37 +127,54 @@ class EntrepotViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'])
     def dashboard_stats(self, request):
         """GET /warehouses/dashboard_stats/ - Get overview statistics for the landing page"""
+        warehouse_id = request.query_params.get('warehouse_id')
         now = timezone.now()
         last_24h = now - timezone.timedelta(hours=24)
         
-        # User counts
+        # User counts (Global for now, or could filter by warehouse if users are linked to warehouses)
         total_users = Utilisateur.objects.count()
         admin_users = Utilisateur.objects.filter(role='ADMIN').count()
         employee_users = Utilisateur.objects.filter(role='EMPLOYEE').count()
         
         # Warehouse & Structure
+        if warehouse_id:
+            total_locations = Emplacement.objects.filter(id_entrepot=warehouse_id).count()
+            occupied_locations = Emplacement.objects.filter(statut='OCCUPIED', id_entrepot=warehouse_id).count()
+            available_locations = Emplacement.objects.filter(statut='AVAILABLE', id_entrepot=warehouse_id).count()
+            blocked_locations = Emplacement.objects.filter(statut='BLOCKED', id_entrepot=warehouse_id).count()
+            
+            total_products = Produit.objects.count() # Products are usually global
+            total_stock_qty = Stock.objects.filter(id_emplacement__id_entrepot=warehouse_id).aggregate(total=Sum('quantite'))['total'] or 0
+            total_vrack_qty = Vrack.objects.filter(id_entrepot=warehouse_id).aggregate(total=Sum('quantite'))['total'] or 0
+            
+            total_chariots = Chariot.objects.count() # Chariots could be per warehouse if we add the FK
+            
+            # Activity (Last 24h)
+            receptions_24h = MouvementStock.objects.filter(type_mouvement='RECEPTION', date_execution__gte=last_24h, id_entrepot=warehouse_id).count()
+            pickings_24h = MouvementStock.objects.filter(type_mouvement='PICKING', date_execution__gte=last_24h, id_entrepot=warehouse_id).count()
+            movements_24h = MouvementStock.objects.filter(date_execution__gte=last_24h, id_entrepot=warehouse_id).count()
+        else:
+            total_locations = Emplacement.objects.count()
+            occupied_locations = Emplacement.objects.filter(statut='OCCUPIED').count()
+            available_locations = Emplacement.objects.filter(statut='AVAILABLE').count()
+            blocked_locations = Emplacement.objects.filter(statut='BLOCKED').count()
+            
+            total_products = Produit.objects.count()
+            total_stock_qty = Stock.objects.aggregate(total=Sum('quantite'))['total'] or 0
+            total_vrack_qty = Vrack.objects.aggregate(total=Sum('quantite'))['total'] or 0
+            
+            total_chariots = Chariot.objects.count()
+            
+            receptions_24h = MouvementStock.objects.filter(type_mouvement='RECEPTION', date_execution__gte=last_24h).count()
+            pickings_24h = MouvementStock.objects.filter(type_mouvement='PICKING', date_execution__gte=last_24h).count()
+            movements_24h = MouvementStock.objects.filter(date_execution__gte=last_24h).count()
+
         total_warehouses = Entrepot.objects.count()
-        total_locations = Emplacement.objects.count()
-        occupied_locations = Emplacement.objects.filter(statut='OCCUPIED').count()
-        available_locations = Emplacement.objects.filter(statut='AVAILABLE').count()
-        blocked_locations = Emplacement.objects.filter(statut='BLOCKED').count()
-        
-        # Products & Inventory
-        total_products = Produit.objects.count()
-        total_stock_qty = Stock.objects.aggregate(total=Sum('quantite'))['total'] or 0
-        total_vrack_qty = Vrack.objects.aggregate(total=Sum('quantite'))['total'] or 0
-        
-        # Chariots
-        total_chariots = Chariot.objects.count()
         available_chariots = Chariot.objects.filter(statut='AVAILABLE').count()
         maintenance_chariots = Chariot.objects.filter(statut='MAINTENANCE').count()
-        
-        # Activity (Last 24h)
-        receptions_24h = MouvementStock.objects.filter(type_mouvement='RECEPTION', date_execution__gte=last_24h).count()
-        pickings_24h = MouvementStock.objects.filter(type_mouvement='PICKING', date_execution__gte=last_24h).count()
-        movements_24h = MouvementStock.objects.filter(date_execution__gte=last_24h).count()
 
         return Response({
             'users': {
@@ -155,6 +219,16 @@ class NiveauStockageViewSet(viewsets.ModelViewSet):
     lookup_field = 'id_niveau'
     permission_classes = [AllowAny] # Changed for development
 
+    def get_queryset(self):
+        queryset = NiveauStockage.objects.all()
+        warehouse_id = self.request.query_params.get('warehouse_id')
+        if warehouse_id:
+            queryset = queryset.filter(id_entrepot=warehouse_id)
+        else:
+            if not self.request.user.is_superuser:
+                return NiveauStockage.objects.none()
+        return queryset
+
     def destroy(self, request, *args, **kwargs):
         floor = self.get_object()
         # Enforce "At least one storing floor" rule
@@ -182,6 +256,16 @@ class NiveauPickingViewSet(viewsets.ModelViewSet):
     serializer_class = NiveauPickingSerializer
     lookup_field = 'id_niveau_picking'
     permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        queryset = NiveauPicking.objects.all()
+        warehouse_id = self.request.query_params.get('warehouse_id')
+        if warehouse_id:
+            queryset = queryset.filter(id_entrepot=warehouse_id)
+        else:
+            if not self.request.user.is_superuser:
+                return NiveauPicking.objects.none()
+        return queryset
 
     def destroy(self, request, *args, **kwargs):
         floor = self.get_object()
@@ -220,7 +304,17 @@ class EmplacementViewSet(viewsets.ModelViewSet):
     queryset = Emplacement.objects.all()
     serializer_class = EmplacementSerializer
     lookup_field = 'id_emplacement'
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny] # Changed for development
+
+    def get_queryset(self):
+        queryset = Emplacement.objects.all()
+        warehouse_id = self.request.query_params.get('warehouse_id')
+        if warehouse_id:
+            queryset = queryset.filter(id_entrepot=warehouse_id)
+        else:
+            if not self.request.user.is_superuser:
+                return Emplacement.objects.none()
+        return queryset
 
     @action(detail=False, methods=['get'])
     def search_by_code(self, request):
@@ -278,6 +372,17 @@ class RackViewSet(viewsets.ModelViewSet):
     lookup_field = 'id_rack'
     permission_classes = [AllowAny]
 
+    def get_queryset(self):
+        queryset = Rack.objects.all()
+        warehouse_id = self.request.query_params.get('warehouse_id')
+        if warehouse_id:
+            # Check both possible floor links for warehouse ID
+            queryset = queryset.filter(
+                Q(storage_floor__id_entrepot=warehouse_id) | 
+                Q(picking_floor__id_entrepot=warehouse_id)
+            )
+        return queryset
+
 
 class RackProductViewSet(viewsets.ModelViewSet):
     """
@@ -301,6 +406,19 @@ class StockViewSet(viewsets.ModelViewSet):
     serializer_class = StockSerializer
     lookup_field = 'id_stock'
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Stock.objects.all()
+        warehouse_id = self.request.query_params.get('warehouse_id')
+        if warehouse_id:
+            queryset = queryset.filter(id_emplacement__id_entrepot=warehouse_id)
+        else:
+            # If no warehouse_id is provided, we return nothing to ensure isolation
+            # The exception is for superusers or if we want to default to something
+            if self.request.user.is_superuser:
+                return queryset
+            return Stock.objects.none()
+        return queryset
 
     @action(detail=False, methods=['get'])
     def filter_by_sku(self, request):
@@ -352,6 +470,13 @@ class VrackViewSet(viewsets.ModelViewSet):
     serializer_class = VrackSerializer
     lookup_field = 'id_vrack'
     permission_classes = [AllowAny] # Changed for development
+
+    def get_queryset(self):
+        queryset = Vrack.objects.all()
+        warehouse_id = self.request.query_params.get('warehouse_id')
+        if warehouse_id:
+            queryset = queryset.filter(id_entrepot=warehouse_id)
+        return queryset
 
     @action(detail=False, methods=['get'])
     def by_warehouse(self, request):
@@ -419,6 +544,7 @@ class VrackViewSet(viewsets.ModelViewSet):
                 mvt_id = f"MVT_{timezone.now().strftime('%Y%m%d%H%M%S')}_{vrack.id_produit_id}"
                 mvt = MouvementStock.objects.create(
                     id_mouvement=mvt_id,
+                    id_entrepot=vrack.id_entrepot,
                     type_mouvement='TRANSFERT',
                     id_produit=vrack.id_produit,
                     id_emplacement_source=source,
@@ -466,6 +592,17 @@ class MouvementStockViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = MouvementStockSerializer
     lookup_field = 'id_mouvement'
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = MouvementStock.objects.all()
+        warehouse_id = self.request.query_params.get('warehouse_id')
+        if warehouse_id:
+            queryset = queryset.filter(id_entrepot=warehouse_id)
+        else:
+            if self.request.user.is_superuser:
+                return queryset.order_by('-date_execution')
+            return MouvementStock.objects.none()
+        return queryset.order_by('-date_execution')
 
     @action(detail=False, methods=['get'])
     def filter_by_sku(self, request):
@@ -752,6 +889,17 @@ class JournalAuditViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = JournalAuditSerializer
     lookup_field = 'id_audit'
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = JournalAudit.objects.all()
+        warehouse_id = self.request.query_params.get('warehouse_id')
+        if warehouse_id:
+            queryset = queryset.filter(id_entrepot=warehouse_id)
+        else:
+            if self.request.user.is_superuser:
+                return queryset.order_by('-timestamp')
+            return JournalAudit.objects.none()
+        return queryset.order_by('-timestamp')
 
     @action(detail=False, methods=['get'])
     def filter_by_user(self, request):

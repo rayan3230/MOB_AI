@@ -94,10 +94,6 @@ const Sidebar = ({ role, user, activePage = 'User_managment', onNavigate, onClos
           style={styles.profileSection} 
           onPress={() => onNavigate('Profile')}
         >
-          <Image 
-            source={{ uri: `https://ui-avatars.com/api/?name=${user?.user_name || 'User'}&background=random` }} 
-            style={styles.avatar} 
-          />
           <View style={styles.profileInfo}>
             <Text style={[
               styles.userName,

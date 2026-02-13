@@ -12,6 +12,7 @@ import {
   ScrollView
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { warehouseService } from '../../../services/warehouseService';
 
 const WarehouseManagement = () => {
@@ -21,6 +22,7 @@ const WarehouseManagement = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [activeWarehouse, setActiveWarehouse] = useState(null);
   const [newWarehouse, setNewWarehouse] = useState({
     code_entrepot: '',
     nom_entrepot: '',
@@ -34,12 +36,26 @@ const WarehouseManagement = () => {
       setLoading(true);
       const data = await warehouseService.getWarehouses();
       setWarehouses(data);
+      const activeId = await AsyncStorage.getItem('activeWarehouseId');
+      if (activeId) {
+        setActiveWarehouse(activeId);
+      }
     } catch (error) {
       console.error('Error fetching warehouses:', error);
       Alert.alert('Error', 'Failed to fetch warehouse list');
     } finally {
       setLoading(false);
       setRefreshing(false);
+    }
+  };
+
+  const handleSelectWarehouse = async (id) => {
+    try {
+      await AsyncStorage.setItem('activeWarehouseId', id);
+      setActiveWarehouse(id);
+      Alert.alert('Success', `Warehouse ${id} selected as active`);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to save active warehouse');
     }
   };
 
@@ -138,19 +154,32 @@ const WarehouseManagement = () => {
   };
 
   const renderWarehouseItem = ({ item }) => (
-    <View style={styles.warehouseCard}>
+    <View style={[styles.warehouseCard, activeWarehouse === item.id_entrepot && styles.activeCard]}>
       <View style={styles.warehouseInfo}>
         <Text style={styles.warehouseName}>{item.nom_entrepot}</Text>
         <Text style={styles.warehouseCode}>{item.code_entrepot}</Text>
         <Text style={styles.warehouseDetails}>
           {item.ville}{item.adresse ? ` - ${item.adresse}` : ''}
         </Text>
-        <View style={[styles.statusBadge, { backgroundColor: item.actif ? '#4CAF50' : '#F44336', alignSelf: 'flex-start', marginTop: 8 }]}>
-          <Text style={styles.statusText}>{item.actif ? 'Active' : 'Inactive'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 8}}>
+          <View style={[styles.statusBadge, { backgroundColor: item.actif ? '#4CAF50' : '#F44336' }]}>
+            <Text style={styles.statusText}>{item.actif ? 'Active' : 'Inactive'}</Text>
+          </View>
+          {activeWarehouse === item.id_entrepot && (
+            <View style={[styles.statusBadge, { backgroundColor: '#2196F3', marginLeft: 8 }]}>
+              <Text style={styles.statusText}>Selected</Text>
+            </View>
+          )}
         </View>
       </View>
       
       <View style={styles.actionButtons}>
+        <TouchableOpacity 
+          style={[styles.actionButton, {backgroundColor: '#e3f2fd'}]} 
+          onPress={() => handleSelectWarehouse(item.id_entrepot)}
+        >
+          <Feather name="check-circle" size={18} color="#2196F3" />
+        </TouchableOpacity>
         <TouchableOpacity 
           style={[styles.actionButton, styles.editButton]} 
           onPress={() => openEditModal(item)}

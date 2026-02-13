@@ -213,6 +213,13 @@ class MouvementStockSerializer(serializers.ModelSerializer):
         write_only=True,
         required=False
     )
+    id_entrepot = EntrepotSerializer(read_only=True)
+    id_entrepot_id = serializers.PrimaryKeyRelatedField(
+        queryset=Entrepot.objects.all(),
+        source='id_entrepot',
+        write_only=True,
+        required=False
+    )
     id_emplacement_source = EmplacementSerializer(read_only=True)
     id_emplacement_source_id = serializers.PrimaryKeyRelatedField(
         queryset=Emplacement.objects.all(),
@@ -241,6 +248,7 @@ class MouvementStockSerializer(serializers.ModelSerializer):
             'id_mouvement', 'type_mouvement', 'quantite', 'lot_serie',
             'motif_code', 'reference_transaction', 'date_execution', 'notes',
             'id_produit', 'id_produit_id',
+            'id_entrepot', 'id_entrepot_id',
             'id_emplacement_source', 'id_emplacement_source_id',
             'id_emplacement_destination', 'id_emplacement_destination_id',
             'execute_par', 'execute_par_id'
@@ -543,6 +551,13 @@ class JournalAuditSerializer(serializers.ModelSerializer):
         write_only=True,
         required=False
     )
+    id_entrepot = EntrepotSerializer(read_only=True)
+    id_entrepot_id = serializers.PrimaryKeyRelatedField(
+        queryset=Entrepot.objects.all(),
+        source='id_entrepot',
+        write_only=True,
+        required=False
+    )
 
     class Meta:
         model = JournalAudit
@@ -550,7 +565,8 @@ class JournalAuditSerializer(serializers.ModelSerializer):
             'id_audit', 'type_action', 'type_entite', 'id_entite',
             'ancienne_valeur', 'nouvelle_valeur', 'description',
             'adresse_ip', 'timestamp',
-            'execute_par', 'execute_par_id'
+            'execute_par', 'execute_par_id',
+            'id_entrepot', 'id_entrepot_id'
         ]
         read_only_fields = ['timestamp']
 

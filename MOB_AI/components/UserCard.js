@@ -73,13 +73,6 @@ const UserCard = ({ user, currentUserRole, onToggleStatus, onEdit, onDelete }) =
       >
         {/* Header Section */}
         <View style={styles.mainContent}>
-          <View style={styles.avatarContainer}>
-            <View style={[styles.avatar, { backgroundColor: getRoleColor(user.role) }]}>
-              <Text style={styles.avatarText}>{getInitials(user.nom_complet)}</Text>
-            </View>
-            <View style={[styles.statusDot, { backgroundColor: user.is_banned ? '#FF3B30' : '#34C759' }]} />
-          </View>
-
           <View style={styles.infoContainer}>
             <View style={styles.nameRow}>
               <Text style={styles.userName} numberOfLines={1}>

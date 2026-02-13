@@ -97,7 +97,6 @@ const EmployeeProfile = ({ route, navigation }) => {
         </View>
 
         <View style={styles.identityCard}>
-          <Image source={{ uri: avatarUri }} style={styles.avatar} />
           {isEditing ? (
             <TextInput
               style={styles.nameInput}

@@ -12,6 +12,7 @@ import {
   ScrollView
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { warehouseService } from '../../../services/warehouseService';
 import { productService } from '../../../services/productService';
 import { Picker } from '@react-native-picker/picker';
@@ -38,11 +39,12 @@ const VrackManagement = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      const activeWhId = await AsyncStorage.getItem('activeWarehouseId');
       const [vrackData, warehouseData, productData, locationData] = await Promise.all([
-        warehouseService.getVracks(),
+        warehouseService.getVracks(activeWhId),
         warehouseService.getWarehouses(),
         productService.getProducts(),
-        warehouseService.getLocations()
+        warehouseService.getLocations(activeWhId)
       ]);
       setVracks(vrackData);
       setWarehouses(warehouseData);

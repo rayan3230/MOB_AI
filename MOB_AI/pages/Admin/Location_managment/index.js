@@ -13,6 +13,7 @@ import {
   Switch
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { warehouseService } from '../../../services/warehouseService';
 
@@ -40,20 +41,31 @@ const LocationManagement = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      const activeWhId = await AsyncStorage.getItem('activeWarehouseId');
+      
+      if (!activeWhId) {
+        setLoading(false);
+        return;
+      }
+
       const [locsData, whData, stockFloors, pickingFloors] = await Promise.all([
-        warehouseService.getLocations(),
+        warehouseService.getLocations(activeWhId),
         warehouseService.getWarehouses(),
-        warehouseService.getFloors(),
-        warehouseService.getPickingFloors()
+        warehouseService.getFloors(activeWhId),
+        warehouseService.getPickingFloors(activeWhId)
       ]);
       
+      setLocations(Array.isArray(locsData) ? locsData : []);
+      setWarehouses(Array.isArray(whData) ? whData : []);
+      
+      const safeStockFloors = Array.isArray(stockFloors) ? stockFloors : [];
+      const safePickingFloors = Array.isArray(pickingFloors) ? pickingFloors : [];
+      
       const allFloors = [
-        ...stockFloors,
-        ...pickingFloors.map(f => ({ ...f, id_niveau: f.id_niveau_picking }))
+        ...safeStockFloors.map(f => ({ ...f, id_niveau: f.id_niveau })),
+        ...safePickingFloors.map(f => ({ ...f, id_niveau: f.id_niveau_picking }))
       ];
       
-      setLocations(locsData);
-      setWarehouses(whData);
       setFloors(allFloors);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -88,12 +100,14 @@ const LocationManagement = () => {
       
       if (selectedFloor) {
         if (selectedFloor.type_niveau === 'PICKING') {
-          submissionData.id_niveau_picking_id = selectedFloor.id_niveau;
-          submissionData.id_niveau_id = null;
+          submissionData.picking_floor_id = selectedFloor.id_niveau;
+          delete submissionData.id_niveau_id;
         } else {
-          submissionData.id_niveau_id = selectedFloor.id_niveau;
-          submissionData.id_niveau_picking_id = null;
+          submissionData.storage_floor_id = selectedFloor.id_niveau;
+          delete submissionData.id_niveau_id;
         }
+      } else {
+        delete submissionData.id_niveau_id;
       }
 
       if (isEditing) {
@@ -141,7 +155,7 @@ const LocationManagement = () => {
     setNewLocation({
       code_emplacement: loc.code_emplacement,
       id_entrepot_id: loc.id_entrepot?.id_entrepot || loc.id_entrepot,
-      id_niveau_id: loc.id_niveau?.id_niveau || loc.id_niveau || loc.id_niveau_picking?.id_niveau_picking || loc.id_niveau_picking || '',
+      id_niveau_id: loc.storage_floor?.id_niveau || loc.picking_floor?.id_niveau_picking || '',
       zone: loc.zone || '',
       type_emplacement: loc.type_emplacement || 'STORAGE',
       statut: loc.statut || 'AVAILABLE',
@@ -193,7 +207,7 @@ const LocationManagement = () => {
         
         <Text style={styles.subText}>
           <Feather name="home" size={12} /> {item.id_entrepot?.nom_entrepot || 'N/A'} 
-          {item.id_niveau ? ` • ${item.id_niveau.code_niveau}` : ''}
+          {item.storage_floor ? ` • ${item.storage_floor.code_niveau}` : (item.picking_floor ? ` • ${item.picking_floor.code_niveau}` : '')}
         </Text>
         
         {item.zone ? (
@@ -233,6 +247,7 @@ const LocationManagement = () => {
     );
   }
 
+  // Check if active warehouse is selected
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -247,7 +262,10 @@ const LocationManagement = () => {
       
       {locations.length === 0 ? (
         <View style={styles.centered}>
-          <Text>No locations found</Text>
+          <Feather name="layers" size={48} color="#ccc" />
+          <Text style={styles.emptyText}>
+            {floors.length === 0 ? "No warehouse selected or no floors found. Please select a warehouse in Warehouse Management." : "No locations found"}
+          </Text>
         </View>
       ) : (
         <FlatList
@@ -396,6 +414,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 12,
   },
   header: {
     flexDirection: 'row',

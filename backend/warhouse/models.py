@@ -49,19 +49,30 @@ class Entrepot(models.Model):
         super().save(*args, **kwargs)
 
         if is_new:
-            # Create a picking floor in the new table
+            # Create default structure (1 Storage Floor + 1 Picking Floor)
+            # This triggers the automatic rack and capacity generation in Floor models
             NiveauPicking.objects.create(
                 id_entrepot=self,
-                code_niveau='PICK',
-                description='Default Picking Floor'
+                code_niveau='PICKING',
+                description='Main Picking Floor (A-X)'
             )
-            # Create a stocking floor in the stocking table
+            
+            # Create the first storage floor (N1)
             NiveauStockage.objects.create(
                 id_entrepot=self,
                 code_niveau='N1',
                 type_niveau='STOCK',
-                description='Default Stocking Level 1'
+                description='Storage Floor 1'
             )
+
+            # Create VRacks for existing products
+            from Produit.models import Produit
+            for produit in Produit.objects.all():
+                Vrack.objects.get_or_create(
+                    id_entrepot=self,
+                    id_produit=produit,
+                    defaults={'quantite': 0}
+                )
 
     def __str__(self):
         return f"{self.id_entrepot} - {self.nom_entrepot}"
@@ -78,7 +89,7 @@ class NiveauStockage(models.Model):
         ('STOCK', 'Stocking Level'),
     ]
 
-    id_niveau = models.CharField(max_length=20, primary_key=True, blank=True)
+    id_niveau = models.CharField(max_length=100, primary_key=True, blank=True)
     id_entrepot = models.ForeignKey(Entrepot, on_delete=models.CASCADE, related_name='niveaux_stockage')
     code_niveau = models.CharField(max_length=50)  # N1, N2, N3, N4
     type_niveau = models.CharField(max_length=20, choices=TYPE_CHOICES, default='STOCK')
@@ -168,7 +179,7 @@ class NiveauPicking(models.Model):
     Picking Floor Table (Separate table as requested)
     FR-13 subset
     """
-    id_niveau_picking = models.CharField(max_length=20, primary_key=True, blank=True)
+    id_niveau_picking = models.CharField(max_length=100, primary_key=True, blank=True)
     id_entrepot = models.ForeignKey(Entrepot, on_delete=models.CASCADE, related_name='niveaux_picking')
     code_niveau = models.CharField(max_length=50)
     description = models.CharField(max_length=255, null=True, blank=True)
@@ -301,8 +312,8 @@ class Emplacement(models.Model):
         ('BLOCKED', 'Blocked'),
     ]
 
-    id_emplacement = models.CharField(max_length=20, primary_key=True, blank=True)
-    code_emplacement = models.CharField(max_length=50, unique=True)  # FR-17: Unique code per location
+    id_emplacement = models.CharField(max_length=100, primary_key=True, blank=True)
+    code_emplacement = models.CharField(max_length=50)  # FR-17: Unique code per location
     id_entrepot = models.ForeignKey(Entrepot, on_delete=models.CASCADE, related_name='emplacements')
     storage_floor = models.ForeignKey(NiveauStockage, on_delete=models.SET_NULL, null=True, blank=True, related_name='emplacements')
     picking_floor = models.ForeignKey(NiveauPicking, on_delete=models.SET_NULL, null=True, blank=True, related_name='emplacements')
@@ -324,6 +335,7 @@ class Emplacement(models.Model):
 
     class Meta:
         db_table = 'emplacements'
+        unique_together = [['id_entrepot', 'code_emplacement']]
 
 
 # ============================================================================
@@ -398,6 +410,7 @@ class MouvementStock(models.Model):
     ]
 
     id_mouvement = models.CharField(max_length=30, primary_key=True)
+    id_entrepot = models.ForeignKey(Entrepot, on_delete=models.CASCADE, null=True, blank=True, related_name='mouvements_stock')
     type_mouvement = models.CharField(max_length=50, choices=TYPES_MOUVEMENT)
     id_produit = models.ForeignKey(Produit, on_delete=models.SET_NULL, null=True, related_name='mouvements_stock')
     id_emplacement_source = models.ForeignKey(Emplacement, on_delete=models.SET_NULL, null=True, blank=True, related_name='mouvements_stock_source')
@@ -735,6 +748,7 @@ class JournalAudit(models.Model):
     ]
 
     id_audit = models.CharField(max_length=30, primary_key=True)
+    id_entrepot = models.ForeignKey(Entrepot, on_delete=models.CASCADE, null=True, blank=True, related_name='journaux_audit')
     type_action = models.CharField(max_length=50, choices=TYPES_ACTION)
     type_entite = models.CharField(max_length=100)
     id_entite = models.CharField(max_length=100, null=True, blank=True)

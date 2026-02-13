@@ -14,12 +14,14 @@ export const warehouseService = {
     },
 
     // Floor Management
-    getFloors: async () => {
-        return await apiCall('/api/warehouse/floors/', 'GET');
+    getFloors: async (warehouseId = null) => {
+        const url = warehouseId ? `/api/warehouse/floors/?warehouse_id=${warehouseId}` : '/api/warehouse/floors/';
+        return await apiCall(url, 'GET');
     },
 
-    getPickingFloors: async () => {
-        return await apiCall('/api/warehouse/picking-floors/', 'GET');
+    getPickingFloors: async (warehouseId = null) => {
+        const url = warehouseId ? `/api/warehouse/picking-floors/?warehouse_id=${warehouseId}` : '/api/warehouse/picking-floors/';
+        return await apiCall(url, 'GET');
     },
 
     createFloor: async (floorData) => {
@@ -54,8 +56,9 @@ export const warehouseService = {
     },
 
     // Location Management
-    getLocations: async () => {
-        return await apiCall('/api/warehouse/locations/', 'GET');
+    getLocations: async (warehouseId = null) => {
+        const url = warehouseId ? `/api/warehouse/locations/?warehouse_id=${warehouseId}` : '/api/warehouse/locations/';
+        return await apiCall(url, 'GET');
     },
 
     createLocation: async (locationData) => {
@@ -88,8 +91,9 @@ export const warehouseService = {
     },
 
     // Vrack Management
-    getVracks: async () => {
-        return await apiCall('/api/warehouse/vracks/', 'GET');
+    getVracks: async (warehouseId = null) => {
+        const url = warehouseId ? `/api/warehouse/vracks/?warehouse_id=${warehouseId}` : '/api/warehouse/vracks/';
+        return await apiCall(url, 'GET');
     },
 
     createVrack: async (vrackData) => {
@@ -108,8 +112,9 @@ export const warehouseService = {
         return await apiCall(`/api/warehouse/vracks/by_warehouse/?warehouse_id=${warehouseId}`, 'GET');
     },
 
-    getDashboardStats: async () => {
-        return await apiCall('/api/warehouse/warehouses/dashboard_stats/', 'GET');
+    getDashboardStats: async (warehouseId = null) => {
+        const url = warehouseId ? `/api/warehouse/warehouses/dashboard_stats/?warehouse_id=${warehouseId}` : '/api/warehouse/warehouses/dashboard_stats/';
+        return await apiCall(url, 'GET');
     },
 
     adjustVrackQuantity: async (vrackId, delta) => {

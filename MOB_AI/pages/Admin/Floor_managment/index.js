@@ -12,6 +12,7 @@ import {
   ScrollView
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { warehouseService } from '../../../services/warehouseService';
 
@@ -35,19 +36,28 @@ const FloorManagement = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      const activeWhId = await AsyncStorage.getItem('activeWarehouseId');
       const [stockFloors, pickingFloors, warehousesData] = await Promise.all([
         warehouseService.getFloors(),
         warehouseService.getPickingFloors(),
         warehouseService.getWarehouses()
       ]);
       
-      const allFloors = [
+      let allFloors = [
         ...stockFloors,
         ...pickingFloors.map(f => ({ ...f, id_niveau: f.id_niveau_picking }))
       ];
       
+      if (activeWhId) {
+        allFloors = allFloors.filter(f => f.id_entrepot === activeWhId || f.id_entrepot_id === activeWhId);
+      }
+      
       setFloors(allFloors);
       setWarehouses(warehousesData);
+      
+      if (activeWhId) {
+        setNewFloor(prev => ({ ...prev, id_entrepot_id: activeWhId }));
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
       Alert.alert('Error', 'Failed to load floors or warehouses');

@@ -82,17 +82,6 @@ const ProfileContent = ({ user: initialUser, role, navigation, onOpenDrawer }) =
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.profileCard}>
-          <View style={styles.imageContainer}>
-            <Image 
-              source={{ uri: `https://ui-avatars.com/api/?name=${user?.user_name || 'User'}&background=04324C&color=fff&size=128` }} 
-              style={styles.profileImage} 
-            />
-            {isEditing && (
-              <TouchableOpacity style={styles.editBadge}>
-                <Feather name="camera" size={14} color="#fff" />
-              </TouchableOpacity>
-            )}
-          </View>
           
           {isEditing ? (
             <TextInput
