@@ -50,15 +50,18 @@ const Signin = () => {
       const response = await authService.login(username, password);
       console.log('Login Success:', response);
       
-      // Normalize role to lowercase for comparison
-      const role = (response.user?.user_role || '').toLowerCase();
+      const user = response.user;
+      const role = (user?.user_role || '').toLowerCase();
       
       if (role === 'admin' || role === 'administrator') {
-        navigation.replace('AdminHome');
+        navigation.replace('AdminHome', { user });
       } else if (role === 'manager' || role === 'supervisor') {
-        navigation.replace('SupervisorHome');
+        navigation.replace('SupervisorHome', { user });
+      } else if (role === 'employee') {
+        navigation.replace('EmployeeHome', { user });
       } else {
-        navigation.replace('EmployeeHome');
+        // Fallback or error
+        setError('Unknown user role: ' + role);
       }
       
     } catch (err) {
