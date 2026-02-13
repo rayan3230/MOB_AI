@@ -514,7 +514,9 @@ class ForecastingService:
                 test_date = history.iloc[t]['date'] if t < len(history) else datetime.now()
                 actual_value = float(history.iloc[t:t + horizon]['quantite_demande'].sum())
 
-                # Candidate models: REG and HYBRID only
+                # Candidate models: SMA, REG and HYBRID
+                sma_pred = self.baseline.predict(train_data, pid) * horizon
+                
                 reg_results = self.regression.analyze(train_data, pid)
                 reg_pred = float(reg_results.get('prediction', 0.0)) * horizon
 
@@ -541,6 +543,7 @@ class ForecastingService:
                 rolling_rows.append({
                     'sku_id': pid,
                     'actual': actual_value,
+                    'sma': max(0.0, sma_pred),
                     'reg': max(0.0, reg_pred),
                     'hybrid': max(0.0, hybrid_pred)
                 })
@@ -551,9 +554,9 @@ class ForecastingService:
 
         eval_df = pd.DataFrame(rolling_rows)
         
-        # Calculate Metrics (SMA removed)
+        # Calculate Metrics
         metrics = []
-        for model in ['reg', 'hybrid']:
+        for model in ['sma', 'reg', 'hybrid']:
             total_abs_error = (eval_df[model] - eval_df['actual']).abs().sum()
             total_actual = eval_df['actual'].sum()
             wap = (total_abs_error / total_actual) * 100 if total_actual > 0 else 0
@@ -570,6 +573,7 @@ class ForecastingService:
         metrics_df = pd.DataFrame(metrics)
 
         previous_reference = pd.DataFrame([
+            {'Model': 'SMA', 'WAP (%)': 52.12, 'Bias (%)': -2.15},
             {'Model': 'REG', 'WAP (%)': 44.59, 'Bias (%)': 3.53},
             {'Model': 'HYBRID', 'WAP (%)': 40.95, 'Bias (%)': 3.98},
         ])
