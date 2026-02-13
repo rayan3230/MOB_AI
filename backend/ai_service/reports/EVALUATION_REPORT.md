@@ -39,6 +39,11 @@ The storage service has been hardened to respect high-fidelity warehouse constra
     - **Real-Time Occupancy Tracking**: Maps are updated atomically upon assignment to prevent double-booking.
     - **Supervisor Overrides**: Support for manual placement with required justification.
     - **Full Audit Trail**: Every storage decision, whether AI-driven or manual, is timestamped and logged with user role context.
+## 8.3 Advanced Storage Intelligence
+The system includes enterprise-grade optimizations for dynamic flow:
+- **Dynamic Workload Congestion**: Real-time integration of pending pick tasks. Slots in high-activity zones receive a +8.0 cost penalty per task to steer incoming inventory towards quieter aisles, preventing forklift bottlenecks.
+- **Forecast-Aware Positioning**: Prioritizes SKUs identified as "High Demand" by the Forecasting Service (8.1), shifting them into a "Super-Fast" category (0.3x cost multiplier) even if their historical movement was slow.
+- **Automated Zone Balancing**: A background engine monitors the picking heatmap. If a zone exceeds a traffic threshold (e.g., 20 picks/day), the system automatically triggers relocation suggestions to move products into 20% more efficient, low-traffic areas.
 - **Pillar/Wall Exclusion**: High-resolution `pillar_matrix` prevents slot suggestions on physical obstructions.
 - **Rack-Only Logic**: `storage_matrix` restricts inventory to valid Storage zones, excluding aisles, dock areas (Expédition), and offices.
 - **Reserved Zones**: Zones marked as "Reserved" or "Obstacle" are automatically pruned from the storage pool.

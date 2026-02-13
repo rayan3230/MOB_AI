@@ -31,11 +31,22 @@ class StorageOptimizationService:
             "distance": 1.0,
             "weight": 2.5,     # High penalty for heavy items far away
             "frequency": 1.0,  # Multiplier applied directly to distance
-            "congestion": 5.0, # Significant penalty to avoid bottleneck
-            "traffic": 0.2     # Adjustment for zone heat
+            "congestion": 5.0, # Penalty for localized occupancy (3x3)
+            "workload": 8.0,   # NEW: Heavy penalty for areas with high pending pick tasks
+            "traffic": 0.2     # Adjustment for historical zone heat
         }
         
+        # --- NEW: Pending Workload Tracker ---
+        self.pending_tasks: Dict[int, Dict[Tuple[int, int], int]] = {} # floor -> coord -> task_count
+        
         self._classify_all_floors()
+
+    def set_pending_tasks(self, tasks_by_coord: Dict[int, Dict[Tuple[int, int], int]]):
+        """
+        REQ 8.2 ADVANCED: Dynamic congestion penalty based on upcoming workload.
+        :param tasks_by_coord: {floor_idx: {(x, y): count}}
+        """
+        self.pending_tasks = tasks_by_coord
 
     def apply_forecast_data(self, high_demand_skus: List[int]):
         """
@@ -95,6 +106,17 @@ class StorageOptimizationService:
         
         congestion_penalty = occupied_count * self.weights["congestion"]
         score += congestion_penalty
+        
+        # 4. NEW: Workload Congestion Penalty (Dynamic)
+        # Avoid zones where many picks are already scheduled
+        workload_penalty = 0.0
+        # Check 3x3 surrounding for workload spillover
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                node_workload = self.pending_tasks.get(floor_idx, {}).get((int(coord.x) + dx, int(coord.y) + dy), 0)
+                workload_penalty += node_workload * self.weights["workload"]
+        
+        score += workload_penalty
         
         return score
 
