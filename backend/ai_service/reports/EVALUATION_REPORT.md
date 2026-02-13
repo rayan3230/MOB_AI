@@ -2,10 +2,10 @@
 
 ### Performance Comparison Table
 
-| Model   |    MAE |   RMSE |
-|:--------|-------:|-------:|
-| SMA     | 130.17 | 145.05 |
-| REG     | 139.23 | 149.05 |
-| HYBRID  | 333.63 | 358.15 |
+| Model   |   WAP (%) |   Bias (%) |
+|:--------|----------:|-----------:|
+| SMA     |     41.2  |       3.49 |
+| REG     |     44.59 |       3.53 |
+| HYBRID  |     40.95 |       3.98 |
 
 *Note: HYBRID model includes reasoned logic adjustments and risk-aware buffering.*

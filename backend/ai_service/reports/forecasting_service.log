@@ -1529,3 +1529,1055 @@ Final Items Sent to Warehouse:
 2026-02-13 01:22:39,125 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
 2026-02-13 01:22:59,783 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
 2026-02-13 01:24:26,610 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 04:29:31,515 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 04:29:31,628 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 04:30:00,899 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 04:30:01,345 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 04:30:01,348 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (MAE & RMSE for SMA, Reg, Hybrid) ---
+2026-02-13 04:30:01,397 - ForecastingService - INFO - 
+========================================
+2026-02-13 04:30:01,398 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 04:30:01,398 - ForecastingService - INFO - ========================================
+2026-02-13 04:30:01,442 - ForecastingService - INFO - 
+ Model  WAP (%)   RMSE
+   SMA   147.92 145.05
+   REG   158.22 149.05
+HYBRID   379.13 358.15
+2026-02-13 04:30:01,443 - ForecastingService - INFO - ========================================
+2026-02-13 04:30:01,473 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 04:30:01,562 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 04:30:01,566 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 04:30:01,575 - ForecastingService - INFO - Product 31334 | SMA: 150.00 | Reg: 138.15
+2026-02-13 04:30:01,575 - ForecastingService - INFO - Decision: 484.52 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.07). | High volatility detected. Added safety buffer of 346.36 to prevent stockouts.
+2026-02-13 04:30:01,584 - ForecastingService - INFO - Product 31335 | SMA: 98.57 | Reg: 114.15
+2026-02-13 04:30:01,584 - ForecastingService - INFO - Decision: 374.21 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 275.63 to prevent stockouts.
+2026-02-13 04:30:01,592 - ForecastingService - INFO - Product 31336 | SMA: 162.57 | Reg: 136.18
+2026-02-13 04:30:01,594 - ForecastingService - INFO - Decision: 403.75 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.05). | High volatility detected. Added safety buffer of 267.57 to prevent stockouts.
+2026-02-13 04:30:01,600 - ForecastingService - INFO - Product 31337 | SMA: 87.29 | Reg: 93.18
+2026-02-13 04:30:01,600 - ForecastingService - INFO - Decision: 248.1 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.08). | High volatility detected. Added safety buffer of 154.92 to prevent stockouts.
+2026-02-13 04:30:01,611 - ForecastingService - INFO - Product 31338 | SMA: 74.86 | Reg: 186.34
+2026-02-13 04:30:01,612 - ForecastingService - INFO - Decision: 434.1 | Reason: Strong upward trend detected (slope 0.12). Regression model preferred to capture growth. | High volatility detected. Added safety buffer of 247.76 to prevent stockouts.
+2026-02-13 04:30:01,620 - ForecastingService - INFO - Product 31339 | SMA: 64.86 | Reg: 49.02
+2026-02-13 04:30:01,622 - ForecastingService - INFO - Decision: 128.62 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 63.76 to prevent stockouts.
+2026-02-13 04:30:01,630 - ForecastingService - INFO - Product 31340 | SMA: 18.43 | Reg: 20.95
+2026-02-13 04:30:01,631 - ForecastingService - INFO - Decision: 100.15 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 81.72 to prevent stockouts.
+2026-02-13 04:30:01,639 - ForecastingService - INFO - Product 31341 | SMA: 46.29 | Reg: 61.51
+2026-02-13 04:30:01,640 - ForecastingService - INFO - Decision: 456.75 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 415.09 to prevent stockouts.
+2026-02-13 04:30:01,647 - ForecastingService - INFO - Product 31342 | SMA: 152.14 | Reg: 178.99
+2026-02-13 04:30:01,648 - ForecastingService - INFO - Decision: 471.26 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.08). | High volatility detected. Added safety buffer of 292.27 to prevent stockouts.
+2026-02-13 04:30:01,656 - ForecastingService - INFO - Product 31343 | SMA: 129.43 | Reg: 141.47
+2026-02-13 04:30:01,657 - ForecastingService - INFO - Decision: 373.89 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.05). | High volatility detected. Added safety buffer of 232.42 to prevent stockouts.
+2026-02-13 04:30:01,665 - ForecastingService - INFO - Product 31344 | SMA: 112.43 | Reg: 125.72
+2026-02-13 04:30:01,666 - ForecastingService - INFO - Decision: 291.77 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 179.34 to prevent stockouts.
+2026-02-13 04:30:01,675 - ForecastingService - INFO - Product 31347 | SMA: 85.86 | Reg: 97.41
+2026-02-13 04:30:01,675 - ForecastingService - INFO - Decision: 222.48 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 136.62 to prevent stockouts.
+2026-02-13 04:30:01,686 - ForecastingService - INFO - Product 31348 | SMA: 78.71 | Reg: 44.98
+2026-02-13 04:30:01,687 - ForecastingService - INFO - Decision: 181.88 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 141.39 to prevent stockouts.
+2026-02-13 04:30:01,699 - ForecastingService - INFO - Product 31349 | SMA: 185.86 | Reg: 142.58
+2026-02-13 04:30:01,700 - ForecastingService - INFO - Decision: 348.03 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 219.70 to prevent stockouts.
+2026-02-13 04:30:01,708 - ForecastingService - INFO - Product 31350 | SMA: 65.00 | Reg: 38.79
+2026-02-13 04:30:01,709 - ForecastingService - INFO - Decision: 183.87 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 148.96 to prevent stockouts.
+2026-02-13 04:30:01,717 - ForecastingService - INFO - Product 31351 | SMA: 71.71 | Reg: 82.23
+2026-02-13 04:30:01,717 - ForecastingService - INFO - Decision: 131.03 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 59.32 to prevent stockouts.
+2026-02-13 04:30:01,724 - ForecastingService - INFO - Product 31352 | SMA: 43.86 | Reg: 29.12
+2026-02-13 04:30:01,724 - ForecastingService - INFO - Decision: 119.18 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 92.97 to prevent stockouts.
+2026-02-13 04:30:01,734 - ForecastingService - INFO - Product 31353 | SMA: 128.57 | Reg: 119.87
+2026-02-13 04:30:01,735 - ForecastingService - INFO - Decision: 380.29 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 251.72 to prevent stockouts.
+2026-02-13 04:30:01,742 - ForecastingService - INFO - Product 31354 | SMA: 128.57 | Reg: 121.95
+2026-02-13 04:30:01,743 - ForecastingService - INFO - Decision: 429.89 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 320.13 to prevent stockouts.
+2026-02-13 04:30:01,751 - ForecastingService - INFO - Product 31355 | SMA: 142.86 | Reg: 136.18
+2026-02-13 04:30:01,751 - ForecastingService - INFO - Decision: 470.03 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 327.18 to prevent stockouts.
+2026-02-13 04:30:01,752 - ForecastingService - INFO - 
+==================================================
+2026-02-13 04:30:01,752 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 04:30:01,753 - ForecastingService - INFO - ==================================================
+2026-02-13 04:30:01,753 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-9B707C9B
+2026-02-13 04:30:01,754 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 04:30:01,759 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    374.21           374.21              0
+  31336    403.75           403.75              0
+  31337    128.10           248.10            120
+  31342    471.26           471.26              0
+  31344    291.77           291.77              0
+  31347     22.48           222.48            200
+  31348    181.88           181.88              0
+  31352    119.18           119.18              0
+  31353    380.29           380.29              0
+2026-02-13 04:30:01,760 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 04:30:01,761 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-9B707C9B | SKU: 31335 | Changed from 374.21 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 04:30:01,761 - ForecastingService - INFO - ORDER PREP-9B707C9B VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 04:30:01,763 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 04:30:01,763 - ForecastingService - INFO - Order ID: PREP-9B707C9B
+2026-02-13 04:30:01,764 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 04:30:01,773 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                                                                                                                     reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           374.21              0            Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 275.63 to prevent stockouts.                374.21              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    403.75           403.75              0      Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.05). | High volatility detected. Added safety buffer of 267.57 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31337    128.10           248.10            120      Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.08). | High volatility detected. Added safety buffer of 154.92 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31342    471.26           471.26              0      Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.08). | High volatility detected. Added safety buffer of 292.27 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31344    291.77           291.77              0            Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 179.34 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31347     22.48           222.48            200            Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 136.62 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31348    181.88           181.88              0 Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 141.39 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31352    119.18           119.18              0  Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 92.97 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31353    380.29           380.29              0            Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 251.72 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 04:36:36,668 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 04:36:36,753 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 04:37:05,184 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 04:37:05,538 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 04:37:05,540 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (WAP & Bias for SMA, Reg, Hybrid) ---
+2026-02-13 04:37:05,594 - ForecastingService - INFO - 
+========================================
+2026-02-13 04:37:05,595 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 04:37:05,595 - ForecastingService - INFO - ========================================
+2026-02-13 04:37:05,604 - ForecastingService - INFO - 
+ Model  WAP (%)   Bias
+   SMA   147.92  30.23
+   REG   158.22  45.38
+HYBRID   379.13 300.08
+2026-02-13 04:37:05,606 - ForecastingService - INFO - ========================================
+2026-02-13 04:37:05,646 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 04:37:05,736 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 04:37:05,740 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 04:37:05,751 - ForecastingService - INFO - Product 31334 | SMA: 150.00 | Reg: 138.15
+2026-02-13 04:37:05,751 - ForecastingService - INFO - Decision: 484.52 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.07). | High volatility detected. Added safety buffer of 346.36 to prevent stockouts.
+2026-02-13 04:37:05,766 - ForecastingService - INFO - Product 31335 | SMA: 98.57 | Reg: 114.15
+2026-02-13 04:37:05,766 - ForecastingService - INFO - Decision: 374.21 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 275.63 to prevent stockouts.
+2026-02-13 04:37:05,777 - ForecastingService - INFO - Product 31336 | SMA: 162.57 | Reg: 136.18
+2026-02-13 04:37:05,777 - ForecastingService - INFO - Decision: 403.75 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.05). | High volatility detected. Added safety buffer of 267.57 to prevent stockouts.
+2026-02-13 04:37:05,787 - ForecastingService - INFO - Product 31337 | SMA: 87.29 | Reg: 93.18
+2026-02-13 04:37:05,787 - ForecastingService - INFO - Decision: 248.1 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.08). | High volatility detected. Added safety buffer of 154.92 to prevent stockouts.
+2026-02-13 04:37:05,796 - ForecastingService - INFO - Product 31338 | SMA: 74.86 | Reg: 186.34
+2026-02-13 04:37:05,797 - ForecastingService - INFO - Decision: 434.1 | Reason: Strong upward trend detected (slope 0.12). Regression model preferred to capture growth. | High volatility detected. Added safety buffer of 247.76 to prevent stockouts.
+2026-02-13 04:37:05,805 - ForecastingService - INFO - Product 31339 | SMA: 64.86 | Reg: 49.02
+2026-02-13 04:37:05,806 - ForecastingService - INFO - Decision: 128.62 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 63.76 to prevent stockouts.
+2026-02-13 04:37:05,814 - ForecastingService - INFO - Product 31340 | SMA: 18.43 | Reg: 20.95
+2026-02-13 04:37:05,814 - ForecastingService - INFO - Decision: 100.15 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 81.72 to prevent stockouts.
+2026-02-13 04:37:05,822 - ForecastingService - INFO - Product 31341 | SMA: 46.29 | Reg: 61.51
+2026-02-13 04:37:05,823 - ForecastingService - INFO - Decision: 456.75 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 415.09 to prevent stockouts.
+2026-02-13 04:37:05,830 - ForecastingService - INFO - Product 31342 | SMA: 152.14 | Reg: 178.99
+2026-02-13 04:37:05,832 - ForecastingService - INFO - Decision: 471.26 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.08). | High volatility detected. Added safety buffer of 292.27 to prevent stockouts.
+2026-02-13 04:37:05,838 - ForecastingService - INFO - Product 31343 | SMA: 129.43 | Reg: 141.47
+2026-02-13 04:37:05,838 - ForecastingService - INFO - Decision: 373.89 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.05). | High volatility detected. Added safety buffer of 232.42 to prevent stockouts.
+2026-02-13 04:37:05,846 - ForecastingService - INFO - Product 31344 | SMA: 112.43 | Reg: 125.72
+2026-02-13 04:37:05,847 - ForecastingService - INFO - Decision: 291.77 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 179.34 to prevent stockouts.
+2026-02-13 04:37:05,853 - ForecastingService - INFO - Product 31347 | SMA: 85.86 | Reg: 97.41
+2026-02-13 04:37:05,853 - ForecastingService - INFO - Decision: 222.48 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 136.62 to prevent stockouts.
+2026-02-13 04:37:05,862 - ForecastingService - INFO - Product 31348 | SMA: 78.71 | Reg: 44.98
+2026-02-13 04:37:05,863 - ForecastingService - INFO - Decision: 181.88 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 141.39 to prevent stockouts.
+2026-02-13 04:37:05,870 - ForecastingService - INFO - Product 31349 | SMA: 185.86 | Reg: 142.58
+2026-02-13 04:37:05,871 - ForecastingService - INFO - Decision: 348.03 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 219.70 to prevent stockouts.
+2026-02-13 04:37:05,878 - ForecastingService - INFO - Product 31350 | SMA: 65.00 | Reg: 38.79
+2026-02-13 04:37:05,878 - ForecastingService - INFO - Decision: 183.87 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 148.96 to prevent stockouts.
+2026-02-13 04:37:05,886 - ForecastingService - INFO - Product 31351 | SMA: 71.71 | Reg: 82.23
+2026-02-13 04:37:05,886 - ForecastingService - INFO - Decision: 131.03 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 59.32 to prevent stockouts.
+2026-02-13 04:37:05,893 - ForecastingService - INFO - Product 31352 | SMA: 43.86 | Reg: 29.12
+2026-02-13 04:37:05,894 - ForecastingService - INFO - Decision: 119.18 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 92.97 to prevent stockouts.
+2026-02-13 04:37:05,901 - ForecastingService - INFO - Product 31353 | SMA: 128.57 | Reg: 119.87
+2026-02-13 04:37:05,902 - ForecastingService - INFO - Decision: 380.29 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 251.72 to prevent stockouts.
+2026-02-13 04:37:05,909 - ForecastingService - INFO - Product 31354 | SMA: 128.57 | Reg: 121.95
+2026-02-13 04:37:05,909 - ForecastingService - INFO - Decision: 429.89 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 320.13 to prevent stockouts.
+2026-02-13 04:37:05,916 - ForecastingService - INFO - Product 31355 | SMA: 142.86 | Reg: 136.18
+2026-02-13 04:37:05,917 - ForecastingService - INFO - Decision: 470.03 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 327.18 to prevent stockouts.
+2026-02-13 04:37:05,918 - ForecastingService - INFO - 
+==================================================
+2026-02-13 04:37:05,918 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 04:37:05,919 - ForecastingService - INFO - ==================================================
+2026-02-13 04:37:05,919 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-D11F2278
+2026-02-13 04:37:05,920 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 04:37:05,926 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    374.21           374.21              0
+  31336    403.75           403.75              0
+  31337    128.10           248.10            120
+  31342    471.26           471.26              0
+  31344    291.77           291.77              0
+  31347     22.48           222.48            200
+  31348    181.88           181.88              0
+  31352    119.18           119.18              0
+  31353    380.29           380.29              0
+2026-02-13 04:37:05,959 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 04:37:05,960 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-D11F2278 | SKU: 31335 | Changed from 374.21 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 04:37:05,960 - ForecastingService - INFO - ORDER PREP-D11F2278 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 04:37:05,961 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 04:37:05,961 - ForecastingService - INFO - Order ID: PREP-D11F2278
+2026-02-13 04:37:05,962 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 04:37:05,971 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                                                                                                                     reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           374.21              0            Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 275.63 to prevent stockouts.                374.21              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    403.75           403.75              0      Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.05). | High volatility detected. Added safety buffer of 267.57 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31337    128.10           248.10            120      Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.08). | High volatility detected. Added safety buffer of 154.92 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31342    471.26           471.26              0      Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.08). | High volatility detected. Added safety buffer of 292.27 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31344    291.77           291.77              0            Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 179.34 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31347     22.48           222.48            200            Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 136.62 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31348    181.88           181.88              0 Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 141.39 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31352    119.18           119.18              0  Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 92.97 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31353    380.29           380.29              0            Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 251.72 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 04:41:08,611 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 04:41:08,692 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 04:41:36,022 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 04:41:36,448 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 04:41:36,451 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (WAP & Bias for SMA, Reg, Hybrid) ---
+2026-02-13 04:41:36,507 - ForecastingService - INFO - 
+========================================
+2026-02-13 04:41:36,508 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 04:41:36,508 - ForecastingService - INFO - ========================================
+2026-02-13 04:41:36,515 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   SMA   147.92     34.35
+   REG   158.22     51.56
+HYBRID   379.13    341.00
+2026-02-13 04:41:36,516 - ForecastingService - INFO - ========================================
+2026-02-13 04:41:36,546 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 04:41:36,629 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 04:41:36,634 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 04:41:36,644 - ForecastingService - INFO - Product 31334 | SMA: 150.00 | Reg: 138.15
+2026-02-13 04:41:36,644 - ForecastingService - INFO - Decision: 484.52 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.07). | High volatility detected. Added safety buffer of 346.36 to prevent stockouts.
+2026-02-13 04:41:36,651 - ForecastingService - INFO - Product 31335 | SMA: 98.57 | Reg: 114.15
+2026-02-13 04:41:36,652 - ForecastingService - INFO - Decision: 374.21 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 275.63 to prevent stockouts.
+2026-02-13 04:41:36,660 - ForecastingService - INFO - Product 31336 | SMA: 162.57 | Reg: 136.18
+2026-02-13 04:41:36,661 - ForecastingService - INFO - Decision: 403.75 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.05). | High volatility detected. Added safety buffer of 267.57 to prevent stockouts.
+2026-02-13 04:41:36,669 - ForecastingService - INFO - Product 31337 | SMA: 87.29 | Reg: 93.18
+2026-02-13 04:41:36,669 - ForecastingService - INFO - Decision: 248.1 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.08). | High volatility detected. Added safety buffer of 154.92 to prevent stockouts.
+2026-02-13 04:41:36,678 - ForecastingService - INFO - Product 31338 | SMA: 74.86 | Reg: 186.34
+2026-02-13 04:41:36,678 - ForecastingService - INFO - Decision: 434.1 | Reason: Strong upward trend detected (slope 0.12). Regression model preferred to capture growth. | High volatility detected. Added safety buffer of 247.76 to prevent stockouts.
+2026-02-13 04:41:36,687 - ForecastingService - INFO - Product 31339 | SMA: 64.86 | Reg: 49.02
+2026-02-13 04:41:36,687 - ForecastingService - INFO - Decision: 128.62 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 63.76 to prevent stockouts.
+2026-02-13 04:41:36,696 - ForecastingService - INFO - Product 31340 | SMA: 18.43 | Reg: 20.95
+2026-02-13 04:41:36,696 - ForecastingService - INFO - Decision: 100.15 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 81.72 to prevent stockouts.
+2026-02-13 04:41:36,705 - ForecastingService - INFO - Product 31341 | SMA: 46.29 | Reg: 61.51
+2026-02-13 04:41:36,705 - ForecastingService - INFO - Decision: 456.75 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 415.09 to prevent stockouts.
+2026-02-13 04:41:36,714 - ForecastingService - INFO - Product 31342 | SMA: 152.14 | Reg: 178.99
+2026-02-13 04:41:36,715 - ForecastingService - INFO - Decision: 471.26 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.08). | High volatility detected. Added safety buffer of 292.27 to prevent stockouts.
+2026-02-13 04:41:36,726 - ForecastingService - INFO - Product 31343 | SMA: 129.43 | Reg: 141.47
+2026-02-13 04:41:36,727 - ForecastingService - INFO - Decision: 373.89 | Reason: Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.05). | High volatility detected. Added safety buffer of 232.42 to prevent stockouts.
+2026-02-13 04:41:36,736 - ForecastingService - INFO - Product 31344 | SMA: 112.43 | Reg: 125.72
+2026-02-13 04:41:36,736 - ForecastingService - INFO - Decision: 291.77 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 179.34 to prevent stockouts.
+2026-02-13 04:41:36,743 - ForecastingService - INFO - Product 31347 | SMA: 85.86 | Reg: 97.41
+2026-02-13 04:41:36,743 - ForecastingService - INFO - Decision: 222.48 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 136.62 to prevent stockouts.
+2026-02-13 04:41:36,751 - ForecastingService - INFO - Product 31348 | SMA: 78.71 | Reg: 44.98
+2026-02-13 04:41:36,752 - ForecastingService - INFO - Decision: 181.88 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 141.39 to prevent stockouts.
+2026-02-13 04:41:36,761 - ForecastingService - INFO - Product 31349 | SMA: 185.86 | Reg: 142.58
+2026-02-13 04:41:36,762 - ForecastingService - INFO - Decision: 348.03 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 219.70 to prevent stockouts.
+2026-02-13 04:41:36,771 - ForecastingService - INFO - Product 31350 | SMA: 65.00 | Reg: 38.79
+2026-02-13 04:41:36,771 - ForecastingService - INFO - Decision: 183.87 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 148.96 to prevent stockouts.
+2026-02-13 04:41:36,780 - ForecastingService - INFO - Product 31351 | SMA: 71.71 | Reg: 82.23
+2026-02-13 04:41:36,781 - ForecastingService - INFO - Decision: 131.03 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 59.32 to prevent stockouts.
+2026-02-13 04:41:36,789 - ForecastingService - INFO - Product 31352 | SMA: 43.86 | Reg: 29.12
+2026-02-13 04:41:36,790 - ForecastingService - INFO - Decision: 119.18 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 92.97 to prevent stockouts.
+2026-02-13 04:41:36,796 - ForecastingService - INFO - Product 31353 | SMA: 128.57 | Reg: 119.87
+2026-02-13 04:41:36,798 - ForecastingService - INFO - Decision: 380.29 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 251.72 to prevent stockouts.
+2026-02-13 04:41:36,806 - ForecastingService - INFO - Product 31354 | SMA: 128.57 | Reg: 121.95
+2026-02-13 04:41:36,807 - ForecastingService - INFO - Decision: 429.89 | Reason: Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 320.13 to prevent stockouts.
+2026-02-13 04:41:36,818 - ForecastingService - INFO - Product 31355 | SMA: 142.86 | Reg: 136.18
+2026-02-13 04:41:36,819 - ForecastingService - INFO - Decision: 470.03 | Reason: Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 327.18 to prevent stockouts.
+2026-02-13 04:41:36,820 - ForecastingService - INFO - 
+==================================================
+2026-02-13 04:41:36,821 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 04:41:36,821 - ForecastingService - INFO - ==================================================
+2026-02-13 04:41:36,821 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-A11AD3B7
+2026-02-13 04:41:36,823 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 04:41:36,833 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    374.21           374.21              0
+  31336    403.75           403.75              0
+  31337    128.10           248.10            120
+  31342    471.26           471.26              0
+  31344    291.77           291.77              0
+  31347     22.48           222.48            200
+  31348    181.88           181.88              0
+  31352    119.18           119.18              0
+  31353    380.29           380.29              0
+2026-02-13 04:41:36,835 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 04:41:36,836 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-A11AD3B7 | SKU: 31335 | Changed from 374.21 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 04:41:36,836 - ForecastingService - INFO - ORDER PREP-A11AD3B7 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 04:41:36,836 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 04:41:36,838 - ForecastingService - INFO - Order ID: PREP-A11AD3B7
+2026-02-13 04:41:36,839 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 04:41:36,851 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                                                                                                                     reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           374.21              0            Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 275.63 to prevent stockouts.                374.21              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    403.75           403.75              0      Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.05). | High volatility detected. Added safety buffer of 267.57 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31337    128.10           248.10            120      Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.08). | High volatility detected. Added safety buffer of 154.92 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31342    471.26           471.26              0      Mixed signals. Defaulting to Regression model to account for recent trend (Slope: 0.08). | High volatility detected. Added safety buffer of 292.27 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31344    291.77           291.77              0            Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 179.34 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31347     22.48           222.48            200            Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 136.62 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31348    181.88           181.88              0 Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 141.39 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31352    119.18           119.18              0  Downward trend detected. Forecast reduced by 10% to prevent overstocking (Trend: decreasing). | High volatility detected. Added safety buffer of 92.97 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+  31353    380.29           380.29              0            Demand is stable. Simple Moving Average provides the most reliable naive forecast. | High volatility detected. Added safety buffer of 251.72 to prevent stockouts.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 04:42:15,776 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 04:42:15,869 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 04:42:42,415 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 04:42:42,782 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 04:42:42,785 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (WAP & Bias for SMA, Reg, Hybrid) ---
+2026-02-13 04:42:42,836 - ForecastingService - INFO - 
+========================================
+2026-02-13 04:42:42,838 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 04:42:42,839 - ForecastingService - INFO - ========================================
+2026-02-13 04:42:42,846 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   SMA   147.92     34.35
+   REG   158.22     51.56
+HYBRID   163.74     56.11
+2026-02-13 04:42:42,847 - ForecastingService - INFO - ========================================
+2026-02-13 04:42:42,878 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 04:42:42,963 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 04:42:42,968 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 04:42:42,974 - ForecastingService - INFO - Product 31334 | SMA: 150.00 | Reg: 138.15
+2026-02-13 04:42:42,975 - ForecastingService - INFO - Decision: 145.96 | Reason: Hybrid weighted ensemble (30% SMA, 70% Regression) used for balanced accuracy. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:42,983 - ForecastingService - INFO - Product 31335 | SMA: 98.57 | Reg: 114.15
+2026-02-13 04:42:42,984 - ForecastingService - INFO - Decision: 109.55 | Reason: Averaged SMA and Regression for maximal stability in stable demand SKUs. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:42,990 - ForecastingService - INFO - Product 31336 | SMA: 162.57 | Reg: 136.18
+2026-02-13 04:42:42,991 - ForecastingService - INFO - Decision: 148.42 | Reason: Hybrid weighted ensemble (30% SMA, 70% Regression) used for balanced accuracy. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,000 - ForecastingService - INFO - Product 31337 | SMA: 87.29 | Reg: 93.18
+2026-02-13 04:42:43,001 - ForecastingService - INFO - Decision: 94.15 | Reason: Hybrid weighted ensemble (30% SMA, 70% Regression) used for balanced accuracy. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,009 - ForecastingService - INFO - Product 31338 | SMA: 74.86 | Reg: 186.34
+2026-02-13 04:42:43,009 - ForecastingService - INFO - Decision: 195.77 | Reason: Capture growth trend (slope 0.12) with conservative 2% adjustment. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,018 - ForecastingService - INFO - Product 31339 | SMA: 64.86 | Reg: 49.02
+2026-02-13 04:42:43,018 - ForecastingService - INFO - Decision: 58.65 | Reason: Averaged SMA and Regression for maximal stability in stable demand SKUs. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,026 - ForecastingService - INFO - Product 31340 | SMA: 18.43 | Reg: 20.95
+2026-02-13 04:42:43,027 - ForecastingService - INFO - Decision: 20.28 | Reason: Averaged SMA and Regression for maximal stability in stable demand SKUs. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,035 - ForecastingService - INFO - Product 31341 | SMA: 46.29 | Reg: 61.51
+2026-02-13 04:42:43,035 - ForecastingService - INFO - Decision: 58.29 | Reason: Following downward trend (slope -0.08) to minimize over-forecasting bias. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,044 - ForecastingService - INFO - Product 31342 | SMA: 152.14 | Reg: 178.99
+2026-02-13 04:42:43,045 - ForecastingService - INFO - Decision: 176.07 | Reason: Hybrid weighted ensemble (30% SMA, 70% Regression) used for balanced accuracy. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,052 - ForecastingService - INFO - Product 31343 | SMA: 129.43 | Reg: 141.47
+2026-02-13 04:42:43,052 - ForecastingService - INFO - Decision: 142.0 | Reason: Hybrid weighted ensemble (30% SMA, 70% Regression) used for balanced accuracy. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,061 - ForecastingService - INFO - Product 31344 | SMA: 112.43 | Reg: 125.72
+2026-02-13 04:42:43,062 - ForecastingService - INFO - Decision: 122.65 | Reason: Averaged SMA and Regression for maximal stability in stable demand SKUs. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,068 - ForecastingService - INFO - Product 31347 | SMA: 85.86 | Reg: 97.41
+2026-02-13 04:42:43,069 - ForecastingService - INFO - Decision: 94.38 | Reason: Averaged SMA and Regression for maximal stability in stable demand SKUs. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,076 - ForecastingService - INFO - Product 31348 | SMA: 78.71 | Reg: 44.98
+2026-02-13 04:42:43,077 - ForecastingService - INFO - Decision: 42.63 | Reason: Following downward trend (slope -0.12) to minimize over-forecasting bias. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,086 - ForecastingService - INFO - Product 31349 | SMA: 185.86 | Reg: 142.58
+2026-02-13 04:42:43,086 - ForecastingService - INFO - Decision: 135.11 | Reason: Following downward trend (slope -0.13) to minimize over-forecasting bias. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,095 - ForecastingService - INFO - Product 31350 | SMA: 65.00 | Reg: 38.79
+2026-02-13 04:42:43,096 - ForecastingService - INFO - Decision: 36.75 | Reason: Following downward trend (slope -0.20) to minimize over-forecasting bias. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,105 - ForecastingService - INFO - Product 31351 | SMA: 71.71 | Reg: 82.23
+2026-02-13 04:42:43,106 - ForecastingService - INFO - Decision: 79.28 | Reason: Averaged SMA and Regression for maximal stability in stable demand SKUs. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,113 - ForecastingService - INFO - Product 31352 | SMA: 43.86 | Reg: 29.12
+2026-02-13 04:42:43,114 - ForecastingService - INFO - Decision: 27.59 | Reason: Following downward trend (slope -0.08) to minimize over-forecasting bias. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,122 - ForecastingService - INFO - Product 31353 | SMA: 128.57 | Reg: 119.87
+2026-02-13 04:42:43,123 - ForecastingService - INFO - Decision: 127.95 | Reason: Averaged SMA and Regression for maximal stability in stable demand SKUs. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,130 - ForecastingService - INFO - Product 31354 | SMA: 128.57 | Reg: 121.95
+2026-02-13 04:42:43,130 - ForecastingService - INFO - Decision: 115.56 | Reason: Following downward trend (slope -0.06) to minimize over-forecasting bias. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,140 - ForecastingService - INFO - Product 31355 | SMA: 142.86 | Reg: 136.18
+2026-02-13 04:42:43,140 - ForecastingService - INFO - Decision: 143.7 | Reason: Averaged SMA and Regression for maximal stability in stable demand SKUs. | Applied 3% volatility risk adjustment (Bias-controlled).
+2026-02-13 04:42:43,141 - ForecastingService - INFO - 
+==================================================
+2026-02-13 04:42:43,141 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 04:42:43,141 - ForecastingService - INFO - ==================================================
+2026-02-13 04:42:43,142 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-40035E5D
+2026-02-13 04:42:43,142 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 04:42:43,148 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    109.55           109.55              0
+  31336    148.42           148.42              0
+  31342    176.07           176.07              0
+  31344    122.65           122.65              0
+  31348     42.63            42.63              0
+  31352     27.59            27.59              0
+  31353    127.95           127.95              0
+2026-02-13 04:42:43,149 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 04:42:43,149 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-40035E5D | SKU: 31335 | Changed from 109.55 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 04:42:43,150 - ForecastingService - INFO - ORDER PREP-40035E5D VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 04:42:43,150 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 04:42:43,151 - ForecastingService - INFO - Order ID: PREP-40035E5D
+2026-02-13 04:42:43,151 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 04:42:43,160 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                                                                                 reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           109.55              0       Averaged SMA and Regression for maximal stability in stable demand SKUs. | Applied 3% volatility risk adjustment (Bias-controlled).                109.55              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    148.42           148.42              0 Hybrid weighted ensemble (30% SMA, 70% Regression) used for balanced accuracy. | Applied 3% volatility risk adjustment (Bias-controlled).                   NaN               NaN                                                                   NaN         NaN
+  31342    176.07           176.07              0 Hybrid weighted ensemble (30% SMA, 70% Regression) used for balanced accuracy. | Applied 3% volatility risk adjustment (Bias-controlled).                   NaN               NaN                                                                   NaN         NaN
+  31344    122.65           122.65              0       Averaged SMA and Regression for maximal stability in stable demand SKUs. | Applied 3% volatility risk adjustment (Bias-controlled).                   NaN               NaN                                                                   NaN         NaN
+  31348     42.63            42.63              0      Following downward trend (slope -0.12) to minimize over-forecasting bias. | Applied 3% volatility risk adjustment (Bias-controlled).                   NaN               NaN                                                                   NaN         NaN
+  31352     27.59            27.59              0      Following downward trend (slope -0.08) to minimize over-forecasting bias. | Applied 3% volatility risk adjustment (Bias-controlled).                   NaN               NaN                                                                   NaN         NaN
+  31353    127.95           127.95              0       Averaged SMA and Regression for maximal stability in stable demand SKUs. | Applied 3% volatility risk adjustment (Bias-controlled).                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 04:43:57,994 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 04:43:58,081 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 04:44:26,036 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 04:44:26,490 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 04:44:26,493 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (WAP & Bias for SMA, Reg, Hybrid) ---
+2026-02-13 04:44:26,540 - ForecastingService - INFO - 
+========================================
+2026-02-13 04:44:26,542 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 04:44:26,543 - ForecastingService - INFO - ========================================
+2026-02-13 04:44:26,550 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   SMA   147.92     34.35
+   REG   158.22     51.56
+HYBRID   123.24      5.49
+2026-02-13 04:44:26,551 - ForecastingService - INFO - ========================================
+2026-02-13 04:44:26,583 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 04:44:26,663 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 04:44:26,667 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 04:44:26,673 - ForecastingService - INFO - Product 31334 | SMA: 150.00 | Reg: 138.15
+2026-02-13 04:44:26,674 - ForecastingService - INFO - Decision: 98.64 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,682 - ForecastingService - INFO - Product 31335 | SMA: 98.57 | Reg: 114.15
+2026-02-13 04:44:26,683 - ForecastingService - INFO - Decision: 70.21 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,690 - ForecastingService - INFO - Product 31336 | SMA: 162.57 | Reg: 136.18
+2026-02-13 04:44:26,691 - ForecastingService - INFO - Decision: 97.23 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,699 - ForecastingService - INFO - Product 31337 | SMA: 87.29 | Reg: 93.18
+2026-02-13 04:44:26,700 - ForecastingService - INFO - Decision: 66.53 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,708 - ForecastingService - INFO - Product 31338 | SMA: 74.86 | Reg: 186.34
+2026-02-13 04:44:26,708 - ForecastingService - INFO - Decision: 133.05 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,716 - ForecastingService - INFO - Product 31339 | SMA: 64.86 | Reg: 49.02
+2026-02-13 04:44:26,717 - ForecastingService - INFO - Decision: 40.87 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,722 - ForecastingService - INFO - Product 31340 | SMA: 18.43 | Reg: 20.95
+2026-02-13 04:44:26,723 - ForecastingService - INFO - Decision: 13.05 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,730 - ForecastingService - INFO - Product 31341 | SMA: 46.29 | Reg: 61.51
+2026-02-13 04:44:26,732 - ForecastingService - INFO - Decision: 29.9 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,738 - ForecastingService - INFO - Product 31342 | SMA: 152.14 | Reg: 178.99
+2026-02-13 04:44:26,738 - ForecastingService - INFO - Decision: 127.8 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,746 - ForecastingService - INFO - Product 31343 | SMA: 129.43 | Reg: 141.47
+2026-02-13 04:44:26,747 - ForecastingService - INFO - Decision: 101.01 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,753 - ForecastingService - INFO - Product 31344 | SMA: 112.43 | Reg: 125.72
+2026-02-13 04:44:26,754 - ForecastingService - INFO - Decision: 79.16 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,761 - ForecastingService - INFO - Product 31347 | SMA: 85.86 | Reg: 97.41
+2026-02-13 04:44:26,762 - ForecastingService - INFO - Decision: 60.74 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,769 - ForecastingService - INFO - Product 31348 | SMA: 78.71 | Reg: 44.98
+2026-02-13 04:44:26,770 - ForecastingService - INFO - Decision: 29.06 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,777 - ForecastingService - INFO - Product 31349 | SMA: 185.86 | Reg: 142.58
+2026-02-13 04:44:26,778 - ForecastingService - INFO - Decision: 92.11 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,785 - ForecastingService - INFO - Product 31350 | SMA: 65.00 | Reg: 38.79
+2026-02-13 04:44:26,785 - ForecastingService - INFO - Decision: 25.06 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,796 - ForecastingService - INFO - Product 31351 | SMA: 71.71 | Reg: 82.23
+2026-02-13 04:44:26,797 - ForecastingService - INFO - Decision: 50.91 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,804 - ForecastingService - INFO - Product 31352 | SMA: 43.86 | Reg: 29.12
+2026-02-13 04:44:26,804 - ForecastingService - INFO - Decision: 18.81 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,811 - ForecastingService - INFO - Product 31353 | SMA: 128.57 | Reg: 119.87
+2026-02-13 04:44:26,812 - ForecastingService - INFO - Decision: 85.65 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,818 - ForecastingService - INFO - Product 31354 | SMA: 128.57 | Reg: 121.95
+2026-02-13 04:44:26,819 - ForecastingService - INFO - Decision: 78.78 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,829 - ForecastingService - INFO - Product 31355 | SMA: 142.86 | Reg: 136.18
+2026-02-13 04:44:26,829 - ForecastingService - INFO - Decision: 95.78 | Reason: Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:44:26,830 - ForecastingService - INFO - 
+==================================================
+2026-02-13 04:44:26,832 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 04:44:26,832 - ForecastingService - INFO - ==================================================
+2026-02-13 04:44:26,832 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-38892738
+2026-02-13 04:44:26,833 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 04:44:26,838 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     70.21            70.21              0
+  31336     97.23            97.23              0
+  31342    127.80           127.80              0
+  31344     79.16            79.16              0
+  31348     29.06            29.06              0
+  31352     18.81            18.81              0
+  31353     85.65            85.65              0
+2026-02-13 04:44:26,839 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 04:44:26,839 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-38892738 | SKU: 31335 | Changed from 70.21 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 04:44:26,840 - ForecastingService - INFO - ORDER PREP-38892738 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 04:44:26,842 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 04:44:26,842 - ForecastingService - INFO - Order ID: PREP-38892738
+2026-02-13 04:44:26,842 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 04:44:26,849 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                                          reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            70.21              0 Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.                 70.21              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336     97.23            97.23              0 Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31342    127.80           127.80              0 Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31344     79.16            79.16              0 Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31348     29.06            29.06              0 Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31352     18.81            18.81              0 Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31353     85.65            85.65              0 Calibrated Hybrid Forecast (Factor: 0.68).  volatility detected but smoothed to maintain accuracy.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 04:45:17,424 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 04:45:17,472 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 04:45:32,363 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 04:45:32,587 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 04:45:32,588 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (WAP & Bias for SMA, Reg, Hybrid) ---
+2026-02-13 04:45:32,613 - ForecastingService - INFO - 
+========================================
+2026-02-13 04:45:32,613 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 04:45:32,613 - ForecastingService - INFO - ========================================
+2026-02-13 04:45:32,616 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   SMA   147.92     34.35
+   REG   158.22     51.56
+HYBRID   120.95      2.39
+2026-02-13 04:45:32,617 - ForecastingService - INFO - ========================================
+2026-02-13 04:45:32,631 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 04:45:32,681 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 04:45:32,683 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 04:45:32,687 - ForecastingService - INFO - Product 31334 | SMA: 150.00 | Reg: 138.15
+2026-02-13 04:45:32,687 - ForecastingService - INFO - Decision: 95.74 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,691 - ForecastingService - INFO - Product 31335 | SMA: 98.57 | Reg: 114.15
+2026-02-13 04:45:32,691 - ForecastingService - INFO - Decision: 68.14 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,694 - ForecastingService - INFO - Product 31336 | SMA: 162.57 | Reg: 136.18
+2026-02-13 04:45:32,695 - ForecastingService - INFO - Decision: 94.37 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,698 - ForecastingService - INFO - Product 31337 | SMA: 87.29 | Reg: 93.18
+2026-02-13 04:45:32,699 - ForecastingService - INFO - Decision: 64.57 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,702 - ForecastingService - INFO - Product 31338 | SMA: 74.86 | Reg: 186.34
+2026-02-13 04:45:32,703 - ForecastingService - INFO - Decision: 129.13 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,707 - ForecastingService - INFO - Product 31339 | SMA: 64.86 | Reg: 49.02
+2026-02-13 04:45:32,708 - ForecastingService - INFO - Decision: 39.67 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,711 - ForecastingService - INFO - Product 31340 | SMA: 18.43 | Reg: 20.95
+2026-02-13 04:45:32,711 - ForecastingService - INFO - Decision: 12.66 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,715 - ForecastingService - INFO - Product 31341 | SMA: 46.29 | Reg: 61.51
+2026-02-13 04:45:32,715 - ForecastingService - INFO - Decision: 29.02 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,719 - ForecastingService - INFO - Product 31342 | SMA: 152.14 | Reg: 178.99
+2026-02-13 04:45:32,719 - ForecastingService - INFO - Decision: 124.04 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,722 - ForecastingService - INFO - Product 31343 | SMA: 129.43 | Reg: 141.47
+2026-02-13 04:45:32,723 - ForecastingService - INFO - Decision: 98.04 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,727 - ForecastingService - INFO - Product 31344 | SMA: 112.43 | Reg: 125.72
+2026-02-13 04:45:32,727 - ForecastingService - INFO - Decision: 76.84 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,730 - ForecastingService - INFO - Product 31347 | SMA: 85.86 | Reg: 97.41
+2026-02-13 04:45:32,731 - ForecastingService - INFO - Decision: 58.95 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,734 - ForecastingService - INFO - Product 31348 | SMA: 78.71 | Reg: 44.98
+2026-02-13 04:45:32,735 - ForecastingService - INFO - Decision: 28.2 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,739 - ForecastingService - INFO - Product 31349 | SMA: 185.86 | Reg: 142.58
+2026-02-13 04:45:32,739 - ForecastingService - INFO - Decision: 89.4 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,744 - ForecastingService - INFO - Product 31350 | SMA: 65.00 | Reg: 38.79
+2026-02-13 04:45:32,744 - ForecastingService - INFO - Decision: 24.32 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,747 - ForecastingService - INFO - Product 31351 | SMA: 71.71 | Reg: 82.23
+2026-02-13 04:45:32,748 - ForecastingService - INFO - Decision: 49.41 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,751 - ForecastingService - INFO - Product 31352 | SMA: 43.86 | Reg: 29.12
+2026-02-13 04:45:32,753 - ForecastingService - INFO - Decision: 18.26 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,757 - ForecastingService - INFO - Product 31353 | SMA: 128.57 | Reg: 119.87
+2026-02-13 04:45:32,757 - ForecastingService - INFO - Decision: 83.13 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,761 - ForecastingService - INFO - Product 31354 | SMA: 128.57 | Reg: 121.95
+2026-02-13 04:45:32,761 - ForecastingService - INFO - Decision: 76.46 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,765 - ForecastingService - INFO - Product 31355 | SMA: 142.86 | Reg: 136.18
+2026-02-13 04:45:32,765 - ForecastingService - INFO - Decision: 92.96 | Reason: Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.
+2026-02-13 04:45:32,765 - ForecastingService - INFO - 
+==================================================
+2026-02-13 04:45:32,766 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 04:45:32,766 - ForecastingService - INFO - ==================================================
+2026-02-13 04:45:32,766 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-634E6263
+2026-02-13 04:45:32,766 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 04:45:32,771 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     68.14            68.14              0
+  31336     94.37            94.37              0
+  31342    124.04           124.04              0
+  31344     76.84            76.84              0
+  31348     28.20            28.20              0
+  31352     18.26            18.26              0
+  31353     83.13            83.13              0
+2026-02-13 04:45:32,771 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 04:45:32,771 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-634E6263 | SKU: 31335 | Changed from 68.14 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 04:45:32,772 - ForecastingService - INFO - ORDER PREP-634E6263 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 04:45:32,772 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 04:45:32,772 - ForecastingService - INFO - Order ID: PREP-634E6263
+2026-02-13 04:45:32,772 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 04:45:32,776 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                                              reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            68.14              0 Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.                 68.14              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336     94.37            94.37              0 Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31342    124.04           124.04              0 Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31344     76.84            76.84              0 Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31348     28.20            28.20              0 Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31352     18.26            18.26              0 Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.                   NaN               NaN                                                                   NaN         NaN
+  31353     83.13            83.13              0 Calibrated Hybrid Forecast (Factor: 0.66). High volatility detected but smoothed to maintain accuracy.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 04:48:46,596 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 04:49:01,239 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 04:49:01,443 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 04:52:49,456 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 04:52:50,567 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 04:53:05,970 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 04:53:06,204 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 04:53:06,206 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (WAP & Bias for SMA, Reg, Hybrid) ---
+2026-02-13 04:53:06,374 - ForecastingService - INFO - 
+========================================
+2026-02-13 04:53:06,375 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 04:53:06,375 - ForecastingService - INFO - ========================================
+2026-02-13 04:53:06,394 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   SMA    82.14    -13.10
+   REG    74.01    -23.10
+HYBRID    76.37    -30.69
+2026-02-13 04:53:06,394 - ForecastingService - INFO - ========================================
+2026-02-13 04:53:06,445 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 04:53:06,495 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 04:53:06,498 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 04:53:06,501 - ForecastingService - INFO - Product 31334 | SMA: 150.00 | Reg: 138.15
+2026-02-13 04:53:06,502 - ForecastingService - INFO - Decision: 123.47 | Reason: Hybrid Accuracy Ensemble (increasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,506 - ForecastingService - INFO - Product 31335 | SMA: 98.57 | Reg: 114.15
+2026-02-13 04:53:06,507 - ForecastingService - INFO - Decision: 90.41 | Reason: Hybrid Accuracy Ensemble (stable profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,512 - ForecastingService - INFO - Product 31336 | SMA: 162.57 | Reg: 136.18
+2026-02-13 04:53:06,513 - ForecastingService - INFO - Decision: 129.21 | Reason: Hybrid Accuracy Ensemble (increasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,516 - ForecastingService - INFO - Product 31337 | SMA: 87.29 | Reg: 93.18
+2026-02-13 04:53:06,517 - ForecastingService - INFO - Decision: 76.2 | Reason: Hybrid Accuracy Ensemble (increasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,520 - ForecastingService - INFO - Product 31338 | SMA: 74.86 | Reg: 186.34
+2026-02-13 04:53:06,521 - ForecastingService - INFO - Decision: 66.17 | Reason: Hybrid Accuracy Ensemble (increasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,527 - ForecastingService - INFO - Product 31339 | SMA: 64.86 | Reg: 49.02
+2026-02-13 04:53:06,527 - ForecastingService - INFO - Decision: 48.4 | Reason: Hybrid Accuracy Ensemble (stable profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,531 - ForecastingService - INFO - Product 31340 | SMA: 18.43 | Reg: 20.95
+2026-02-13 04:53:06,532 - ForecastingService - INFO - Decision: 16.74 | Reason: Hybrid Accuracy Ensemble (stable profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,536 - ForecastingService - INFO - Product 31341 | SMA: 46.29 | Reg: 61.51
+2026-02-13 04:53:06,536 - ForecastingService - INFO - Decision: 45.81 | Reason: Hybrid Accuracy Ensemble (decreasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,540 - ForecastingService - INFO - Product 31342 | SMA: 152.14 | Reg: 178.99
+2026-02-13 04:53:06,540 - ForecastingService - INFO - Decision: 134.49 | Reason: Hybrid Accuracy Ensemble (increasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,544 - ForecastingService - INFO - Product 31343 | SMA: 129.43 | Reg: 141.47
+2026-02-13 04:53:06,544 - ForecastingService - INFO - Decision: 114.11 | Reason: Hybrid Accuracy Ensemble (increasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,549 - ForecastingService - INFO - Product 31344 | SMA: 112.43 | Reg: 125.72
+2026-02-13 04:53:06,549 - ForecastingService - INFO - Decision: 101.21 | Reason: Hybrid Accuracy Ensemble (stable profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,553 - ForecastingService - INFO - Product 31347 | SMA: 85.86 | Reg: 97.41
+2026-02-13 04:53:06,553 - ForecastingService - INFO - Decision: 77.89 | Reason: Hybrid Accuracy Ensemble (stable profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,557 - ForecastingService - INFO - Product 31348 | SMA: 78.71 | Reg: 44.98
+2026-02-13 04:53:06,557 - ForecastingService - INFO - Decision: 52.57 | Reason: Hybrid Accuracy Ensemble (decreasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,562 - ForecastingService - INFO - Product 31349 | SMA: 185.86 | Reg: 142.58
+2026-02-13 04:53:06,562 - ForecastingService - INFO - Decision: 139.59 | Reason: Hybrid Accuracy Ensemble (decreasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,565 - ForecastingService - INFO - Product 31350 | SMA: 65.00 | Reg: 38.79
+2026-02-13 04:53:06,566 - ForecastingService - INFO - Decision: 44.11 | Reason: Hybrid Accuracy Ensemble (decreasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,570 - ForecastingService - INFO - Product 31351 | SMA: 71.71 | Reg: 82.23
+2026-02-13 04:53:06,571 - ForecastingService - INFO - Decision: 65.42 | Reason: Hybrid Accuracy Ensemble (stable profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,575 - ForecastingService - INFO - Product 31352 | SMA: 43.86 | Reg: 29.12
+2026-02-13 04:53:06,576 - ForecastingService - INFO - Decision: 31.02 | Reason: Hybrid Accuracy Ensemble (decreasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,579 - ForecastingService - INFO - Product 31353 | SMA: 128.57 | Reg: 119.87
+2026-02-13 04:53:06,580 - ForecastingService - INFO - Decision: 105.59 | Reason: Hybrid Accuracy Ensemble (stable profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,583 - ForecastingService - INFO - Product 31354 | SMA: 128.57 | Reg: 121.95
+2026-02-13 04:53:06,584 - ForecastingService - INFO - Decision: 106.47 | Reason: Hybrid Accuracy Ensemble (decreasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,588 - ForecastingService - INFO - Product 31355 | SMA: 142.86 | Reg: 136.18
+2026-02-13 04:53:06,588 - ForecastingService - INFO - Decision: 118.59 | Reason: Hybrid Accuracy Ensemble (stable profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.
+2026-02-13 04:53:06,589 - ForecastingService - INFO - 
+==================================================
+2026-02-13 04:53:06,589 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 04:53:06,589 - ForecastingService - INFO - ==================================================
+2026-02-13 04:53:06,589 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-E59A265B
+2026-02-13 04:53:06,589 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 04:53:06,593 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335     90.41            90.41              0
+  31336    129.21           129.21              0
+  31342    134.49           134.49              0
+  31344    101.21           101.21              0
+  31348     52.57            52.57              0
+  31352     31.02            31.02              0
+  31353    105.59           105.59              0
+2026-02-13 04:53:06,593 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 04:53:06,594 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-E59A265B | SKU: 31335 | Changed from 90.41 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 04:53:06,594 - ForecastingService - INFO - ORDER PREP-E59A265B VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 04:53:06,594 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 04:53:06,594 - ForecastingService - INFO - Order ID: PREP-E59A265B
+2026-02-13 04:53:06,595 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 04:53:06,600 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                                                                              reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00            90.41              0     Hybrid Accuracy Ensemble (stable profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.                 90.41              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    129.21           129.21              0 Hybrid Accuracy Ensemble (increasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.                   NaN               NaN                                                                   NaN         NaN
+  31342    134.49           134.49              0 Hybrid Accuracy Ensemble (increasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.                   NaN               NaN                                                                   NaN         NaN
+  31344    101.21           101.21              0     Hybrid Accuracy Ensemble (stable profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.                   NaN               NaN                                                                   NaN         NaN
+  31348     52.57            52.57              0 Hybrid Accuracy Ensemble (decreasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.                   NaN               NaN                                                                   NaN         NaN
+  31352     31.02            31.02              0 Hybrid Accuracy Ensemble (decreasing profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.                   NaN               NaN                                                                   NaN         NaN
+  31353    105.59           105.59              0     Hybrid Accuracy Ensemble (stable profile). Calibration applied for WAP optimization. Damping applied to reduce impact of outliers.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 04:53:31,171 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 04:53:31,214 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 04:53:45,041 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 04:53:45,246 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 04:53:45,248 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (WAP & Bias for SMA, Reg, Hybrid) ---
+2026-02-13 04:53:45,389 - ForecastingService - INFO - 
+========================================
+2026-02-13 04:53:45,389 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 04:53:45,389 - ForecastingService - INFO - ========================================
+2026-02-13 04:53:45,393 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   SMA    82.14    -13.10
+   REG    74.01    -23.10
+HYBRID    80.88     -1.46
+2026-02-13 04:53:45,393 - ForecastingService - INFO - ========================================
+2026-02-13 04:53:45,407 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 04:53:45,460 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 04:53:45,462 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 04:53:45,467 - ForecastingService - INFO - Product 31334 | SMA: 150.00 | Reg: 138.15
+2026-02-13 04:53:45,467 - ForecastingService - INFO - Decision: 170.03 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,471 - ForecastingService - INFO - Product 31335 | SMA: 98.57 | Reg: 114.15
+2026-02-13 04:53:45,471 - ForecastingService - INFO - Decision: 122.64 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,475 - ForecastingService - INFO - Product 31336 | SMA: 162.57 | Reg: 136.18
+2026-02-13 04:53:45,475 - ForecastingService - INFO - Decision: 177.16 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,479 - ForecastingService - INFO - Product 31337 | SMA: 87.29 | Reg: 93.18
+2026-02-13 04:53:45,479 - ForecastingService - INFO - Decision: 105.65 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,484 - ForecastingService - INFO - Product 31338 | SMA: 74.86 | Reg: 186.34
+2026-02-13 04:53:45,484 - ForecastingService - INFO - Decision: 146.48 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,487 - ForecastingService - INFO - Product 31339 | SMA: 64.86 | Reg: 49.02
+2026-02-13 04:53:45,489 - ForecastingService - INFO - Decision: 69.28 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,492 - ForecastingService - INFO - Product 31340 | SMA: 18.43 | Reg: 20.95
+2026-02-13 04:53:45,492 - ForecastingService - INFO - Decision: 22.76 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,496 - ForecastingService - INFO - Product 31341 | SMA: 46.29 | Reg: 61.51
+2026-02-13 04:53:45,496 - ForecastingService - INFO - Decision: 59.71 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,500 - ForecastingService - INFO - Product 31342 | SMA: 152.14 | Reg: 178.99
+2026-02-13 04:53:45,501 - ForecastingService - INFO - Decision: 192.86 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,503 - ForecastingService - INFO - Product 31343 | SMA: 129.43 | Reg: 141.47
+2026-02-13 04:53:45,504 - ForecastingService - INFO - Decision: 158.4 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,509 - ForecastingService - INFO - Product 31344 | SMA: 112.43 | Reg: 125.72
+2026-02-13 04:53:45,509 - ForecastingService - INFO - Decision: 137.92 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,514 - ForecastingService - INFO - Product 31347 | SMA: 85.86 | Reg: 97.41
+2026-02-13 04:53:45,514 - ForecastingService - INFO - Decision: 105.94 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,518 - ForecastingService - INFO - Product 31348 | SMA: 78.71 | Reg: 44.98
+2026-02-13 04:53:45,519 - ForecastingService - INFO - Decision: 80.68 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,522 - ForecastingService - INFO - Product 31349 | SMA: 185.86 | Reg: 142.58
+2026-02-13 04:53:45,522 - ForecastingService - INFO - Decision: 203.24 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,527 - ForecastingService - INFO - Product 31350 | SMA: 65.00 | Reg: 38.79
+2026-02-13 04:53:45,527 - ForecastingService - INFO - Decision: 67.2 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,532 - ForecastingService - INFO - Product 31351 | SMA: 71.71 | Reg: 82.23
+2026-02-13 04:53:45,532 - ForecastingService - INFO - Decision: 88.86 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,535 - ForecastingService - INFO - Product 31352 | SMA: 43.86 | Reg: 29.12
+2026-02-13 04:53:45,536 - ForecastingService - INFO - Decision: 46.37 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,539 - ForecastingService - INFO - Product 31353 | SMA: 128.57 | Reg: 119.87
+2026-02-13 04:53:45,540 - ForecastingService - INFO - Decision: 147.26 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,543 - ForecastingService - INFO - Product 31354 | SMA: 128.57 | Reg: 121.95
+2026-02-13 04:53:45,544 - ForecastingService - INFO - Decision: 148.75 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,548 - ForecastingService - INFO - Product 31355 | SMA: 142.86 | Reg: 136.18
+2026-02-13 04:53:45,549 - ForecastingService - INFO - Decision: 164.94 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 04:53:45,549 - ForecastingService - INFO - 
+==================================================
+2026-02-13 04:53:45,549 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 04:53:45,550 - ForecastingService - INFO - ==================================================
+2026-02-13 04:53:45,550 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-1E54FE23
+2026-02-13 04:53:45,550 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 04:53:45,553 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    122.64           122.64              0
+  31336    177.16           177.16              0
+  31342    192.86           192.86              0
+  31344    137.92           137.92              0
+  31348     80.68            80.68              0
+  31352     46.37            46.37              0
+  31353    147.26           147.26              0
+2026-02-13 04:53:45,554 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 04:53:45,554 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-1E54FE23 | SKU: 31335 | Changed from 122.64 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 04:53:45,554 - ForecastingService - INFO - ORDER PREP-1E54FE23 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 04:53:45,555 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 04:53:45,555 - ForecastingService - INFO - Order ID: PREP-1E54FE23
+2026-02-13 04:53:45,555 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 04:53:45,560 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                    reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           122.64              0     Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.                122.64              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    177.16           177.16              0 Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31342    192.86           192.86              0 Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31344    137.92           137.92              0     Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31348     80.68            80.68              0 Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31352     46.37            46.37              0 Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31353    147.26           147.26              0     Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 10:26:41,889 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:26:56,891 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:26:57,102 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:27:20,597 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:27:37,019 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:27:37,225 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:28:07,296 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:28:22,262 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:28:22,466 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:28:38,396 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:28:52,768 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:28:52,973 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:29:16,032 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:29:29,920 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:29:30,131 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:29:49,591 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:30:03,134 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:30:03,350 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:30:03,351 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:30:19,465 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:30:33,099 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:30:33,306 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:31:02,378 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:31:02,417 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:31:16,201 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:31:16,409 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:31:16,411 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (WAP & Bias for SMA, Reg, Hybrid | Horizon=7 day(s)) ---
+2026-02-13 10:31:16,550 - ForecastingService - INFO - 
+========================================
+2026-02-13 10:31:16,550 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 10:31:16,550 - ForecastingService - INFO - ========================================
+2026-02-13 10:31:16,567 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   SMA    41.20      3.49
+   REG    44.59      3.53
+HYBRID   462.83    462.83
+2026-02-13 10:31:16,567 - ForecastingService - INFO - ========================================
+2026-02-13 10:31:16,618 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 10:31:16,663 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 10:31:16,666 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 10:31:16,670 - ForecastingService - INFO - Product 31334 | SMA: 150.00 | Reg: 138.15
+2026-02-13 10:31:16,671 - ForecastingService - INFO - Decision: 170.03 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,675 - ForecastingService - INFO - Product 31335 | SMA: 98.57 | Reg: 114.15
+2026-02-13 10:31:16,676 - ForecastingService - INFO - Decision: 122.64 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,680 - ForecastingService - INFO - Product 31336 | SMA: 162.57 | Reg: 136.18
+2026-02-13 10:31:16,680 - ForecastingService - INFO - Decision: 177.16 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,684 - ForecastingService - INFO - Product 31337 | SMA: 87.29 | Reg: 93.18
+2026-02-13 10:31:16,684 - ForecastingService - INFO - Decision: 105.65 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,688 - ForecastingService - INFO - Product 31338 | SMA: 74.86 | Reg: 186.34
+2026-02-13 10:31:16,688 - ForecastingService - INFO - Decision: 146.48 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,692 - ForecastingService - INFO - Product 31339 | SMA: 64.86 | Reg: 49.02
+2026-02-13 10:31:16,694 - ForecastingService - INFO - Decision: 69.28 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,697 - ForecastingService - INFO - Product 31340 | SMA: 18.43 | Reg: 20.95
+2026-02-13 10:31:16,698 - ForecastingService - INFO - Decision: 22.76 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,702 - ForecastingService - INFO - Product 31341 | SMA: 46.29 | Reg: 61.51
+2026-02-13 10:31:16,702 - ForecastingService - INFO - Decision: 59.71 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,706 - ForecastingService - INFO - Product 31342 | SMA: 152.14 | Reg: 178.99
+2026-02-13 10:31:16,707 - ForecastingService - INFO - Decision: 192.86 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,710 - ForecastingService - INFO - Product 31343 | SMA: 129.43 | Reg: 141.47
+2026-02-13 10:31:16,711 - ForecastingService - INFO - Decision: 158.4 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,714 - ForecastingService - INFO - Product 31344 | SMA: 112.43 | Reg: 125.72
+2026-02-13 10:31:16,715 - ForecastingService - INFO - Decision: 137.92 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,719 - ForecastingService - INFO - Product 31347 | SMA: 85.86 | Reg: 97.41
+2026-02-13 10:31:16,720 - ForecastingService - INFO - Decision: 105.94 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,724 - ForecastingService - INFO - Product 31348 | SMA: 78.71 | Reg: 44.98
+2026-02-13 10:31:16,724 - ForecastingService - INFO - Decision: 80.68 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,728 - ForecastingService - INFO - Product 31349 | SMA: 185.86 | Reg: 142.58
+2026-02-13 10:31:16,729 - ForecastingService - INFO - Decision: 203.24 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,735 - ForecastingService - INFO - Product 31350 | SMA: 65.00 | Reg: 38.79
+2026-02-13 10:31:16,735 - ForecastingService - INFO - Decision: 67.2 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,739 - ForecastingService - INFO - Product 31351 | SMA: 71.71 | Reg: 82.23
+2026-02-13 10:31:16,740 - ForecastingService - INFO - Decision: 88.86 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,743 - ForecastingService - INFO - Product 31352 | SMA: 43.86 | Reg: 29.12
+2026-02-13 10:31:16,743 - ForecastingService - INFO - Decision: 46.37 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,748 - ForecastingService - INFO - Product 31353 | SMA: 128.57 | Reg: 119.87
+2026-02-13 10:31:16,748 - ForecastingService - INFO - Decision: 147.26 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,751 - ForecastingService - INFO - Product 31354 | SMA: 128.57 | Reg: 121.95
+2026-02-13 10:31:16,752 - ForecastingService - INFO - Decision: 148.75 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,757 - ForecastingService - INFO - Product 31355 | SMA: 142.86 | Reg: 136.18
+2026-02-13 10:31:16,757 - ForecastingService - INFO - Decision: 164.94 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:16,758 - ForecastingService - INFO - 
+==================================================
+2026-02-13 10:31:16,758 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 10:31:16,758 - ForecastingService - INFO - ==================================================
+2026-02-13 10:31:16,758 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-35CFD7E8
+2026-02-13 10:31:16,759 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 10:31:16,762 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    122.64           122.64              0
+  31336    177.16           177.16              0
+  31342    192.86           192.86              0
+  31344    137.92           137.92              0
+  31348     80.68            80.68              0
+  31352     46.37            46.37              0
+  31353    147.26           147.26              0
+2026-02-13 10:31:16,763 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 10:31:16,763 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-35CFD7E8 | SKU: 31335 | Changed from 122.64 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 10:31:16,763 - ForecastingService - INFO - ORDER PREP-35CFD7E8 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 10:31:16,764 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 10:31:16,764 - ForecastingService - INFO - Order ID: PREP-35CFD7E8
+2026-02-13 10:31:16,764 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 10:31:16,769 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                    reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           122.64              0     Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.                122.64              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    177.16           177.16              0 Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31342    192.86           192.86              0 Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31344    137.92           137.92              0     Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31348     80.68            80.68              0 Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31352     46.37            46.37              0 Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31353    147.26           147.26              0     Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 10:31:39,616 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:31:39,654 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:31:54,677 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:31:54,954 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:31:54,958 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (WAP & Bias for SMA, Reg, Hybrid | Horizon=7 day(s)) ---
+2026-02-13 10:31:55,110 - ForecastingService - INFO - 
+========================================
+2026-02-13 10:31:55,110 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 10:31:55,110 - ForecastingService - INFO - ========================================
+2026-02-13 10:31:55,114 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   SMA    41.20      3.49
+   REG    44.59      3.53
+HYBRID    47.74     22.37
+2026-02-13 10:31:55,114 - ForecastingService - INFO - ========================================
+2026-02-13 10:31:55,126 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 10:31:55,171 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 10:31:55,174 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 10:31:55,178 - ForecastingService - INFO - Product 31334 | SMA: 150.00 | Reg: 138.15
+2026-02-13 10:31:55,178 - ForecastingService - INFO - Decision: 170.03 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,182 - ForecastingService - INFO - Product 31335 | SMA: 98.57 | Reg: 114.15
+2026-02-13 10:31:55,183 - ForecastingService - INFO - Decision: 122.64 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,188 - ForecastingService - INFO - Product 31336 | SMA: 162.57 | Reg: 136.18
+2026-02-13 10:31:55,188 - ForecastingService - INFO - Decision: 177.16 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,192 - ForecastingService - INFO - Product 31337 | SMA: 87.29 | Reg: 93.18
+2026-02-13 10:31:55,193 - ForecastingService - INFO - Decision: 105.65 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,198 - ForecastingService - INFO - Product 31338 | SMA: 74.86 | Reg: 186.34
+2026-02-13 10:31:55,198 - ForecastingService - INFO - Decision: 146.48 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,202 - ForecastingService - INFO - Product 31339 | SMA: 64.86 | Reg: 49.02
+2026-02-13 10:31:55,202 - ForecastingService - INFO - Decision: 69.28 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,206 - ForecastingService - INFO - Product 31340 | SMA: 18.43 | Reg: 20.95
+2026-02-13 10:31:55,206 - ForecastingService - INFO - Decision: 22.76 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,210 - ForecastingService - INFO - Product 31341 | SMA: 46.29 | Reg: 61.51
+2026-02-13 10:31:55,210 - ForecastingService - INFO - Decision: 59.71 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,215 - ForecastingService - INFO - Product 31342 | SMA: 152.14 | Reg: 178.99
+2026-02-13 10:31:55,215 - ForecastingService - INFO - Decision: 192.86 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,220 - ForecastingService - INFO - Product 31343 | SMA: 129.43 | Reg: 141.47
+2026-02-13 10:31:55,220 - ForecastingService - INFO - Decision: 158.4 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,224 - ForecastingService - INFO - Product 31344 | SMA: 112.43 | Reg: 125.72
+2026-02-13 10:31:55,224 - ForecastingService - INFO - Decision: 137.92 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,228 - ForecastingService - INFO - Product 31347 | SMA: 85.86 | Reg: 97.41
+2026-02-13 10:31:55,228 - ForecastingService - INFO - Decision: 105.94 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,231 - ForecastingService - INFO - Product 31348 | SMA: 78.71 | Reg: 44.98
+2026-02-13 10:31:55,232 - ForecastingService - INFO - Decision: 80.68 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,237 - ForecastingService - INFO - Product 31349 | SMA: 185.86 | Reg: 142.58
+2026-02-13 10:31:55,238 - ForecastingService - INFO - Decision: 203.24 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,242 - ForecastingService - INFO - Product 31350 | SMA: 65.00 | Reg: 38.79
+2026-02-13 10:31:55,242 - ForecastingService - INFO - Decision: 67.2 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,246 - ForecastingService - INFO - Product 31351 | SMA: 71.71 | Reg: 82.23
+2026-02-13 10:31:55,246 - ForecastingService - INFO - Decision: 88.86 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,249 - ForecastingService - INFO - Product 31352 | SMA: 43.86 | Reg: 29.12
+2026-02-13 10:31:55,250 - ForecastingService - INFO - Decision: 46.37 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,255 - ForecastingService - INFO - Product 31353 | SMA: 128.57 | Reg: 119.87
+2026-02-13 10:31:55,255 - ForecastingService - INFO - Decision: 147.26 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,259 - ForecastingService - INFO - Product 31354 | SMA: 128.57 | Reg: 121.95
+2026-02-13 10:31:55,259 - ForecastingService - INFO - Decision: 148.75 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,263 - ForecastingService - INFO - Product 31355 | SMA: 142.86 | Reg: 136.18
+2026-02-13 10:31:55,264 - ForecastingService - INFO - Decision: 164.94 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:31:55,264 - ForecastingService - INFO - 
+==================================================
+2026-02-13 10:31:55,264 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 10:31:55,265 - ForecastingService - INFO - ==================================================
+2026-02-13 10:31:55,265 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-9F5EAA8F
+2026-02-13 10:31:55,265 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 10:31:55,269 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    122.64           122.64              0
+  31336    177.16           177.16              0
+  31342    192.86           192.86              0
+  31344    137.92           137.92              0
+  31348     80.68            80.68              0
+  31352     46.37            46.37              0
+  31353    147.26           147.26              0
+2026-02-13 10:31:55,269 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 10:31:55,269 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-9F5EAA8F | SKU: 31335 | Changed from 122.64 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 10:31:55,270 - ForecastingService - INFO - ORDER PREP-9F5EAA8F VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 10:31:55,270 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 10:31:55,271 - ForecastingService - INFO - Order ID: PREP-9F5EAA8F
+2026-02-13 10:31:55,271 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 10:31:55,275 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                    reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           122.64              0     Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.                122.64              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    177.16           177.16              0 Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31342    192.86           192.86              0 Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31344    137.92           137.92              0     Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31348     80.68            80.68              0 Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31352     46.37            46.37              0 Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31353    147.26           147.26              0     Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+2026-02-13 10:32:23,782 - ForecastingService - INFO - Loading data from backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:32:39,270 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:32:39,499 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:32:54,982 - DecisionLayer - WARNING - No Mistral API key found. Falling back to deterministic simulation.
+2026-02-13 10:32:55,026 - ForecastingService - INFO - Loading data from C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\data\WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx
+2026-02-13 10:33:09,566 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-13 10:33:09,775 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-13 10:33:09,777 - ForecastingService - INFO - --- MODEL EVALUATION PHASE (WAP & Bias for SMA, Reg, Hybrid | Horizon=7 day(s)) ---
+2026-02-13 10:33:09,907 - ForecastingService - INFO - 
+========================================
+2026-02-13 10:33:09,907 - ForecastingService - INFO - FINAL MODEL COMPARISON TABLE
+2026-02-13 10:33:09,907 - ForecastingService - INFO - ========================================
+2026-02-13 10:33:09,910 - ForecastingService - INFO - 
+ Model  WAP (%)  Bias (%)
+   SMA    41.20      3.49
+   REG    44.59      3.53
+HYBRID    40.95      3.98
+2026-02-13 10:33:09,911 - ForecastingService - INFO - ========================================
+2026-02-13 10:33:09,926 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-13 10:33:09,966 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-13 10:33:09,969 - ForecastingService - INFO - Analyzing 20 products with Statistical & Decision Engine...
+2026-02-13 10:33:09,973 - ForecastingService - INFO - Product 31334 | SMA: 150.00 | Reg: 138.15
+2026-02-13 10:33:09,973 - ForecastingService - INFO - Decision: 145.03 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:09,978 - ForecastingService - INFO - Product 31335 | SMA: 98.57 | Reg: 114.15
+2026-02-13 10:33:09,978 - ForecastingService - INFO - Decision: 104.02 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:09,983 - ForecastingService - INFO - Product 31336 | SMA: 162.57 | Reg: 136.18
+2026-02-13 10:33:09,983 - ForecastingService - INFO - Decision: 151.49 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:09,987 - ForecastingService - INFO - Product 31337 | SMA: 87.29 | Reg: 93.18
+2026-02-13 10:33:09,987 - ForecastingService - INFO - Decision: 89.76 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:09,991 - ForecastingService - INFO - Product 31338 | SMA: 74.86 | Reg: 186.34
+2026-02-13 10:33:09,991 - ForecastingService - INFO - Decision: 121.68 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:09,996 - ForecastingService - INFO - Product 31339 | SMA: 64.86 | Reg: 49.02
+2026-02-13 10:33:09,996 - ForecastingService - INFO - Decision: 59.31 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,000 - ForecastingService - INFO - Product 31340 | SMA: 18.43 | Reg: 20.95
+2026-02-13 10:33:10,000 - ForecastingService - INFO - Decision: 19.31 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,004 - ForecastingService - INFO - Product 31341 | SMA: 46.29 | Reg: 61.51
+2026-02-13 10:33:10,005 - ForecastingService - INFO - Decision: 50.55 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,008 - ForecastingService - INFO - Product 31342 | SMA: 152.14 | Reg: 178.99
+2026-02-13 10:33:10,008 - ForecastingService - INFO - Decision: 163.42 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,013 - ForecastingService - INFO - Product 31343 | SMA: 129.43 | Reg: 141.47
+2026-02-13 10:33:10,013 - ForecastingService - INFO - Decision: 134.49 | Reason: Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,018 - ForecastingService - INFO - Product 31344 | SMA: 112.43 | Reg: 125.72
+2026-02-13 10:33:10,018 - ForecastingService - INFO - Decision: 117.08 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,021 - ForecastingService - INFO - Product 31347 | SMA: 85.86 | Reg: 97.41
+2026-02-13 10:33:10,021 - ForecastingService - INFO - Decision: 89.9 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,025 - ForecastingService - INFO - Product 31348 | SMA: 78.71 | Reg: 44.98
+2026-02-13 10:33:10,025 - ForecastingService - INFO - Decision: 69.27 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,029 - ForecastingService - INFO - Product 31349 | SMA: 185.86 | Reg: 142.58
+2026-02-13 10:33:10,029 - ForecastingService - INFO - Decision: 173.74 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,033 - ForecastingService - INFO - Product 31350 | SMA: 65.00 | Reg: 38.79
+2026-02-13 10:33:10,034 - ForecastingService - INFO - Decision: 57.66 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,037 - ForecastingService - INFO - Product 31351 | SMA: 71.71 | Reg: 82.23
+2026-02-13 10:33:10,038 - ForecastingService - INFO - Decision: 75.39 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,041 - ForecastingService - INFO - Product 31352 | SMA: 43.86 | Reg: 29.12
+2026-02-13 10:33:10,042 - ForecastingService - INFO - Decision: 39.73 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,046 - ForecastingService - INFO - Product 31353 | SMA: 128.57 | Reg: 119.87
+2026-02-13 10:33:10,046 - ForecastingService - INFO - Decision: 125.52 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,049 - ForecastingService - INFO - Product 31354 | SMA: 128.57 | Reg: 121.95
+2026-02-13 10:33:10,050 - ForecastingService - INFO - Decision: 126.72 | Reason: Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,054 - ForecastingService - INFO - Product 31355 | SMA: 142.86 | Reg: 136.18
+2026-02-13 10:33:10,054 - ForecastingService - INFO - Decision: 140.52 | Reason: Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.
+2026-02-13 10:33:10,055 - ForecastingService - INFO - 
+==================================================
+2026-02-13 10:33:10,055 - ForecastingService - INFO - PHASE 5: SUPERVISOR INTERACTION FLOW
+2026-02-13 10:33:10,055 - ForecastingService - INFO - ==================================================
+2026-02-13 10:33:10,056 - ForecastingService - INFO - NEW ORDER ARRIVED FOR REVIEW: PREP-FE099346
+2026-02-13 10:33:10,056 - ForecastingService - INFO - Status: PENDING_SUPERVISOR_VALIDATION
+2026-02-13 10:33:10,059 - ForecastingService - INFO - 
+--- ITEMS TO REVIEW ---
+ sku_id  quantity  target_forecast  current_stock
+  31335    104.02           104.02              0
+  31336    151.49           151.49              0
+  31342    163.42           163.42              0
+  31344    117.08           117.08              0
+  31348     69.27            69.27              0
+  31352     39.73            39.73              0
+  31353    125.52           125.52              0
+2026-02-13 10:33:10,059 - ForecastingService - INFO - 
+[ACTION] Supervisor is overriding SKU 31335...
+2026-02-13 10:33:10,059 - ForecastingService - WARNING - AUDIT-LOG | Order: PREP-FE099346 | SKU: 31335 | Changed from 104.02 to 50.0 | Reason: Manual buffer added for upcoming promotion detected by local manager.
+2026-02-13 10:33:10,061 - ForecastingService - INFO - ORDER PREP-FE099346 VALIDATED - Status changed to VALIDATED (Visible to Employees)
+2026-02-13 10:33:10,061 - ForecastingService - INFO - 
+--- FINAL VALIDATED ORDER OBJECT ---
+2026-02-13 10:33:10,061 - ForecastingService - INFO - Order ID: PREP-FE099346
+2026-02-13 10:33:10,062 - ForecastingService - INFO - Final Status: VALIDATED
+2026-02-13 10:33:10,065 - ForecastingService - INFO - 
+Final Items Sent to Warehouse:
+ sku_id  quantity  target_forecast  current_stock                                                                    reasoning  original_ai_forecast  new_manual_value                                                         justification modified_by
+  31335     50.00           104.02              0     Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.                104.02              50.0 Manual buffer added for upcoming promotion detected by local manager.  SUPERVISOR
+  31336    151.49           151.49              0 Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31342    163.42           163.42              0 Optimized Ensemble (increasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31344    117.08           117.08              0     Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31348     69.27            69.27              0 Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31352     39.73            39.73              0 Optimized Ensemble (decreasing profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN
+  31353    125.52           125.52              0     Optimized Ensemble (stable profile). Factors tuned for WAP < 50% target.                   NaN               NaN                                                                   NaN         NaN

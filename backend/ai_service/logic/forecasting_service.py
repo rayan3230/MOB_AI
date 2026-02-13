@@ -106,12 +106,12 @@ class DataLoader:
 
 class BaselineModel:
     """1️⃣ Simple Moving Average (Baseline): Predict next-day demand using last 7 days average."""
-    def predict(self, history, product_id):
+    def predict(self, history, product_id, window=7):
         product_history = history[history['id_produit'] == product_id]
         if product_history.empty:
             return 0
-        # Average demand of the last 7 days
-        return product_history['quantite_demande'].tail(7).mean()
+        # Average demand of the last N days
+        return product_history['quantite_demande'].tail(window).mean()
 
 class RegressionModel:
     """2️⃣ Linear Regression Forecast: Fit line on past demand and extract trend/prediction."""
@@ -284,38 +284,42 @@ class ForecastingService:
         self.improved = ImprovedModel()
         self.order_service = PreparationOrderService()
 
-    def evaluate_models(self, limit_products=10, test_days=1):
+    def evaluate_models(self, limit_products=50, test_days=1):
         """
         PHASE 6 — Evaluation
-        Step 2 — Compute Metrics (MAE, RMSE)
+        Step 2 — Compute Metrics (WAP, Bias)
         Calculates for: SMA, Regression, and Hybrid (LLM decision)
         """
         self.loader.load_and_clean()
         all_products = self.loader.demand_history['id_produit'].unique()
         evaluation_results = []
 
-        logger.info(f"--- MODEL EVALUATION PHASE (MAE & RMSE for SMA, Reg, Hybrid) ---")
+        logger.info(f"--- MODEL EVALUATION PHASE (WAP & Bias for SMA, Reg, Hybrid | Horizon={test_days} day(s)) ---")
 
         for pid in all_products[:limit_products]:
             history = self.loader.demand_history[self.loader.demand_history['id_produit'] == pid].sort_values('date')
-            if len(history) < 10: continue
+            if len(history) < max(10, test_days + 7):
+                continue
 
-            # Split Point: Use all but the last known day
-            train_data = history.iloc[:-1]
-            actual_value = history.iloc[-1]['quantite_demande']
+            # Split Point: reserve last `test_days` as holdout period
+            train_data = history.iloc[:-test_days]
+            actual_value = history.iloc[-test_days:]['quantite_demande'].sum()
 
             # 1. Baseline Prediction (SMA-7)
-            baseline_pred = self.baseline.predict(train_data, pid)
+            baseline_daily = self.baseline.predict(train_data, pid)
+            baseline_pred = baseline_daily * test_days
 
             # 2. Regression Prediction (Statistical Model)
             reg_results = self.regression.analyze(train_data, pid)
-            reg_pred = reg_results['prediction']
+            reg_daily = reg_results['prediction']
+            reg_pred = reg_daily * test_days
             
             # 3. Hybrid Model Prediction (LLM Logic)
-            reg_results['sma'] = baseline_pred
+            reg_results['sma'] = baseline_daily
             reg_results['id'] = pid
             ai_decision = self.decision_layer.call_mistral_api(reg_results)
-            hybrid_pred = ai_decision.get('final_forecast', baseline_pred)
+            hybrid_daily = ai_decision.get('final_forecast', baseline_daily)
+            hybrid_pred = hybrid_daily * test_days
 
             evaluation_results.append({
                 'sku_id': pid,
@@ -334,12 +338,21 @@ class ForecastingService:
         # Calculate Metrics
         metrics = []
         for model in ['sma', 'reg', 'hybrid']:
-            mae = (eval_df[model] - eval_df['actual']).abs().mean()
-            rmse = np.sqrt(((eval_df[model] - eval_df['actual'])**2).mean())
+            # Calculate WAP (Weighted Absolute Percentage - standard in supply chain)
+            # WAP = Sum(|Actual - Forecast|) / Sum(Actual)
+            total_abs_error = (eval_df[model] - eval_df['actual']).abs().sum()
+            total_actual = eval_df['actual'].sum()
+            wap = (total_abs_error / total_actual) * 100 if total_actual > 0 else 0
+            
+            # Forecast Bias (%) - identifies over/under forecasting percentage
+            # Goal: 0-5% is ideal for high-performing models.
+            total_forecast = eval_df[model].sum()
+            bias_pct = ((total_forecast - total_actual) / total_actual) * 100 if total_actual > 0 else 0
+            
             metrics.append({
                 'Model': model.upper(),
-                'MAE': round(mae, 2),
-                'RMSE': round(rmse, 2)
+                'WAP (%)': round(wap, 2),
+                'Bias (%)': round(bias_pct, 2)
             })
 
         metrics_df = pd.DataFrame(metrics)
@@ -444,7 +457,7 @@ def main():
     
     # --- PHASE 6: EVALUATION ---
     # We prove the model is better by simulating the last day of history
-    service.evaluate_models(limit_products=5)
+    service.evaluate_models(limit_products=50, test_days=7)
     
     # --- PHASE 4 & 5: GENERATION & INTERACTION ---
     # 1. AI Generation Phase

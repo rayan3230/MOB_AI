@@ -52,7 +52,7 @@ Instead of a simple mathematical average, we use **Mistral AI** to act as a ware
 | **Explainability** | ✅ COMPLETED | Every forecast includes a `reasoning` field and a dedicated `/explanation/` API endpoint. |
 | **Robustness** | ✅ COMPLETED | Handled missing data, Excel cleaning, and type-serialization. Fallback to simulation if Mistral API key is absent. |
 | **Validation of AI** | ✅ COMPLETED | State-machine based orders (`PENDING` -> `VALIDATED`) with mandatory justification for human overrides. |
-| **Comparative Analysis** | ✅ COMPLETED | Integrated backtesting suite generating `EVALUATION_REPORT.md` with MAE/RMSE metrics. |
+| **Comparative Analysis** | ✅ COMPLETED | Integrated backtesting suite generating `EVALUATION_REPORT.md` with WAP/Bias (%) metrics. |
 | **Proper Logging** | ✅ COMPLETED | Thread-safe logging to `forecasting_service.log` for full auditability of AI decisions and overrides. |
 | **WMS Integration** | ✅ COMPLETED | Logic directly outputs Preparation Quantities (`Forecast - Stock`) ready for WMS ingestion. |
 

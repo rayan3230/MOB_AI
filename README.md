@@ -13,7 +13,7 @@ This repository contains a technically mature, AI-driven forecasting system desi
 
 ## 📊 Deliverables (Must-Read for Judges)
 - **[Technical_Report.md](Technical_Report.md)**: Deep dive into architecture and how we met the 10-phase criteria.
-- **[EVALUATION_REPORT.md](EVALUATION_REPORT.md)**: Scientific backtesting results (MAE/RMSE) comparing SMA vs. Hybrid AI.
+- **[EVALUATION_REPORT.md](EVALUATION_REPORT.md)**: Scientific backtesting results (WAP/Bias) comparing SMA vs. Hybrid AI.
 - **[forecasting_service.log](forecasting_service.log)**: The persistent audit trail of every model decision.
 
 ## 🛠️ Key Technologies
