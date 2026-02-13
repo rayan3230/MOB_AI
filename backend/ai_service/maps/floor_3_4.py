@@ -1,4 +1,4 @@
-from ..engine.base import DepotB7Map, WarehouseCoordinate
+from ..engine.base import DepotB7Map, WarehouseCoordinate, ZoneType
 
 class UpperFloorMap(DepotB7Map):
     def __init__(self, floor_index: int = 3):
@@ -62,6 +62,15 @@ class UpperFloorMap(DepotB7Map):
            "D13":(5, 8.1 , 6 , 13),
            "D14":[(0 , 8.1 , 1.4 , 13),(1.4 , 10.9 , 2.9 , 13 )],
         }
+
+        # Explicitly define zone types (REQ: All zones defined explicitly)
+        self.zone_types = {}
+        for name in self.zones:
+            if any(k in name for k in ["Monte Charge", "Assenseur"]):
+                self.zone_types[name] = ZoneType.TRANSITION
+            else:
+                self.zone_types[name] = ZoneType.STORAGE
+
         self.pillars = [
             WarehouseCoordinate(x, y) for x, y in [
                 (2,8),(7.5,8),(14,8),(21,8),(23,8),(29,8),(36,8),(43,8),

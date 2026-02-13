@@ -36,12 +36,13 @@ class WMSOperationManager:
                 "product_id": product_id,
                 "suggested_floor": suggestion['floor_idx'],
                 "suggested_coord": suggestion['coord'],
+                "suggested_slot_name": suggestion['slot_name'],
                 "status": "PENDING_VALIDATION",
                 "overridden": False,
                 "justification": None,
                 "assigned_to": None
             }
-            AuditTrail.log(Role.ADMIN, f"Created AI placement task {task_id}")
+            AuditTrail.log(Role.ADMIN, f"Created AI placement task {task_id} for slot {suggestion['slot_name']}")
             return task_id
         return None
 

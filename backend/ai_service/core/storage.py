@@ -217,10 +217,11 @@ class StorageOptimizationService:
         return relocation_suggestions
 
     def _is_in_prohibited_zone(self, warehouse_map: DepotB7Map, coord: WarehouseCoordinate) -> bool:
-        """Checks if a coordinate falls within a 'Reserved' or non-storage area."""
-        prohibited_keywords = ["Reserved", "Bureau", "Expédition", "Zone Spec", "VRAC"]
+        """Checks if a coordinate falls within a non-storage area using explicit metadata."""
+        from ..engine.base import ZoneType
         for name, coords in warehouse_map.zones.items():
-            if any(k in name for k in prohibited_keywords):
+            z_type = warehouse_map.zone_types.get(name, ZoneType.WALKABLE)
+            if z_type in [ZoneType.OBSTACLE, ZoneType.TRANSITION]:
                 segments = coords if isinstance(coords, list) else [coords]
                 for (x1, y1, x2, y2) in segments:
                     if x1 <= coord.x < x2 and y1 <= coord.y < y2:
@@ -268,10 +269,10 @@ class StorageOptimizationService:
 
         return True
 
-    def _is_storage_zone(self, name: str) -> bool:
-        """Determines if a zone name represents a storage area."""
-        non_storage = ["Bureau", "Expédition", "Monte Charge", "Assenseur", "Zone Spec", "Black object", "Reserved", "VRAC"]
-        return not any(ns in name for ns in non_storage)
+    def _is_storage_zone(self, warehouse_map: DepotB7Map, name: str) -> bool:
+        """Determines if a zone name represents a storage area using explicit map metadata."""
+        from ..engine.base import ZoneType
+        return warehouse_map.zone_types.get(name) == ZoneType.STORAGE
 
     def _classify_all_floors(self):
         """Initial classification of all available slots into FAST, MEDIUM, SLOW."""
@@ -283,31 +284,30 @@ class StorageOptimizationService:
             entry_points = []
             if floor_index == 0:
                 for name, coords in warehouse_map.zones.items():
+                    # REQ: Explicitly find Walkable zones related to Shipping
                     if "Expédition" in name:
                         segments = coords if isinstance(coords, list) else [coords]
                         for (x1, y1, x2, y2) in segments:
-                            # Sample points within the expedition zone
                             entry_points.append(WarehouseCoordinate((x1 + x2) / 2, (y1 + y2) / 2))
             
             if not entry_points:
+                from ..engine.base import ZoneType
                 for name, coords in warehouse_map.zones.items():
-                    if any(k in name for k in ["Monte Charge", "Assenseur"]):
+                    if warehouse_map.zone_types.get(name) == ZoneType.TRANSITION:
                         segments = coords if isinstance(coords, list) else [coords]
                         for (x1, y1, x2, y2) in segments:
                             entry_points.append(WarehouseCoordinate((x1 + x2) / 2, (y1 + y2) / 2))
 
             if not entry_points:
                 entry_points.append(WarehouseCoordinate(0, 0))
-
+            
             # --- STEP 2: Precompute Distance Map using Pathfinding ---
-            # This computes the distance from EVERY walkable point to the nearest entry/exit
             path_dist_map = warehouse_map.get_path_distance_map(entry_points)
             self.slot_distance_scores[floor_index] = path_dist_map
 
             # Iterate through all storage zones (Racks)
             for name, coords in warehouse_map.zones.items():
-                is_storage = self._is_storage_zone(name)
-                if not is_storage:
+                if not self._is_storage_zone(warehouse_map, name):
                     continue
 
                 segments = coords if isinstance(coords, list) else [coords]
@@ -342,11 +342,6 @@ class StorageOptimizationService:
                                 s_class = StorageClass.SLOW
                                 
                             self.storage_zoning[floor_index][(x, y)] = s_class
-
-    def _is_storage_zone(self, name: str) -> bool:
-        """Determines if a zone name represents a storage area."""
-        non_storage = ["Bureau", "Expédition", "Monte Charge", "Assenseur", "Zone Spec", "Black object", "Reserved", "VRAC"]
-        return not any(ns in name for ns in non_storage)
 
     def get_zone_class(self, floor_index: int, x: int, y: int) -> Optional[StorageClass]:
         return self.storage_zoning.get(floor_index, {}).get((x, y))
@@ -391,7 +386,7 @@ class StorageOptimizationService:
         for name, coords in warehouse_map.zones.items():
             segments = coords if isinstance(coords, list) else [coords]
             for (x1, y1, x2, y2) in segments:
-                edge = 'blue' if self._is_storage_zone(name) else 'gray'
+                edge = 'blue' if self._is_storage_zone(warehouse_map, name) else 'gray'
                 rect = patches.Rectangle((x1, y1), x2-x1, y2-y1, linewidth=1, edgecolor=edge, facecolor='none', alpha=0.5)
                 ax.add_patch(rect)
                 ax.text((x1 + x2)/2, (y1 + y2)/2, name, color=edge, fontsize=8, ha='center', va='center')

@@ -9,6 +9,12 @@ class Role(enum.Enum):
     SUPERVISOR = "SUPERVISOR"
     EMPLOYEE = "EMPLOYEE"
 
+class ZoneType(enum.Enum):
+    STORAGE = "STORAGE"
+    OBSTACLE = "OBSTACLE"
+    TRANSITION = "TRANSITION"
+    WALKABLE = "WALKABLE"
+
 class StorageClass(enum.Enum):
     FAST = "FAST-MOVING"    # Near expedition, ground level
     MEDIUM = "MEDIUM-MOVING" # Mid distance
@@ -37,6 +43,7 @@ class DepotB7Map:
         
         # To be populated by specific map definitions
         self.zones: Dict[str, Union[Tuple, List[Tuple]]] = {}
+        self.zone_types: Dict[str, ZoneType] = {}
         self.landmarks: Dict[str, WarehouseCoordinate] = {}
         self.pillars: List[WarehouseCoordinate] = []
         self.special_walls: List[Tuple] = []
@@ -68,10 +75,11 @@ class DepotB7Map:
             return False
         if self.pillar_matrix[int(coord.x)][int(coord.y)]:
             return False
-        blocked_keywords = ["Rack", "Bureau", "Black object", "Monte Charge", "Assenseur"]
+            
+        # Use explicit zone types for walkability
         for name, coords in self.zones.items():
-            is_blocked_zone = (len(name) <= 2) or any(k in name for k in blocked_keywords) # Updated to include short names like 'A1'
-            if is_blocked_zone:
+            z_type = self.zone_types.get(name, ZoneType.WALKABLE)
+            if z_type in [ZoneType.STORAGE, ZoneType.OBSTACLE, ZoneType.TRANSITION]:
                 segments = coords if isinstance(coords, list) else [coords]
                 for (x1, y1, x2, y2) in segments:
                     if x1 <= coord.x < x2 and y1 <= coord.y < y2:

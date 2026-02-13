@@ -1,4 +1,4 @@
-from ..engine.base import DepotB7Map, WarehouseCoordinate
+from ..engine.base import DepotB7Map, WarehouseCoordinate, ZoneType
 
 class GroundFloorMap(DepotB7Map):
     def __init__(self):
@@ -17,6 +17,22 @@ class GroundFloorMap(DepotB7Map):
             "A": (25, 13, 26, 20), "Rack X": [(9, 22, 10, 25), (10, 25, 17, 26), (14, 20, 17, 21), (17, 21, 18, 24)],
             "Reserved": (24, 20, 28, 27)
         }
+        
+        # Explicitly define zone types (REQ: All zones defined explicitly)
+        self.zone_types = {
+            "V": ZoneType.STORAGE, "S": ZoneType.STORAGE, "Bureau": ZoneType.OBSTACLE,
+            "Expédition 1": ZoneType.WALKABLE, "Expédition 2": ZoneType.WALKABLE,
+            "VRAC": ZoneType.STORAGE, "Monte Charge 1": ZoneType.TRANSITION,
+            "Monte Charge 2": ZoneType.TRANSITION, "B": ZoneType.STORAGE,
+            "F": ZoneType.STORAGE, "D": ZoneType.STORAGE, "K": ZoneType.STORAGE,
+            "H": ZoneType.STORAGE, "Q": ZoneType.STORAGE, "N": ZoneType.STORAGE,
+            "W": ZoneType.STORAGE, "Assenseur": ZoneType.TRANSITION, "Zone Spec": ZoneType.WALKABLE,
+            "Black object": ZoneType.OBSTACLE, "T": ZoneType.STORAGE, "R": ZoneType.STORAGE,
+            "P": ZoneType.STORAGE, "M": ZoneType.STORAGE, "I": ZoneType.STORAGE,
+            "G": ZoneType.STORAGE, "E": ZoneType.STORAGE, "C": ZoneType.STORAGE,
+            "A": ZoneType.STORAGE, "Rack X": ZoneType.STORAGE, "Reserved": ZoneType.OBSTACLE
+        }
+
         self.landmarks = {
             "Chariot Start 1": WarehouseCoordinate(34, 10),
             "Chariot Start 2": WarehouseCoordinate(34, 16)

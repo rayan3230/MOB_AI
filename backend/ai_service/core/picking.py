@@ -111,7 +111,7 @@ class PickingOptimizationService:
                 elevator_pos = self._find_nearest_transition(current_floor, current_pos)
                 if elevator_pos:
                     path_to_elevator = self.find_path(current_floor, current_pos, elevator_pos)
-                    total_path.extend([{"floor": current_floor, "coord": p} for p in path_to_elevator])
+                    total_path.extend([{"floor": current_floor, "coord": p, "slot": self.floors[current_floor].get_slot_name(WarehouseCoordinate(p[0], p[1]))} for p in path_to_elevator])
                     total_distance += len(path_to_elevator)
                     current_pos = elevator_pos # On new floor, assume we exit at same (x,y)
                 current_floor = floor_idx
@@ -125,7 +125,7 @@ class PickingOptimizationService:
                 # Get actual A* path
                 path_to_item = self.find_path(current_floor, current_pos, next_item['coord'])
                 if path_to_item:
-                    total_path.extend([{"floor": current_floor, "coord": p} for p in path_to_item])
+                    total_path.extend([{"floor": current_floor, "coord": p, "slot": self.floors[current_floor].get_slot_name(WarehouseCoordinate(p[0], p[1]))} for p in path_to_item])
                     total_distance += len(path_to_item)
                     current_pos = next_item['coord']
                 
@@ -136,7 +136,7 @@ class PickingOptimizationService:
             elevator_pos = self._find_nearest_transition(current_floor, current_pos)
             if elevator_pos:
                 path_to_elevator = self.find_path(current_floor, current_pos, elevator_pos)
-                total_path.extend([{"floor": current_floor, "coord": p} for p in path_to_elevator])
+                total_path.extend([{"floor": current_floor, "coord": p, "slot": self.floors[current_floor].get_slot_name(WarehouseCoordinate(p[0], p[1]))} for p in path_to_elevator])
                 total_distance += len(path_to_elevator)
                 current_floor = 0
                 current_pos = elevator_pos
@@ -148,13 +148,14 @@ class PickingOptimizationService:
         }
 
     def _find_nearest_transition(self, floor_idx: int, current_pos: Tuple[int, int]) -> Optional[Tuple[int, int]]:
-        """Finds nearest elevator or monte-charge."""
+        """Finds nearest elevator or monte-charge using explicit metadata."""
         if floor_idx not in self.floors: return None
         warehouse_map = self.floors[floor_idx]
+        from ..engine.base import ZoneType
         
         candidates = []
         for name, coords in warehouse_map.zones.items():
-            if any(k in name for k in ["Monte Charge", "Assenseur"]):
+            if warehouse_map.zone_types.get(name) == ZoneType.TRANSITION:
                 segments = coords if isinstance(coords, list) else [coords]
                 for (x1, y1, x2, y2) in segments:
                     candidates.append((int((x1+x2)/2), int((y1+y2)/2)))

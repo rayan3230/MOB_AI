@@ -1,4 +1,4 @@
-from ..engine.base import DepotB7Map, WarehouseCoordinate
+from ..engine.base import DepotB7Map, WarehouseCoordinate, ZoneType
 from typing import List
 
 class IntermediateFloorMap(DepotB7Map):
@@ -64,6 +64,16 @@ class IntermediateFloorMap(DepotB7Map):
             "C6": (27.8, 10.5, 28.8, 17.9),
             "Assenseur": (2, 20.0, 7, 22.5),
         }
+
+        # Explicitly define zone types (REQ: All zones defined explicitly)
+        self.zone_types = {}
+        for name in self.zones:
+            if any(k in name for k in ["Monte Charge", "Assenseur"]):
+                self.zone_types[name] = ZoneType.TRANSITION
+            else:
+                # In floors 1 and 2, almost all zones are storage
+                self.zone_types[name] = ZoneType.STORAGE
+
         self.landmarks = {}
         self.pillars: List[WarehouseCoordinate] = [
             # Line 1 (Y: 26.2 - 27)
