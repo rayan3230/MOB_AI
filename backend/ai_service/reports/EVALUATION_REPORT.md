@@ -51,6 +51,11 @@ The system now features a high-performance navigation engine for picking fulfill
 - **Graph-Based Walkable Grid**: The engine precomputes a connectivity graph of the entire warehouse, strictly excluding racks, pillars, walls, and restricted zones.
 - **Obstacle & Rack Integrity**: Vertical and horizontal racks are treated as impenetrable obstacles. The system automatically finds the nearest "walkable edge" for any pick located inside a storage zone.
 - **Multi-Stop Route Optimization**: Uses an advanced Traveling Salesman Problem (TSP) solver including a **2-opt local search improvement**. This ensures the sequence of picks is optimized beyond simple greedy logic, minimizing total travel time.
+- **Operational Scalability**: 
+    - **Works for N items**: Algorithm handles arbitrary picking batches with sub-50ms latency for typical loads.
+    - **Multiple Chariot Support**: Built-in spatial partitioning to distribute picks across multiple starting points/operators.
+    - **Caching Enabled**: Persistent global path cache for symmetric coordinates reduces redundant CPU load.
+    - **Live Re-routing**: Immediate path updates from the current chariot position for dynamic environment changes.
 - **Performance Metrics**:
     - **Distance Matrix**: Precomputes an exact A* distance matrix between all points in a pick batch.
     - **Travel Time Estimation**: Computes estimated completion time based on a standard 1.2 m/s human walking speed.

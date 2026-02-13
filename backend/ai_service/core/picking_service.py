@@ -6,35 +6,56 @@ class PickingOptimizationService:
     def __init__(self, floors: Dict[int, DepotB7Map]):
         self.floors = floors
         self.travel_speed = 1.2 # m/s (Average walking speed)
+        self.global_path_cache = {} # (floor_idx, coord_a, coord_b) -> (dist, path)
+
+    def _get_cached_path(self, floor_idx: int, a: WarehouseCoordinate, b: WarehouseCoordinate) -> Tuple[float, List[WarehouseCoordinate]]:
+        """Requirement: Caching enabled."""
+        key = tuple(sorted([a, b], key=lambda c: (c.x, c.y, c.z)))
+        full_key = (floor_idx, *key)
+        
+        if full_key in self.global_path_cache:
+            return self.global_path_cache[full_key]
+            
+        warehouse_map = self.floors[floor_idx]
+        path = warehouse_map.find_path_astar(a, b)
+        
+        if not path:
+            dist = float(abs(a.x - b.x) + abs(a.y - b.y))
+        else:
+            dist = float(len(path) - 1)
+            
+        self.global_path_cache[full_key] = (dist, path)
+        return dist, path
 
     def calculate_picking_route(self, floor_idx: int, start_coord: WarehouseCoordinate, picks: List[WarehouseCoordinate]) -> Dict:
         """
         Requirement 8.3: Optimized Picking Route with 2-Opt TSP.
-        - Distance Matrix: Exact A* path distances precomputed.
-        - Initial Solution: Greedy Nearest Neighbor.
-        - Optimization: 2-Opt local search improvement.
+        - Works for N items: Optimized distance matrix building.
+        - Caching enabled: Persistent global path cache.
         """
         if floor_idx not in self.floors:
             return {"error": f"Floor {floor_idx} not found."}
+        if not picks:
+            return {
+                "floor_idx": floor_idx,
+                "route_sequence": [],
+                "path_segments": [],
+                "total_distance": 0.0,
+                "estimated_time_seconds": 0.0
+            }
 
-        warehouse_map = self.floors[floor_idx]
         nodes = [start_coord] + picks
         n = len(nodes)
         
-        # 1. Build Distance Matrix (Exact A* distances)
+        # 1. Build Distance Matrix (With Global Cache)
         dist_matrix = [[0.0 for _ in range(n)] for _ in range(n)]
-        path_cache = {} # (i, j) -> path
+        path_segments_lookup = {}
 
         for i in range(n):
             for j in range(i + 1, n):
-                path = warehouse_map.find_path_astar(nodes[i], nodes[j])
-                if not path:
-                    # Fallback to Manhattan if path is blocked (e.g. into a rack)
-                    d = abs(nodes[i].x - nodes[j].x) + abs(nodes[i].y - nodes[j].y)
-                else:
-                    d = len(path) - 1
-                dist_matrix[i][j] = dist_matrix[j][i] = float(d)
-                path_cache[(i, j)] = path_cache[(j, i)] = path
+                dist, path = self._get_cached_path(floor_idx, nodes[i], nodes[j])
+                dist_matrix[i][j] = dist_matrix[j][i] = dist
+                path_segments_lookup[(i, j)] = path_segments_lookup[(j, i)] = path
 
         # 2. Greedy Initial Solution (Nearest Neighbor)
         current_tour = [0]
@@ -47,19 +68,15 @@ class PickingOptimizationService:
 
         # 3. 2-Opt Improvement
         def get_tour_dist(tour):
-            d = 0.0
-            for k in range(len(tour) - 1):
-                d += dist_matrix[tour[k]][tour[k+1]]
-            return d
+            return sum(dist_matrix[tour[k]][tour[k+1]] for k in range(len(tour) - 1))
 
         improved = True
         while improved:
             improved = False
             for i in range(1, n - 1):
                 for j in range(i + 1, n):
-                    # For a simple path (not circuit), 2-opt swaps segment [i...j]
+                    # Segment swap for 2-op optimization
                     new_tour = current_tour[:i] + current_tour[i:j+1][::-1] + current_tour[j+1:]
-                    
                     if get_tour_dist(new_tour) < get_tour_dist(current_tour):
                         current_tour = new_tour
                         improved = True
@@ -70,14 +87,15 @@ class PickingOptimizationService:
         route_sequence = []
         for k in range(len(current_tour) - 1):
             i, j = current_tour[k], current_tour[k+1]
-            seg = path_cache.get((i, j), [])
+            seg = path_segments_lookup.get((i, j), [])
+            # Reverse path if directions don't match (cache stores sorted pairs)
+            if seg and seg[0] != nodes[i]:
+                seg = seg[::-1]
             path_segments.append(seg)
             route_sequence.append(nodes[j])
 
-        # 5. Estimated Travel Time
         travel_time_sec = total_distance / self.travel_speed
-
-        AuditTrail.log(Role.SYSTEM, f"Picking route optimized (2-opt). Distance: {total_distance}m | Est. Time: {travel_time_sec/60:.2f} min")
+        AuditTrail.log(Role.SYSTEM, f"Route optimized for {len(picks)} items. Distance: {total_distance}m")
 
         return {
             "floor_idx": floor_idx,
@@ -86,6 +104,28 @@ class PickingOptimizationService:
             "total_distance": total_distance,
             "estimated_time_seconds": travel_time_sec
         }
+
+    def calculate_multi_chariot_routes(self, floor_idx: int, starts: List[WarehouseCoordinate], picks: List[WarehouseCoordinate]) -> List[Dict]:
+        """Requirement: Multiple chariot start supported."""
+        if not starts: return []
+        if len(starts) == 1:
+            return [self.calculate_picking_route(floor_idx, starts[0], picks)]
+            
+        # Distribute picks to nearest chariot (Simple K-Means style partitioning)
+        chariot_assignments = [[] for _ in range(len(starts))]
+        for p in picks:
+            best_chariot = min(range(len(starts)), key=lambda i: abs(p.x - starts[i].x) + abs(p.y - starts[i].y))
+            chariot_assignments[best_chariot].append(p)
+            
+        results = []
+        for i, assigned_picks in enumerate(chariot_assignments):
+            results.append(self.calculate_picking_route(floor_idx, starts[i], assigned_picks))
+            
+        return results
+
+    def reroute_active_chariot(self, floor_idx: int, current_pos: WarehouseCoordinate, remaining_picks: List[WarehouseCoordinate]) -> Dict:
+        """Requirement: Re-routing supported."""
+        return self.calculate_picking_route(floor_idx, current_pos, remaining_picks)
 
     def batch_picks(self, available_picks: List[Dict]) -> List[List[Dict]]:
         """

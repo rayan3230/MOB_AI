@@ -23,17 +23,25 @@ class StorageClass(enum.Enum):
 
 class WarehouseCoordinate:
     def __init__(self, x: float, y: float, z: float = 0):
-        self.x = x
-        self.y = y
-        self.z = z
+        self.x = int(x)
+        self.y = int(y)
+        self.z = int(z)
 
     def __repr__(self):
         return f"({self.x}, {self.y}, {self.z})"
 
-    def to_tuple(self) -> Tuple[float, float]:
+    def __hash__(self):
+        return hash((self.x, self.y, self.z))
+
+    def __eq__(self, other):
+        if not isinstance(other, WarehouseCoordinate):
+            return False
+        return self.x == other.x and self.y == other.y and self.z == other.z
+
+    def to_tuple(self) -> Tuple[int, int]:
         return (self.x, self.y)
 
-    def to_3d_tuple(self) -> Tuple[float, float, float]:
+    def to_3d_tuple(self) -> Tuple[int, int, int]:
         return (self.x, self.y, self.z)
 
 class DepotB7Map:
@@ -51,7 +59,7 @@ class DepotB7Map:
         self.occupied_slots: set[Tuple[int, int]] = set()
 
     def _precompute_matrices(self):
-        """Precomputes boolean matrices for O(1) lookups."""
+        """Precomputes boolean matrices and graph for O(1) lookups."""
         self.pillar_matrix = [[False for _ in range(self.height)] for _ in range(self.width)]
         for p in self.pillars:
             if 0 <= p.x < self.width and 0 <= p.y < self.height:
@@ -60,7 +68,7 @@ class DepotB7Map:
         self.storage_matrix = [[False for _ in range(self.height)] for _ in range(self.width)]
         for name, coords in self.zones.items():
             if self.zone_types.get(name) == ZoneType.STORAGE:
-                if "Reserved" in name: continue # Requirement 8.2: Reserved zones excluded
+                if "Reserved" in name: continue 
                 segments = coords if isinstance(coords, list) else [coords]
                 for (x1, y1, x2, y2) in segments:
                     for x in range(int(x1), int(x2)):
@@ -72,6 +80,9 @@ class DepotB7Map:
         for x in range(self.width):
             for y in range(self.height):
                 self.walkable_matrix[x][y] = self._calculate_walkable(WarehouseCoordinate(x, y))
+        
+        # Build graph for A*
+        self.walkable_graph = self.build_walkable_graph()
 
     def is_slot_available(self, coord: WarehouseCoordinate) -> bool:
         """Requirement 8.2: Robust Slot Availability Check."""
