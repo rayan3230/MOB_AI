@@ -50,7 +50,11 @@ The system now features a high-performance navigation engine for picking fulfill
 - **A* Pathfinding Implementation**: A deterministic A* algorithm ensures the shortest legal path between any two warehouse coordinates, respecting all physical constraints.
 - **Graph-Based Walkable Grid**: The engine precomputes a connectivity graph of the entire warehouse, strictly excluding racks, pillars, walls, and restricted zones.
 - **Obstacle & Rack Integrity**: Vertical and horizontal racks are treated as impenetrable obstacles. The system automatically finds the nearest "walkable edge" for any pick located inside a storage zone.
-- **Multi-Stop Route Optimization**: Uses a Nearest Neighbor heuristic to sequence multiple picks in a single trip, minimizing total travel distance.
+- **Multi-Stop Route Optimization**: Uses an advanced Traveling Salesman Problem (TSP) solver including a **2-opt local search improvement**. This ensures the sequence of picks is optimized beyond simple greedy logic, minimizing total travel time.
+- **Performance Metrics**:
+    - **Distance Matrix**: Precomputes an exact A* distance matrix between all points in a pick batch.
+    - **Travel Time Estimation**: Computes estimated completion time based on a standard 1.2 m/s human walking speed.
+    - **A* Fallback**: Deterministic logic handles blocked path scenarios (e.g., targets inside racks) by providing lower-bound distance estimates to guarantee a solvable sequence.
 - **Fault Tolerance**: If a target coordinate is physically blocked or out of bounds, the engine logs a system warning and continues the route calculation for reachable items.
 
 - **Pillar/Wall Exclusion**: High-resolution `pillar_matrix` prevents slot suggestions on physical obstructions.
