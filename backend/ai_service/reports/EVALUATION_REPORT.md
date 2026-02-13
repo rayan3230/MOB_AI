@@ -4,11 +4,11 @@
 
 Evaluated points: 40 across up to 5 SKUs.
 
-| Model   |    MAE |   RMSE |   WAP (%) |   Bias (%) |
-|:--------|-------:|-------:|----------:|-----------:|
-| SMA     | 656.23 | 794.57 |     76.74 |      40.89 |
-| REG     | 261.01 | 328    |     30.52 |       6.63 |
-| HYBRID  | 285.11 | 367.62 |     33.34 |      -0.35 |
+| Model   |   WAP (%) |   Bias (%) |
+|:--------|----------:|-----------:|
+| SMA     |     76.74 |      40.89 |
+| REG     |     30.52 |       6.63 |
+| HYBRID  |     33.34 |      -0.35 |
 
 ### Comparison vs Previous Implementation
 

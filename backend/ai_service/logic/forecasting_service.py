@@ -474,9 +474,6 @@ class ForecastingService:
         # Calculate Metrics
         metrics = []
         for model in ['sma', 'reg', 'hybrid']:
-            mae = float((eval_df[model] - eval_df['actual']).abs().mean())
-            rmse = float(np.sqrt(((eval_df[model] - eval_df['actual']) ** 2).mean()))
-
             total_abs_error = (eval_df[model] - eval_df['actual']).abs().sum()
             total_actual = eval_df['actual'].sum()
             wap = (total_abs_error / total_actual) * 100 if total_actual > 0 else 0
@@ -486,8 +483,6 @@ class ForecastingService:
             
             metrics.append({
                 'Model': model.upper(),
-                'MAE': round(mae, 2),
-                'RMSE': round(rmse, 2),
                 'WAP (%)': round(wap, 2),
                 'Bias (%)': round(bias_pct, 2)
             })
