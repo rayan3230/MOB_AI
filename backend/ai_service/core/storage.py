@@ -113,10 +113,9 @@ class StorageOptimizationService:
             for (x, y), s_class in zones.items():
                 coord = WarehouseCoordinate(x, y)
                 
-                # Apply Filters (Step 4)
+                # Apply Filters (Step 4 / Requirement 8.2)
+                # This checks bound, storage_matrix, pillar_matrix, and occupancy
                 if not warehouse_map.is_slot_available(coord):
-                    continue
-                if self._is_in_prohibited_zone(warehouse_map, coord):
                     continue
                     
                 # Apply Business Constraints (Step 5)
@@ -216,18 +215,6 @@ class StorageOptimizationService:
                             
         return relocation_suggestions
 
-    def _is_in_prohibited_zone(self, warehouse_map: DepotB7Map, coord: WarehouseCoordinate) -> bool:
-        """Checks if a coordinate falls within a non-storage area using explicit metadata."""
-        from ..engine.base import ZoneType
-        for name, coords in warehouse_map.zones.items():
-            z_type = warehouse_map.zone_types.get(name, ZoneType.WALKABLE)
-            if z_type in [ZoneType.OBSTACLE, ZoneType.TRANSITION]:
-                segments = coords if isinstance(coords, list) else [coords]
-                for (x1, y1, x2, y2) in segments:
-                    if x1 <= coord.x < x2 and y1 <= coord.y < y2:
-                        return True
-        return False
-
     def _is_rack_compatible(self, product_id: int, floor_idx: int, coord: WarehouseCoordinate) -> bool:
         """
         Placeholder for rack compatibility logic.
@@ -309,12 +296,20 @@ class StorageOptimizationService:
             for name, coords in warehouse_map.zones.items():
                 if not self._is_storage_zone(warehouse_map, name):
                     continue
+                    
+                # Requirement 8.2: Reserved zones excluded
+                if "Reserved" in name:
+                    continue
 
                 segments = coords if isinstance(coords, list) else [coords]
                 for (x1, y1, x2, y2) in segments:
                     for x in range(int(x1), int(x2)):
                         for y in range(int(y1), int(y2)):
                             coord = WarehouseCoordinate(x, y)
+                            
+                            # Requirement 8.2: Pillars and Walls excluded from classification
+                            if warehouse_map.pillar_matrix[x][y]:
+                                continue
                             
                             # Get shortest walking distance from nearest walkable neighbor
                             # (Since the slot itself is occupied by a rack and not walkable)

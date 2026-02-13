@@ -56,18 +56,40 @@ class DepotB7Map:
             if 0 <= p.x < self.width and 0 <= p.y < self.height:
                 self.pillar_matrix[int(p.x)][int(p.y)] = True
 
+        self.storage_matrix = [[False for _ in range(self.height)] for _ in range(self.width)]
+        for name, coords in self.zones.items():
+            if self.zone_types.get(name) == ZoneType.STORAGE:
+                if "Reserved" in name: continue # Requirement 8.2: Reserved zones excluded
+                segments = coords if isinstance(coords, list) else [coords]
+                for (x1, y1, x2, y2) in segments:
+                    for x in range(int(x1), int(x2)):
+                        for y in range(int(y1), int(y2)):
+                            if 0 <= x < self.width and 0 <= y < self.height:
+                                self.storage_matrix[x][y] = True
+
         self.walkable_matrix = [[False for _ in range(self.height)] for _ in range(self.width)]
         for x in range(self.width):
             for y in range(self.height):
                 self.walkable_matrix[x][y] = self._calculate_walkable(WarehouseCoordinate(x, y))
 
     def is_slot_available(self, coord: WarehouseCoordinate) -> bool:
-        if not (0 <= coord.x < self.width and 0 <= coord.y < self.height):
+        """Requirement 8.2: Robust Slot Availability Check."""
+        x, y = int(coord.x), int(coord.y)
+        if not (0 <= x < self.width and 0 <= y < self.height):
             return False
-        if self.pillar_matrix[int(coord.x)][int(coord.y)]:
+        
+        # 1. Rack-only storage respected
+        if not self.storage_matrix[x][y]:
             return False
-        if (int(coord.x), int(coord.y)) in self.occupied_slots:
+            
+        # 2. Pillars & Walls excluded
+        if self.pillar_matrix[x][y]:
             return False
+            
+        # 3. Availability checked (Occupancy)
+        if (x, y) in self.occupied_slots:
+            return False
+            
         return True
 
     def _calculate_walkable(self, coord: WarehouseCoordinate) -> bool:

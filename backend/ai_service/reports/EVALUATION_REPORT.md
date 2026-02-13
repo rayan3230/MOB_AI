@@ -25,7 +25,16 @@ The system now includes safety-first logic for production readiness:
 - **Confidence Scores**: Every forecast carries a 0-100% score based on volume and stability.
 - **Improved Bias**: HYBRID model achieved **-0.16% Bias**, successfully meeting the 0-5% target requirement.
 
+## 8.2 Storage Optimization Logic (Digital Twin)
+The storage service has been hardened to respect high-fidelity warehouse constraints:
+- **Pillar/Wall Exclusion**: High-resolution `pillar_matrix` prevents slot suggestions on physical obstructions.
+- **Rack-Only Logic**: `storage_matrix` restricts inventory to valid Storage zones, excluding aisles, dock areas (Expédition), and offices.
+- **Reserved Zones**: Zones marked as "Reserved" or "Obstacle" are automatically pruned from the storage pool.
+- **Slot Occupancy**: Real-time checking of current stock prevents multi-SKU collisions in a single physical slot.
+- **Multi-Floor Support**: Compatible with RDC and upper floors with individual distance-to-dock calculations.
+
 *Notes:*
+- ABC classification is based on real-time demand frequency from `historique_demande.csv`.
 - Outliers are clipped using IQR; no synthetic zero-filling is introduced in sparse histories.
 - Regression is used only when trend strength is statistically meaningful.
 - LLM output is constrained by deterministic guardrails to prevent accuracy degradation.

@@ -34,7 +34,7 @@ class ProductStorageManager:
         demand_freq = self.demand_df.groupby('id_produit').size().reset_index(name='frequency')
         
         # Merge with products to get all IDs
-        full_products = self.products_df[['id_produit', 'sku', 'poidsu']].merge(demand_freq, on='id_produit', how='left').fillna(0)
+        full_products = self.products_df[['id_produit', 'sku']].merge(demand_freq, on='id_produit', how='left').fillna(0)
         
         # Determine thresholds for ABC classification (Zoning)
         # Fast: top 10% by frequency
@@ -48,10 +48,6 @@ class ProductStorageManager:
         for _, row in full_products.iterrows():
             pid = int(row['id_produit'])
             freq = row['frequency']
-            weight = row['poidsu']
-            
-            # Heavy products (e.g. > 20kg per unit potentially) 
-            # might also be pushed to Fast/Medium to reduce handling distance
             
             if freq >= medium_thresh:
                 p_class = StorageClass.FAST
