@@ -79,4 +79,17 @@ class ProductStorageManager:
         prod = self.products_df[self.products_df['id_produit'] == product_id]
         if prod.empty:
             return {}
-        return prod.iloc[0].to_dict()
+        details = prod.iloc[0].to_dict()
+        
+        # REQ 8.2: If weight (poidsu) is missing, apply a category-based heuristic
+        if 'poidsu' not in details or pd.isna(details['poidsu']):
+            category = str(details.get('categorie', '')).upper()
+            # Heuristic weights in KG
+            if any(k in category for k in ["TABLEAU", "DISJONCTEUR", "METALIC"]):
+                details['poidsu'] = 18.5 # "Heavy"
+            elif any(k in category for k in ["TUBE", "MOULURE", "ACCESSOIRES"]):
+                details['poidsu'] = 2.0  # "Light"
+            else:
+                details['poidsu'] = 5.0  # "Medium"
+                
+        return details
