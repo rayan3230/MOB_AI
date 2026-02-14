@@ -5422,3 +5422,33 @@ Final Items Sent to Warehouse:
 2026-02-14 04:37:36,536 - ForecastingService - INFO - Justification: HYBRID selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
 2026-02-14 04:37:38,572 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.5 m/s based on performance data.
 2026-02-14 04:37:59,662 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 05:02:12,636 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 05:02:18,993 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 05:02:30,560 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 05:02:34,904 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 05:03:55,032 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 05:04:06,810 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 05:04:11,523 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 05:05:53,874 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 05:06:00,304 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 05:06:27,314 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 05:06:32,264 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 05:06:37,729 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 05:06:37,730 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 05:06:50,982 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 05:06:56,146 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 05:07:01,469 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 05:07:07,149 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 05:07:07,367 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 05:07:11,586 - ForecastingService - WARNING - Chronological Violation: 10018 operations attempted to reduce stock below zero.
+2026-02-14 05:07:11,586 - ForecastingService - INFO - Calculated stock for 888 SKUs with chronological validation.
+2026-02-14 05:07:33,723 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 05:21:19,065 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 05:21:38,416 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 05:21:54,361 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\storage.py changed, reloading.
+2026-02-14 05:22:14,977 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\storage.py changed, reloading.
+2026-02-14 05:47:53,006 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\storage.py changed, reloading.
+2026-02-14 05:56:38,312 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\storage.py changed, reloading.
+2026-02-14 05:57:49,615 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\storage.py changed, reloading.
+2026-02-14 06:06:15,369 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\picking_service.py changed, reloading.
+2026-02-14 06:09:53,213 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\picking_service.py changed, reloading.

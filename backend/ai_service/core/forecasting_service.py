@@ -13,6 +13,7 @@ from .learning_engine import LearningFeedbackEngine
 from django.forms.models import model_to_dict
 from Produit.models import Produit, HistoriqueDemande, DelaisApprovisionnement, PolitiqueReapprovisionnement, cmd_achat_ouvertes_opt
 from Transaction.models import Transaction, LigneTransaction
+from warhouse.models import Stock, Emplacement, Entrepot
 
 # Set up paths for reports
 REPORT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "reports")
@@ -37,6 +38,8 @@ class DataLoader:
         self.transactions = None
         self.transaction_lines = None
         self.products = None
+        self.stocks = None
+        self.emplacements = None
 
     def load_and_clean(self):
         if (
@@ -66,12 +69,21 @@ class DataLoader:
                 self.demand_history = pd.read_csv(os.path.join(self.data_path, 'historique_demande.csv'))
                 self.transaction_lines = pd.read_csv(os.path.join(self.data_path, 'lignes_transaction.csv'))
                 self.products = pd.read_csv(os.path.join(self.data_path, 'produits.csv'))
+                
                 t_path = os.path.join(self.data_path, 'transactions.csv')
                 if os.path.exists(t_path):
                     self.transactions = pd.read_csv(t_path)
+                
+                s_path = os.path.join(self.data_path, 'stocks.csv')
+                if os.path.exists(s_path):
+                    self.stocks = pd.read_csv(s_path)
+                
+                e_path = os.path.join(self.data_path, 'emplacements.csv')
+                if os.path.exists(e_path):
+                    self.emplacements = pd.read_csv(e_path)
 
         # Ensure column names are clean
-        for df in [self.demand_history, self.transaction_lines, self.products, self.transactions]:
+        for df in [self.demand_history, self.transaction_lines, self.products, self.transactions, self.stocks, self.emplacements]:
             if df is not None and not df.empty:
                 # Convert column names to strings first, then strip whitespace
                 df.columns = [str(col).strip() for col in df.columns]
@@ -134,6 +146,14 @@ class DataLoader:
             lines = LigneTransaction.objects.all().values()
             self.transaction_lines = pd.DataFrame(list(lines))
             
+            # 4. Stocks (Initial Quantities)
+            stocks = Stock.objects.all().values()
+            self.stocks = pd.DataFrame(list(stocks))
+            
+            # 5. Emplacements (Occupancy State)
+            emplacements = Emplacement.objects.all().values()
+            self.emplacements = pd.DataFrame(list(emplacements))
+            
             logger.info(f"Successfully fetched {len(self.products)} products and {len(self.demand_history)} history points from Supabase.")
         except Exception as e:
             logger.error(f"Error fetching data from Supabase: {e}")
@@ -142,6 +162,8 @@ class DataLoader:
             self.demand_history = pd.DataFrame()
             self.transactions = pd.DataFrame()
             self.transaction_lines = pd.DataFrame()
+            self.stocks = pd.DataFrame()
+            self.emplacements = pd.DataFrame()
 
     def load_and_clean_wrapper(self):
         """Main entry point for loading and cleaning."""
@@ -218,17 +240,72 @@ class DataLoader:
             self._cached_stock = {}
             return self._cached_stock
         
+        # Chronological Integrity Fix: Ensure movements are sorted by date
+        date_col = 'cree_le' if 'cree_le' in movements.columns else None
+        if not date_col:
+            for col in movements.columns:
+                if 'date' in col.lower() or 'cree' in col.lower():
+                    date_col = col
+                    break
+        
+        if date_col:
+            movements[date_col] = pd.to_datetime(movements[date_col], errors='coerce')
+            movements = movements.sort_values(date_col).dropna(subset=[date_col])
+        
         movements['qty_numeric'] = pd.to_numeric(movements['quantite'], errors='coerce').fillna(0)
-        # Ensure type_transaction is string before using .str accessor
         movements['type_transaction'] = movements['type_transaction'].astype(str).str.strip().fillna('UNKNOWN')
-        multipliers = {'RECEIPT': 1, 'DELIVERY': -1, 'PICKING': -1, 'TRANSFER': -1}
+        
+        # Defined multipliers for chronological flow
+        multipliers = {
+            'RECEIPT': 1, 
+            'DELIVERY': -1, 
+            'PICKING': -1, 
+            'ISSUE': -1, 
+            'TRANSFER': -1, 
+            'ADJUSTMENT': 1
+        }
+        
         movements['net_change'] = (movements['qty_numeric'] * 
                                   movements['type_transaction'].str.upper().map(multipliers).fillna(0))
         
-        current_stock = movements.groupby('id_produit')['net_change'].sum().clip(lower=0)
-        self._cached_stock = current_stock.to_dict()
+        # 🟢 Requirement FIX: Initialize stock from the Stock snapshot if available
+        sku_stock = {}
+        if self.loader.stocks is not None and not self.loader.stocks.empty:
+            if 'id_produit_id' in self.loader.stocks.columns:
+                self.loader.stocks = self.loader.stocks.rename(columns={'id_produit_id': 'id_produit'})
+            
+            if 'id_produit' in self.loader.stocks.columns and 'quantite' in self.loader.stocks.columns:
+                # Group by product and sum up initial stocks across all locations
+                initial_stocks = self.loader.stocks.groupby('id_produit')['quantite'].sum().to_dict()
+                for pid, qty in initial_stocks.items():
+                    try:
+                        sku_stock[int(pid)] = float(qty)
+                    except ValueError:
+                        continue
+                logger.info(f"Initialized stock for {len(sku_stock)} SKUs from physical inventory snapshot.")
+
+        violations = 0
         
-        logger.info(f"Calculated stock for {len(self._cached_stock)} SKUs.")
+        for _, row in movements.iterrows():
+            pid = row['id_produit']
+            change = float(row['net_change'])
+            
+            if pid not in sku_stock:
+                sku_stock[pid] = 0.0
+            
+            if sku_stock[pid] + change < 0:
+                violations += 1
+                # Chronological Integrity: Reject/Clip negative stock but track it
+                sku_stock[pid] = 0.0
+            else:
+                sku_stock[pid] += change
+        
+        if violations > 0:
+            logger.warning(f"Chronological Violation: {violations} operations attempted to reduce stock below zero.")
+            
+        self._cached_stock = sku_stock
+        
+        logger.info(f"Calculated stock for {len(self._cached_stock)} SKUs with chronological validation.")
         return self._cached_stock
 
 class BaselineModel:

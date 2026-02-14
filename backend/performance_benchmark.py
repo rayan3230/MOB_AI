@@ -1,73 +1,49 @@
-import time
+import sys
+import os
 import random
-from ai_service.engine.base import Role, WarehouseCoordinate, DepotB7Map
-from ai_service.core.storage import StorageOptimizationService
+
+# Ensure imports work from backend root
+sys.path.append(os.getcwd())
+
+from ai_service.engine.base import WarehouseCoordinate, AuditTrail, Role
 from ai_service.core.picking_service import PickingOptimizationService
-from ai_service.core.product_manager import ProductStorageManager
+from ai_service.maps import GroundFloorMap
 
-def benchmark_system():
-    print("\n--- AI Performance & Efficiency Benchmark ---")
-    
-    # Setup
-    rdc = DepotB7Map(50, 30)
+def run_bench():
+    rdc = GroundFloorMap()
     rdc._precompute_matrices()
-    pm = ProductStorageManager(
-        products_csv="folder_data/csv_cleaned/produits.csv",
-        demand_csv="folder_data/csv_cleaned/historique_demande.csv"
-    )
-    storage = StorageOptimizationService({0: rdc}, pm)
-    picking = PickingOptimizationService({0: rdc})
-
-    # 1. A* Performance
-    print("1. Benchmarking A* Pathfinding...")
-    start_time = time.time()
-    iterations = 100
-    for _ in range(iterations):
-        a = WarehouseCoordinate(random.randint(0, 49), random.randint(0, 29))
-        b = WarehouseCoordinate(random.randint(0, 49), random.randint(0, 29))
-        rdc.find_path_astar(a, b)
-    avg_astar = (time.time() - start_time) / iterations
-    print(f"   [RESULT] Avg A* Latency: {avg_astar*1000:.2f} ms")
-
-    # 2. Storage Scoring Efficiency
-    print("2. Benchmarking Storage Suggestion...")
-    start_time = time.time()
-    storage.suggest_slot(product_id=123)
-    storage_latency = (time.time() - start_time)
-    print(f"   [RESULT] Storage Score Latency: {storage_latency*1000:.2f} ms")
-
-    # 3. Route Optimization Scalability (N=10, N=30)
-    print("3. Benchmarking Route Optimization (2-Opt)...")
-    for n in [5, 15, 30]:
-        picks = [WarehouseCoordinate(random.randint(0, 49), random.randint(0, 29)) for _ in range(n)]
-        start_time = time.time()
-        picking.calculate_picking_route(0, WarehouseCoordinate(0,0), picks)
-        route_latency = (time.time() - start_time)
-        print(f"   [RESULT] Route Opt (N={n}): {route_latency*1000:.2f} ms")
-
-    # 4. Cache Efficiency
-    print("4. Verifying Cache Efficiency...")
-    p1 = WarehouseCoordinate(5,5)
-    p2 = WarehouseCoordinate(20,20)
+    service = PickingOptimizationService({0: rdc})
     
-    # First call (Miss)
-    start_time = time.time()
-    picking._get_cached_path(0, p1, p2)
-    miss_latency = time.time() - start_time
+    start = WarehouseCoordinate(35, 10)
+    # Generate 15 random pick nodes in storage zones
+    storage_nodes = []
+    # Force some spread to see optimization effects
+    for _ in range(15):
+        found = False
+        while not found:
+            x, y = random.randint(0, 41), random.randint(0, 26)
+            if rdc.storage_matrix[x][y]:
+                storage_nodes.append(WarehouseCoordinate(x, y))
+                found = True
+            
+    # 1. Optimized Route (The real one)
+    opt_route = service.calculate_picking_route(0, start, storage_nodes)
+    opt_dist = opt_route['total_distance']
     
-    # Second call (Hit)
-    start_time = time.time()
-    picking._get_cached_path(0, p1, p2)
-    hit_latency = time.time() - start_time
-    
-    print(f"   [RESULT] Cache Miss Latency: {miss_latency*1000:.4f} ms")
-    print(f"   [RESULT] Cache Hit Latency: {hit_latency*1000:.4f} ms")
-    print(f"   [RESULT] Speedup Factor: {miss_latency/max(1e-9, hit_latency):.1f}x")
-
-    print("\n--- Performance Requirement CHECK ---")
-    if avg_astar < 0.05: print("[PASS] A* runs under acceptable time (<50ms)")
-    if storage_latency < 0.1: print("[PASS] Storage scoring is efficient (<100ms)")
-    print("[PASS] Route optimization scalability verified.")
+    # 2. Naive Route (FIFO / Random Order)
+    naive_dist = 0
+    curr = start
+    for p in storage_nodes:
+        dist, _ = service._get_cached_path(0, curr, p)
+        naive_dist += dist
+        curr = p
+        
+    improvement = ((naive_dist - opt_dist) / naive_dist) * 100
+    print(f"--- ROUTE OPTIMIZATION BENCHMARK ---")
+    print(f"Nodes Picked: {len(storage_nodes)}")
+    print(f"Naive Distance: {naive_dist:.2f}m")
+    print(f"Optimized (2-Opt) Distance: {opt_dist:.2f}m")
+    print(f"Measured Improvement: {improvement:.2f}%")
 
 if __name__ == "__main__":
-    benchmark_system()
+    run_bench()

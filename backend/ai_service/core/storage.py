@@ -1,6 +1,11 @@
+import logging
+import pandas as pd
 from typing import List, Dict, Tuple, Optional
 import enum
 import random
+
+logger = logging.getLogger("StorageService")
+
 from ..engine.base import DepotB7Map, WarehouseCoordinate, StorageClass
 from .product_manager import ProductStorageManager
 from ..engine.base import AuditTrail, Role
@@ -40,6 +45,81 @@ class StorageOptimizationService:
         self.pending_tasks: Dict[int, Dict[Tuple[int, int], int]] = {} # floor -> coord -> task_count
         
         self._classify_all_floors()
+
+    def sync_physical_state(self, emplacements_df: Optional[pd.DataFrame] = None):
+        """
+        Requirement FIX: Synchronize AI digital twin with actual warehouse occupancy.
+        Handles both DB objects and CSV data (0A-01-01 format).
+        """
+        if emplacements_df is None or emplacements_df.empty:
+            return
+
+        logger.info(f"Synchronizing AI state with {len(emplacements_df)} physical locations...")
+        
+        count = 0
+        for _, row in emplacements_df.iterrows():
+            # Check if occupied or inactive
+            # In DB 'statut' can be 'OCCUPIED' or 'BLOCKED'. In CSV 'actif' can be 'FALSE' for occupied/blocked.
+            is_occupied = False
+            if 'statut' in row and str(row['statut']).upper() in ['OCCUPIED', 'BLOCKED']:
+                is_occupied = True
+            if 'actif' in row:
+                # In the hackathon context, actif=FALSE often means occupied or unavailable
+                val = str(row['actif']).upper()
+                if val == 'FALSE' or val == '0':
+                    is_occupied = True
+            
+            if not is_occupied:
+                continue
+                
+            code = str(row.get('code_emplacement', ''))
+            floor_req = row.get('id_niveau', 0) # Default to 0
+            
+            # Map code (e.g. 0A-01-01) to coordinates
+            coord = self._map_code_to_coordinate(code, floor_req)
+            if coord:
+                f_idx = int(floor_req) if str(floor_req).isdigit() else 0
+                if f_idx in self.floors:
+                    self.floors[f_idx].occupied_slots.add((int(coord.x), int(coord.y)))
+                    count += 1
+                    
+        logger.info(f"Loaded {count} occupied slots into Digital Twin.")
+
+    def _map_code_to_coordinate(self, code: str, floor_idx: int) -> Optional[WarehouseCoordinate]:
+        """Heuristic mapping from B7 codes to grid coordinates."""
+        if not code or '-' not in code:
+            return None
+            
+        try:
+            parts = code.split('-')
+            # Floor 0: 0A-01-01
+            # Floor 1: 1B-01-01
+            zone_part = parts[0]
+            if len(zone_part) < 2: return None
+            
+            zone_letter = zone_part[1:] # 'A', 'B', 'V' ...
+            f_idx = int(zone_part[0])
+            
+            if f_idx not in self.floors: return None
+            w_map = self.floors[f_idx]
+            
+            if zone_letter in w_map.zones:
+                coords = w_map.zones[zone_letter]
+                if isinstance(coords, list): coords = coords[0] # Take first segment if list
+                
+                x1, y1, x2, y2 = coords
+                
+                # Heuristic: use parts[1] and parts[2] as offsets
+                y_offset = int(parts[2]) if len(parts) > 2 and parts[2].isdigit() else 0
+                
+                # Center-ish of the zone based on offset
+                target_x = x1
+                target_y = y1 + (y_offset % max(1, int(y2-y1)))
+                
+                return WarehouseCoordinate(target_x, target_y)
+        except Exception:
+            pass
+        return None
 
     def set_pending_tasks(self, tasks_by_coord: Dict[int, Dict[Tuple[int, int], int]]):
         """
@@ -317,10 +397,10 @@ class StorageOptimizationService:
                 return False
 
         # 2. Fragile Item Constraint:
-        # Avoid high-traffic areas (within 15m path distance from Expedition)
+        # Avoid high-traffic areas (within 15m path distance from Expedition/Transitions)
         if is_fragile:
             dist = self.slot_distance_scores.get(floor_idx, {}).get((int(coord.x), int(coord.y)), 100.0)
-            if floor_idx == 0 and dist < 15.0:
+            if dist < 15.0:
                 return False
 
         return True

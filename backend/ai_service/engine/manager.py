@@ -1,4 +1,5 @@
 import datetime
+import pandas as pd
 from .base import Role, DepotB7Map, WarehouseCoordinate, AuditTrail
 from ..core.storage import StorageOptimizationService
 from ..core.product_manager import ProductStorageManager
@@ -6,7 +7,7 @@ from ..core.picking import PickingOptimizationService
 from typing import Optional, Dict, List
 
 class WMSOperationManager:
-    def __init__(self, floors: Dict[int, DepotB7Map], product_manager: ProductStorageManager):
+    def __init__(self, floors: Dict[int, DepotB7Map], product_manager: ProductStorageManager, emplacements_df: Optional[pd.DataFrame] = None):
         """
         Final Architecture: WMS Manager
         Orchestrates storage placement, forecasting, picking routes, and OVERRIDES.
@@ -15,6 +16,10 @@ class WMSOperationManager:
         self.product_manager = product_manager
         self.storage_service = StorageOptimizationService(floors, product_manager)
         self.picking_service = PickingOptimizationService(floors)
+        
+        # Sync physical state if provided
+        if emplacements_df is not None:
+            self.storage_service.sync_physical_state(emplacements_df)
         
         # --- REQ 8.4: Task Management ---
         # Task mapping: task_id -> {product_id, suggested_coord, status, user_override, justification}
