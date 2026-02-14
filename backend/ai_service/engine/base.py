@@ -8,6 +8,7 @@ class Role(enum.Enum):
     ADMIN = "ADMIN"
     SUPERVISOR = "SUPERVISOR"
     EMPLOYEE = "EMPLOYEE"
+    SYSTEM = "SYSTEM"
 
 class ZoneType(enum.Enum):
     STORAGE = "STORAGE"
@@ -22,17 +23,25 @@ class StorageClass(enum.Enum):
 
 class WarehouseCoordinate:
     def __init__(self, x: float, y: float, z: float = 0):
-        self.x = x
-        self.y = y
-        self.z = z
+        self.x = int(x)
+        self.y = int(y)
+        self.z = int(z)
 
     def __repr__(self):
         return f"({self.x}, {self.y}, {self.z})"
 
-    def to_tuple(self) -> Tuple[float, float]:
+    def __hash__(self):
+        return hash((self.x, self.y, self.z))
+
+    def __eq__(self, other):
+        if not isinstance(other, WarehouseCoordinate):
+            return False
+        return self.x == other.x and self.y == other.y and self.z == other.z
+
+    def to_tuple(self) -> Tuple[int, int]:
         return (self.x, self.y)
 
-    def to_3d_tuple(self) -> Tuple[float, float, float]:
+    def to_3d_tuple(self) -> Tuple[int, int, int]:
         return (self.x, self.y, self.z)
 
 class DepotB7Map:
@@ -50,24 +59,49 @@ class DepotB7Map:
         self.occupied_slots: set[Tuple[int, int]] = set()
 
     def _precompute_matrices(self):
-        """Precomputes boolean matrices for O(1) lookups."""
+        """Precomputes boolean matrices and graph for O(1) lookups."""
         self.pillar_matrix = [[False for _ in range(self.height)] for _ in range(self.width)]
         for p in self.pillars:
             if 0 <= p.x < self.width and 0 <= p.y < self.height:
                 self.pillar_matrix[int(p.x)][int(p.y)] = True
 
+        self.storage_matrix = [[False for _ in range(self.height)] for _ in range(self.width)]
+        for name, coords in self.zones.items():
+            if self.zone_types.get(name) == ZoneType.STORAGE:
+                if "Reserved" in name: continue 
+                segments = coords if isinstance(coords, list) else [coords]
+                for (x1, y1, x2, y2) in segments:
+                    for x in range(int(x1), int(x2)):
+                        for y in range(int(y1), int(y2)):
+                            if 0 <= x < self.width and 0 <= y < self.height:
+                                self.storage_matrix[x][y] = True
+
         self.walkable_matrix = [[False for _ in range(self.height)] for _ in range(self.width)]
         for x in range(self.width):
             for y in range(self.height):
                 self.walkable_matrix[x][y] = self._calculate_walkable(WarehouseCoordinate(x, y))
+        
+        # Build graph for A*
+        self.walkable_graph = self.build_walkable_graph()
 
     def is_slot_available(self, coord: WarehouseCoordinate) -> bool:
-        if not (0 <= coord.x < self.width and 0 <= coord.y < self.height):
+        """Requirement 8.2: Robust Slot Availability Check."""
+        x, y = int(coord.x), int(coord.y)
+        if not (0 <= x < self.width and 0 <= y < self.height):
             return False
-        if self.pillar_matrix[int(coord.x)][int(coord.y)]:
+        
+        # 1. Rack-only storage respected
+        if not self.storage_matrix[x][y]:
             return False
-        if (int(coord.x), int(coord.y)) in self.occupied_slots:
+            
+        # 2. Pillars & Walls excluded
+        if self.pillar_matrix[x][y]:
             return False
+            
+        # 3. Availability checked (Occupancy)
+        if (x, y) in self.occupied_slots:
+            return False
+            
         return True
 
     def _calculate_walkable(self, coord: WarehouseCoordinate) -> bool:
@@ -141,6 +175,65 @@ class DepotB7Map:
                     queue.append(neighbor)
         
         return dist_map
+
+    def find_path_astar(self, start: WarehouseCoordinate, end: WarehouseCoordinate) -> Optional[List[Tuple[int, int]]]:
+        """
+        Requirement 8.3: A* Pathfinding Algorithm.
+        Guarantees shortest path while respecting obstacles (Is_walkable).
+        """
+        import heapq
+
+        def heuristic(a, b):
+            return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+        start_node = (int(start.x), int(start.y))
+        end_node = (int(end.x), int(end.y))
+
+        # Check if end is reachable (might be inside a rack)
+        if not self.is_walkable(end):
+            # Find nearest walkable neighbor to the rack (Search up to 5m)
+            neighbors = []
+            for radius in range(1, 6):
+                for dx in range(-radius, radius + 1):
+                    for dy in range(-radius, radius + 1):
+                        if dx == 0 and dy == 0: continue
+                        nx, ny = end_node[0] + dx, end_node[1] + dy
+                        if self.is_walkable(WarehouseCoordinate(nx, ny)):
+                            neighbors.append((nx, ny))
+                if neighbors: break
+            
+            if not neighbors:
+                return None # Truly blocked
+            # Pick neighbor closest to start
+            end_node = min(neighbors, key=lambda n: heuristic(n, start_node))
+
+        open_set = []
+        heapq.heappush(open_set, (0, start_node))
+        came_from = {}
+        g_score = {start_node: 0}
+        f_score = {start_node: heuristic(start_node, end_node)}
+
+        while open_set:
+            current = heapq.heappop(open_set)[1]
+
+            if current == end_node:
+                path = []
+                while current in came_from:
+                    path.append(current)
+                    current = came_from[current]
+                path.append(start_node)
+                return path[::-1]
+
+            for neighbor in self.walkable_graph.get(current, []):
+                tentative_g_score = g_score[current] + 1
+                if tentative_g_score < g_score.get(neighbor, float('inf')):
+                    came_from[neighbor] = current
+                    g_score[neighbor] = tentative_g_score
+                    f_score[neighbor] = tentative_g_score + heuristic(neighbor, end_node)
+                    if neighbor not in [i[1] for i in open_set]:
+                        heapq.heappush(open_set, (f_score[neighbor], neighbor))
+
+        return None # No path found
 
     def visualize(self):
         fig, ax = plt.subplots(figsize=(12, 8))

@@ -3,6 +3,7 @@ import enum
 import random
 from ..engine.base import DepotB7Map, WarehouseCoordinate, StorageClass
 from .product_manager import ProductStorageManager
+from ..engine.base import AuditTrail, Role
 
 class StorageOptimizationService:
     def __init__(self, floors: Dict[int, DepotB7Map], product_manager: ProductStorageManager):
@@ -30,11 +31,22 @@ class StorageOptimizationService:
             "distance": 1.0,
             "weight": 2.5,     # High penalty for heavy items far away
             "frequency": 1.0,  # Multiplier applied directly to distance
-            "congestion": 5.0, # Significant penalty to avoid bottleneck
-            "traffic": 0.2     # Adjustment for zone heat
+            "congestion": 5.0, # Penalty for localized occupancy (3x3)
+            "workload": 8.0,   # NEW: Heavy penalty for areas with high pending pick tasks
+            "traffic": 0.2     # Adjustment for historical zone heat
         }
         
+        # --- NEW: Pending Workload Tracker ---
+        self.pending_tasks: Dict[int, Dict[Tuple[int, int], int]] = {} # floor -> coord -> task_count
+        
         self._classify_all_floors()
+
+    def set_pending_tasks(self, tasks_by_coord: Dict[int, Dict[Tuple[int, int], int]]):
+        """
+        REQ 8.2 ADVANCED: Dynamic congestion penalty based on upcoming workload.
+        :param tasks_by_coord: {floor_idx: {(x, y): count}}
+        """
+        self.pending_tasks = tasks_by_coord
 
     def apply_forecast_data(self, high_demand_skus: List[int]):
         """
@@ -95,9 +107,20 @@ class StorageOptimizationService:
         congestion_penalty = occupied_count * self.weights["congestion"]
         score += congestion_penalty
         
+        # 4. NEW: Workload Congestion Penalty (Dynamic)
+        # Avoid zones where many picks are already scheduled
+        workload_penalty = 0.0
+        # Check 3x3 surrounding for workload spillover
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                node_workload = self.pending_tasks.get(floor_idx, {}).get((int(coord.x) + dx, int(coord.y) + dy), 0)
+                workload_penalty += node_workload * self.weights["workload"]
+        
+        score += workload_penalty
+        
         return score
 
-    def suggest_slot(self, product_id: int) -> Optional[Dict]:
+    def suggest_slot(self, product_id: int, user_role: Role = Role.SYSTEM) -> Optional[Dict]:
         """
         STEP 6: Rank all feasible slots by score and return the best one.
         Returns: Dict with floor_index, coordinate, score, and formatted slot name.
@@ -113,10 +136,9 @@ class StorageOptimizationService:
             for (x, y), s_class in zones.items():
                 coord = WarehouseCoordinate(x, y)
                 
-                # Apply Filters (Step 4)
+                # Apply Filters (Step 4 / Requirement 8.2)
+                # This checks bound, storage_matrix, pillar_matrix, and occupancy
                 if not warehouse_map.is_slot_available(coord):
-                    continue
-                if self._is_in_prohibited_zone(warehouse_map, coord):
                     continue
                     
                 # Apply Business Constraints (Step 5)
@@ -125,39 +147,85 @@ class StorageOptimizationService:
 
                 # Compute Multi-Factor Score (Step 3)
                 score = self.calculate_slot_score(floor_idx, coord, product_id)
-                
                 candidate_slots.append({
                     "floor_idx": floor_idx,
                     "coord": coord,
-                    "score": score,
-                    "class": s_class
+                    "score": score
                 })
 
         if not candidate_slots:
+            AuditTrail.log(user_role, f"Placement scan for product {product_id} FAILED - No available slots found.")
             return None
 
-        # Sort slots by score (ascending: lower score is better)
-        candidate_slots.sort(key=lambda x: x["score"])
-
-        # Select the best feasible slot
-        best = candidate_slots[0]
+        # Sort by best score (ascending)
+        best_candidate = min(candidate_slots, key=lambda x: x["score"])
         
-        # Format mapping output: B7-L0-XX-YY
-        warehouse_map = self.floors[best["floor_idx"]]
-        best["slot_name"] = warehouse_map.get_slot_name(best["coord"])
+        floor_idx = best_candidate["floor_idx"]
+        coord = best_candidate["coord"]
+        slot_id = self.floors[floor_idx].get_slot_name(coord)
         
-        return best
+        AuditTrail.log(user_role, f"AI Suggestion for product {product_id}: {slot_id} [Score: {best_candidate['score']:.2f}]")
 
-    def assign_slot(self, product_id: int, floor_idx: int, coord: WarehouseCoordinate) -> bool:
+        return {
+            "floor_idx": floor_idx,
+            "coordinate": coord,
+            "slot_id": slot_id,
+            "score": best_candidate["score"]
+        }
+
+    def manual_override_placement(self, product_id: int, floor_idx: int, coord: WarehouseCoordinate, supervisor_role: Role, justification: str) -> bool:
+        """Requirement 8.2 & Governance: Manual override with audit trail."""
+        if supervisor_role not in [Role.SUPERVISOR, Role.ADMIN]:
+            raise PermissionError("Access Denied: Manual overrides require Supervisor or Admin privileges.")
+            
+        if not justification or len(justification) < 10:
+            raise ValueError("Override rejected: Meaningful justification (min 10 chars) is mandatory.")
+
+        if floor_idx not in self.floors:
+            return False
+            
+        m_map = self.floors[floor_idx]
+        slot_name = m_map.get_slot_name(coord)
+        
+        # Log to immutable audit trail
+        AuditTrail.log(supervisor_role, f"Manual Override: Assigned product {product_id} to {slot_name}", justification)
+        
+        # Logic to occupy the slot
+        m_map.occupied_slots.add(coord.to_tuple())
+        self.slot_to_product[(floor_idx, int(coord.x), int(coord.y))] = product_id
+        return True
+
+    def assign_slot(self, product_id: int, floor_idx: int, coord: WarehouseCoordinate, role: Role = Role.ADMIN) -> bool:
         """
-        STEP 7: Officially mark a slot as occupied in the warehouse map.
-        This prevents the slot from being suggested for future placements.
+        Officially mark a slot as occupied in the warehouse map.
+        Requirement 8.2: Audit trail logged.
         """
         if floor_idx in self.floors:
             self.floors[floor_idx].occupied_slots.add((int(coord.x), int(coord.y)))
             self.slot_to_product[(floor_idx, int(coord.x), int(coord.y))] = product_id
+            
+            # Log action
+            AuditTrail.log(role, f"Assigned SKU {product_id} to {self.floors[floor_idx].get_slot_name(coord)}")
             return True
         return False
+
+    def manual_placement_override(self, product_id: int, floor_idx: int, coord: WarehouseCoordinate, supervisor_id: str, justification: str) -> bool:
+        """
+        Requirement 8.2: Manual override supported.
+        Allows a supervisor to force a placement, still checking basic physical validity.
+        """
+        if floor_idx not in self.floors:
+            return False
+            
+        target_map = self.floors[floor_idx]
+        # Basic constraint: No pillars, no walls
+        if target_map.pillar_matrix[int(coord.x)][int(coord.y)]:
+            return False
+            
+        # Execute override
+        self.assign_slot(product_id, floor_idx, coord, role=Role.SUPERVISOR)
+        AuditTrail.log(Role.SUPERVISOR, f"Manual Override by {supervisor_id} for SKU {product_id}", justification)
+        return True
 
     def record_picking_event(self, floor_idx: int, coord: WarehouseCoordinate):
         """
@@ -215,18 +283,6 @@ class StorageOptimizationService:
                             })
                             
         return relocation_suggestions
-
-    def _is_in_prohibited_zone(self, warehouse_map: DepotB7Map, coord: WarehouseCoordinate) -> bool:
-        """Checks if a coordinate falls within a non-storage area using explicit metadata."""
-        from ..engine.base import ZoneType
-        for name, coords in warehouse_map.zones.items():
-            z_type = warehouse_map.zone_types.get(name, ZoneType.WALKABLE)
-            if z_type in [ZoneType.OBSTACLE, ZoneType.TRANSITION]:
-                segments = coords if isinstance(coords, list) else [coords]
-                for (x1, y1, x2, y2) in segments:
-                    if x1 <= coord.x < x2 and y1 <= coord.y < y2:
-                        return True
-        return False
 
     def _is_rack_compatible(self, product_id: int, floor_idx: int, coord: WarehouseCoordinate) -> bool:
         """
@@ -309,12 +365,20 @@ class StorageOptimizationService:
             for name, coords in warehouse_map.zones.items():
                 if not self._is_storage_zone(warehouse_map, name):
                     continue
+                    
+                # Requirement 8.2: Reserved zones excluded
+                if "Reserved" in name:
+                    continue
 
                 segments = coords if isinstance(coords, list) else [coords]
                 for (x1, y1, x2, y2) in segments:
                     for x in range(int(x1), int(x2)):
                         for y in range(int(y1), int(y2)):
                             coord = WarehouseCoordinate(x, y)
+                            
+                            # Requirement 8.2: Pillars and Walls excluded from classification
+                            if warehouse_map.pillar_matrix[x][y]:
+                                continue
                             
                             # Get shortest walking distance from nearest walkable neighbor
                             # (Since the slot itself is occupied by a rack and not walkable)
