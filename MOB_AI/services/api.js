@@ -6,14 +6,27 @@ const BASE_URL = 'http://10.80.241.245:8000'; // Computer IP (for physical devic
 import { offlineService } from './offlineService';
 import { connectionService } from './connectionService';
 
+const EXCLUDED_OFFLINE_ENDPOINTS = [
+    'login',
+    'signup',
+    'token',
+    'logout'
+];
+
 export const apiCall = async (endpoint, method = 'POST', body = null, token = null, skipQueue = false) => {
     // 1. Proactive check - if we already know we are offline, don't even try the network
-    // (unless it's skipQueue, then we might be in manual retry or sync mode)
     const status = connectionService.getStatus();
     const isActuallyOffline = !status.isConnected || !status.isInternetReachable;
     
-    if (isActuallyOffline && !skipQueue && method !== 'GET') {
-        console.log(`[API] Proactive offline detection for ${endpoint}`);
+    // Normalize endpoint for comparison (remove leading/trailing slashes)
+    const normalizedEndpoint = endpoint.replace(/^\/+|\/+$/g, '');
+    
+    // Check if this endpoint should NEVER be queued (e.g. Auth)
+    const isExcluded = EXCLUDED_OFFLINE_ENDPOINTS.some(ex => normalizedEndpoint.includes(ex));
+    const canQueue = !skipQueue && !isExcluded && method !== 'GET';
+
+    if (isActuallyOffline && canQueue) {
+        console.log(`[Offline] Proactive queue for ${endpoint}`);
         const queued = await offlineService.queueRequest(endpoint, method, body, token);
         if (queued) return { _queued: true };
     }
@@ -51,7 +64,7 @@ export const apiCall = async (endpoint, method = 'POST', body = null, token = nu
         clearTimeout(timeoutId);
         
         // If it's a server error (500+) or timeout, we might want to queue it for POST/PUT/PATCH/DELETE
-        if (!response.ok && response.status >= 500 && !skipQueue && method !== 'GET') {
+        if (!response.ok && response.status >= 500 && canQueue) {
             const queued = await offlineService.queueRequest(endpoint, method, body, token);
             if (queued) return { _queued: true };
         }
@@ -72,7 +85,7 @@ export const apiCall = async (endpoint, method = 'POST', body = null, token = nu
         // console.error(`API Call Error (${endpoint}):`, error);
         
         // Network errors (no connection) or timeout
-        if (!skipQueue && method !== 'GET') {
+        if (canQueue) {
             // Update reachability status based on failure
             connectionService.checkServerPresence();
             

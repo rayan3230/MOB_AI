@@ -1,7 +1,9 @@
 import NetInfo from '@react-native-community/netinfo';
 import { offlineService } from './offlineService';
 
-const PING_URL = 'http://192.168.100.7:8000/ping/'; // We should add this endpoint to the backend
+// This should match the IP in api.js
+const BASE_URL = 'http://10.80.241.245:8000';
+const PING_URL = `${BASE_URL}/api/warehouse/ping/`; // Using an existing or expected endpoint
 
 let listeners = [];
 let isConnected = true;
