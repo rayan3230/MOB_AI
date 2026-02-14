@@ -4,7 +4,7 @@ import Svg, { Rect, Path, G, Circle, Text as SvgText } from 'react-native-svg';
 import { Feather } from '@expo/vector-icons';
 import { aiService } from '../services/aiService';
 
-const WarehouseMap = ({ floorIdx = 0, routeData = null, zoningData = null, mode = 'route' }) => {
+const WarehouseMap = ({ warehouseId, floorIdx = 0, routeData = null }) => {
     const [mapData, setMapData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -19,12 +19,12 @@ const WarehouseMap = ({ floorIdx = 0, routeData = null, zoningData = null, mode 
 
     useEffect(() => {
         fetchMap();
-    }, [floorIdx]);
+    }, [floorIdx, warehouseId]);
 
     const fetchMap = async () => {
         try {
             setLoading(true);
-            const data = await aiService.getDigitalTwinMap(floorIdx);
+            const data = await aiService.getDigitalTwinMap(floorIdx, warehouseId);
             if (data.status === 'success') {
                 setMapData(data);
                 // Calculate scale based on warehouse width and screen width
@@ -44,7 +44,7 @@ const WarehouseMap = ({ floorIdx = 0, routeData = null, zoningData = null, mode 
     if (error) return <Text style={styles.error}>{error}</Text>;
     if (!mapData) return null;
 
-    const { width, height, zones, landmarks } = mapData;
+    const { width, height, zones, landmarks, occupancy = {} } = mapData;
     const currentScale = baseScale * zoom;
 
     return (
@@ -64,7 +64,7 @@ const WarehouseMap = ({ floorIdx = 0, routeData = null, zoningData = null, mode 
 
             {/* Hint Overlay */}
             <View style={styles.hintOverlay}>
-                <Text style={styles.hintText}>{(zoom * 100).toFixed(0)}% | Pan to explore</Text>
+                <Text style={styles.hintText}>{(zoom * 100).toFixed(0)}% | {(Object.keys(occupancy).length)} Racks Occupied</Text>
             </View>
 
             <ScrollView 
@@ -95,16 +95,17 @@ const WarehouseMap = ({ floorIdx = 0, routeData = null, zoningData = null, mode 
                                 
                                 let fill = '#dcdde1';
                                 let stroke = '#7f8c8d';
+                                const isOccupied = occupancy[name];
 
                                 if (name.includes('Expédition')) {
                                     fill = '#fbc531';
                                     stroke = '#e1b12c';
                                 } else if (name === 'Bureau' || name.includes('Assenseur') || name.includes('Charge')) {
-                                    fill = '#9c88ff';
-                                    stroke = '#8c7ae6';
-                                } else if (name.match(/^[A-Z][0-9]+/)) { // Racks A1, B2, etc.
-                                    fill = '#4b7bef';
-                                    stroke = '#2f3640';
+                                    fill = '#9b59b6'; // Purple for transitions
+                                    stroke = '#8e44ad';
+                                } else if (name.match(/^[A-Z][0-9]+/) || name.length <= 3) { // Racks
+                                    fill = isOccupied ? '#2ecc71' : '#3498db'; // Brighter Green for occupied, Brighter Blue for free
+                                    stroke = isOccupied ? '#27ae60' : '#2980b9';
                                 }
 
                                 return (
@@ -115,22 +116,33 @@ const WarehouseMap = ({ floorIdx = 0, routeData = null, zoningData = null, mode 
                                                 <Rect
                                                     key={`${name}-rect-${rIdx}`}
                                                     x={x1}
-                                                    y={height - y2} // Flipped Y
+                                                    y={height - y2}
                                                     width={x2 - x1}
                                                     height={y2 - y1}
                                                     fill={fill}
                                                     stroke={stroke}
                                                     strokeWidth="0.1"
-                                                    opacity="0.6"
+                                                    opacity={isOccupied ? "1" : "0.7"}
                                                 />
                                             );
                                         })}
+                                        {/* Status Dot */}
+                                        {name.match(/^[A-Z][0-9]+/) && (
+                                            <Circle 
+                                                cx={rects[0][0] + 0.3} 
+                                                cy={height - rects[0][3] + 0.3} 
+                                                r="0.25" 
+                                                fill={isOccupied ? "#e74c3c" : "#fff"} // Red dot if occupied, White if free
+                                                stroke="#333"
+                                                strokeWidth="0.05"
+                                            />
+                                        )}
                                         {/* Label at the center of the first rectangle */}
                                         <SvgText
                                             x={(rects[0][0] + rects[0][2]) / 2}
                                             y={height - (rects[0][1] + rects[0][3]) / 2} // Flipped Y
                                             fontSize="0.8"
-                                            fill={stroke}
+                                            fill={isOccupied ? "#fff" : stroke}
                                             textAnchor="middle"
                                             alignmentBaseline="middle"
                                             fontWeight="bold"
@@ -157,26 +169,6 @@ const WarehouseMap = ({ floorIdx = 0, routeData = null, zoningData = null, mode 
                         </SvgText>
                     </G>
                 ))}
-
-                {/* AI Zoning Heatmap (Requirement 8.2) */}
-                {mode === 'zoning' && zoningData && Object.entries(zoningData.zoning).map(([coordStr, storageClass]) => {
-                    const [x, y] = coordStr.split(',').map(Number);
-                    let color = '#7f8c8d'; // Default
-                    if (storageClass === 'FAST') color = '#27ae60'; // Green
-                    if (storageClass === 'MEDIUM') color = '#f1c40f'; // Yellow
-                    if (storageClass === 'SLOW') color = '#e74c3c'; // Red
-                    
-                    return (
-                        <Circle 
-                            key={`zone-${coordStr}`}
-                            cx={x + 0.5} // Offset centered
-                            cy={height - (y + 0.5)} // Flipped Y + centered
-                            r="0.4" 
-                            fill={color} 
-                            opacity="0.5" 
-                        />
-                    );
-                })}
 
                 {/* Optimized Route */}
                 {routeData && routeData.path_segments && routeData.path_segments.map((segment, idx) => {

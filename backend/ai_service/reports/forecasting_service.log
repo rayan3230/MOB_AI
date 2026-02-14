@@ -5469,3 +5469,39 @@ Final Items Sent to Warehouse:
 2026-02-14 10:00:44,435 - django.request - WARNING - Not Found: /sync-queue/
 2026-02-14 10:04:40,456 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\ai_service\api\views.py changed, reloading.
 2026-02-14 10:08:29,330 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 10:47:00,560 - django.request - WARNING - Not Found: /api/warehouse/ping/
+2026-02-14 10:47:01,516 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 10:47:02,564 - django.request - WARNING - Bad Request: /users/users/U0002/
+2026-02-14 10:47:03,599 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 10:47:05,216 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 10:47:06,470 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 10:47:07,487 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 10:47:09,087 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 10:47:09,890 - django.request - WARNING - Bad Request: /users/users/U0002/
+2026-02-14 10:47:10,837 - django.request - WARNING - Bad Request: /users/users/U0002/
+2026-02-14 10:47:11,827 - django.request - WARNING - Bad Request: /users/users/U0002/
+2026-02-14 10:49:49,630 - django.request - WARNING - Not Found: /api/warehouse/ping/
+2026-02-14 10:53:11,985 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 10:54:31,862 - django.request - WARNING - Not Found: /api/warehouse/ping/
+2026-02-14 10:54:35,922 - django.request - WARNING - Not Found: /api/warehouse/ping/
+2026-02-14 10:55:58,930 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 10:56:29,703 - django.request - ERROR - Internal Server Error: /api/forecast/map/0/
+2026-02-14 10:56:35,956 - django.request - ERROR - Internal Server Error: /api/forecast/map/0/
+2026-02-14 10:57:07,314 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 10:59:29,667 - django.request - WARNING - Not Found: /api/warehouse/ping/
+2026-02-14 11:01:01,397 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 11:02:09,344 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 11:02:32,024 - django.request - ERROR - Internal Server Error: /api/forecast/map/0/
+2026-02-14 11:02:41,627 - django.request - ERROR - Internal Server Error: /api/forecast/map/1/
+2026-02-14 11:02:54,638 - django.request - WARNING - Not Found: /api/warehouse/ping/
+2026-02-14 11:03:06,284 - django.request - ERROR - Internal Server Error: /api/forecast/map/0/
+2026-02-14 11:03:08,745 - django.request - ERROR - Internal Server Error: /api/forecast/map/1/
+2026-02-14 11:03:10,494 - django.request - ERROR - Internal Server Error: /api/forecast/map/2/
+2026-02-14 11:03:25,866 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 11:04:25,188 - django.request - WARNING - Not Found: /api/warehouse/ping/
+2026-02-14 11:06:16,416 - django.request - WARNING - Not Found: /api/warehouse/ping/
+2026-02-14 11:06:32,805 - django.request - ERROR - Internal Server Error: /api/forecast/map/0/
+2026-02-14 11:06:34,396 - django.request - ERROR - Internal Server Error: /api/forecast/map/1/
+2026-02-14 11:07:04,311 - django.request - ERROR - Internal Server Error: /api/forecast/map/0/
+2026-02-14 11:07:11,413 - django.request - ERROR - Internal Server Error: /api/forecast/map/0/
+2026-02-14 11:07:17,673 - django.request - ERROR - Internal Server Error: /api/forecast/map/1/
