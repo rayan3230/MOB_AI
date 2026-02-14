@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from ai_service.logic.forecasting_service import ForecastingService
+from ai_service.core.forecasting_service import ForecastingService
 
 # Initialize the service once (or on demand)
 EXCEL_PATH = os.path.join(settings.BASE_DIR, 'ai_service', 'data', 'WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx')

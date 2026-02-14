@@ -71,14 +71,21 @@ const ChariotManagement = () => {
 
     try {
       setSubmitting(true);
+      let result;
       if (isEditing) {
-        await chariotService.updateChariot(editingId, newChariot);
+        result = await chariotService.updateChariot(editingId, newChariot);
       } else {
-        await chariotService.createChariot(newChariot);
+        result = await chariotService.createChariot(newChariot);
       }
+      
+      if (result?._queued) {
+        Alert.alert('Buffered Change', 'Chariot setup has been queued for sync.');
+      } else {
+        Alert.alert('Success', `Chariot ${isEditing ? 'mis à jour' : 'ajouté'} avec succès`);
+      }
+
       setModalVisible(false);
       fetchData(selectedWarehouseId);
-      Alert.alert('Succès', `Chariot ${isEditing ? 'mis à jour' : 'ajouté'} avec succès`);
     } catch (error) {
       Alert.alert('Erreur', 'Échec de l\'opération');
     } finally {
@@ -88,7 +95,8 @@ const ChariotManagement = () => {
 
   const handleMaintenance = async (id) => {
     try {
-      await chariotService.setMaintenance(id);
+      const result = await chariotService.setMaintenance(id);
+      if (result?._queued) Alert.alert('Offline', 'Status update queued.');
       fetchData(selectedWarehouseId);
     } catch (error) {
       Alert.alert('Erreur', 'Impossible de mettre en maintenance');
@@ -97,7 +105,8 @@ const ChariotManagement = () => {
 
   const handleRelease = async (id) => {
     try {
-      await chariotService.releaseChariot(id);
+      const result = await chariotService.releaseChariot(id);
+      if (result?._queued) Alert.alert('Offline', 'Status update queued.');
       fetchData(selectedWarehouseId);
     } catch (error) {
       Alert.alert('Erreur', 'Impossible de libérer le chariot');
@@ -111,7 +120,8 @@ const ChariotManagement = () => {
         text: 'Supprimer', style: 'destructive',
         onPress: async () => {
           try {
-            await chariotService.deleteChariot(id);
+            const result = await chariotService.deleteChariot(id);
+            if (result?._queued) Alert.alert('Offline', 'Deletion queued.');
             fetchData(selectedWarehouseId);
           } catch (error) {
             Alert.alert('Erreur', 'Échec de la suppression');
