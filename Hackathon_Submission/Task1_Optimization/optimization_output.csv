@@ -1,0 +1,19 @@
+Product,Action,Location,Route,Reason
+31554,Storage,B6-00-02,Receipt Zone->Corridor H->B6-00-02,Min distance (score: 14.40) | Freq: SLOW | CH-01 (load:3P)
+31555,Storage,0G-01-01,Receipt Zone->Corridor G->0G-01-01,Min distance (score: 18.50) | Freq: SLOW | CH-01 (load:2P)
+31556,Storage,0I-01-01,Receipt Zone->Corridor I->0I-01-01,Min distance (score: 18.50) | Freq: SLOW | CH-01 (load:2P)
+31554,Picking,B6-00-02,B6-00-02->Expedition Zone,Stock available (FIFO) | Freq: MEDIUM | CH-02 (load:1P)
+31557,Storage,B7-N0-Quai,Receipt Zone->Corridor G->B7-N0-Quai (rerouted),Min distance (score: 20.16) | Freq: SLOW | CH-01 (load:3P) | Congestion reroute
+31555,Picking,0G-01-01,0G-01-01->Expedition Zone (rerouted),Stock available (FIFO) | Freq: MEDIUM | CH-03 (load:1P) | Congestion reroute
+31558,Storage,0I-02-01,Receipt Zone->Corridor I->0I-02-01,Min distance (score: 22.10) | Freq: SLOW | CH-01 (load:3P)
+31556,Picking,0I-01-01,0I-01-01->Expedition Zone (rerouted),Stock available (FIFO) | Freq: MEDIUM | CH-02 (load:1P) | Congestion reroute
+31559,Storage,0E-02-01,Receipt Zone->Corridor E->0E-02-01,Min distance (score: 25.70) | Freq: SLOW | CH-01 (load:2P)
+31557,Picking,B7-N0-Quai,B7-N0-Quai->Expedition Zone (rerouted),Stock available (FIFO) | Freq: MEDIUM | CH-01 (load:2P) | Congestion reroute
+31554,Picking,N/A,N/A,No stock found (chronological violation)
+31560,Storage,0G-02-01,Receipt Zone->Corridor E->0G-02-01 (rerouted),Min distance (score: 25.70) | Freq: SLOW | CH-01 (load:2P) | Congestion reroute
+31558,Picking,0I-02-01,0I-02-01->Expedition Zone (rerouted),Stock available (FIFO) | Freq: MEDIUM | CH-01 (load:2P) | Congestion reroute
+31555,Picking,N/A,N/A,No stock found (chronological violation)
+31559,Picking,0E-02-01,0E-02-01->Expedition Zone (rerouted),Stock available (FIFO) | Freq: MEDIUM | CH-03 (load:1P) | Congestion reroute
+31561,Storage,0K-01-01,Receipt Zone->Corridor K->0K-01-01,Min distance (score: 25.70) | Freq: SLOW | CH-01 (load:3P)
+31560,Picking,0G-02-01,0G-02-01->Expedition Zone (rerouted),Stock available (FIFO) | Freq: MEDIUM | CH-02 (load:1P) | Congestion reroute
+31561,Picking,0K-01-01,0K-01-01->Expedition Zone,Stock available (FIFO) | Freq: MEDIUM | CH-03 (load:1P)

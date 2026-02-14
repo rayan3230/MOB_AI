@@ -1,17 +1,17 @@
 {
   "model_type": "Hybrid Statistical Forecast",
   "description": "Combined SMA + Linear Regression with adaptive calibration",
-  "sma_window": 7,
+  "sma_window": 5,
   "hybrid_weights": {
-    "regression": 0.7,
-    "sma": 0.3
+    "regression": 0.45,
+    "sma": 0.55
   },
-  "calibration_factor": 1.27,
+  "calibration_factor": 1.076,
   "training_metrics": {
-    "WAP_percent": 34.31,
-    "Bias_percent": 1.84,
-    "MAE": 450.0,
-    "RMSE": 658.0
+    "WAPE_percent": 48.5,
+    "Bias_percent": 2.8,
+    "MAE": 172.0,
+    "RMSE": 248.0
   },
   "validation_method": "Rolling backtest (no data leakage)",
   "trained_date": "2026-02-14T00:00:00",

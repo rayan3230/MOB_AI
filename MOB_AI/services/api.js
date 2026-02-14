@@ -1,7 +1,5 @@
-// Using 127.0.0.1 instead of localhost for better iOS compatibility
-//const BASE_URL = 'http://127.0.0.1:8000';
-const BASE_URL = 'http://10.80.241.245:8000'; // Computer IP (for physical devices)
-// const BASE_URL = 'http://10.0.2.2:8000'; // Android Emulator
+// Use environment variable for BASE_URL
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
 import { offlineService } from './offlineService';
 import { connectionService } from './connectionService';
@@ -14,9 +12,9 @@ const EXCLUDED_OFFLINE_ENDPOINTS = [
 ];
 
 export const apiCall = async (endpoint, method = 'POST', body = null, token = null, skipQueue = false) => {
-    // 1. Proactive check - if we already know we are offline, don't even try the network
+    // 1. Proactive check - if we already know we are offline or server is down, don't even try the network
     const status = connectionService.getStatus();
-    const isActuallyOffline = !status.isConnected || !status.isInternetReachable;
+    const isActuallyOffline = !status.isConnected || !status.isInternetReachable || !status.isServerReachable;
     
     // Normalize endpoint for comparison (remove leading/trailing slashes)
     const normalizedEndpoint = endpoint.replace(/^\/+|\/+$/g, '');
@@ -69,7 +67,13 @@ export const apiCall = async (endpoint, method = 'POST', body = null, token = nu
             if (queued) return { _queued: true };
         }
 
-        const data = await response.json();
+        let data;
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            data = await response.json();
+        } else {
+            data = { message: await response.text() };
+        }
         
         if (!response.ok) {
             const error = new Error(data.detail || data.message || 'API Error');

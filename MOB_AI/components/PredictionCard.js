@@ -19,7 +19,8 @@ const PredictionCard = ({ item, canOverride, onAccept, onOverride, onReset }) =>
         <View style={[
           styles.statusBadge, 
           item.status === 'Overridden' ? styles.statusBadgeOverridden : 
-          item.status === 'Accepted' ? styles.statusBadgeAccepted : styles.statusBadgeAI
+          item.status === 'Accepted' ? styles.statusBadgeAccepted : 
+          (item.status === 'AI Predicted' || item.status === 'AI Suggested') ? styles.statusBadgeAI : styles.statusBadgeAI
         ]}>
           <Text style={[
             styles.statusText, 
@@ -27,7 +28,8 @@ const PredictionCard = ({ item, canOverride, onAccept, onOverride, onReset }) =>
             item.status === 'Accepted' ? styles.statusTextAccepted : styles.statusTextAI
           ]}>
             {item.status === 'Overridden' ? 'OVERRIDDEN' : 
-             item.status === 'Accepted' ? 'ACCEPTED' : 'AI PREDICTION'}
+             item.status === 'Accepted' ? 'ACCEPTED' : 
+             item.status === 'AI Suggested' ? 'OPTIMIZATION' : 'AI PREDICTION'}
           </Text>
         </View>
       </View>
@@ -35,22 +37,24 @@ const PredictionCard = ({ item, canOverride, onAccept, onOverride, onReset }) =>
       <Text style={styles.predictionType}>{item.type}</Text>
 
       {/* AI Confidence & Reasoning */}
-      {item.status === 'AI Predicted' && (
+      {(item.status === 'AI Predicted' || item.status === 'AI Suggested') && (
         <View style={styles.aiInsightsContainer}>
           <View style={styles.confidenceRow}>
             <Feather name="activity" size={14} color={lightTheme.primary} />
             <Text style={styles.confidenceLabel}>AI Confidence:</Text>
             <View style={styles.confidenceBarContainer}>
-              <View style={[styles.confidenceBarFill, { width: `${item.confidence || 85}%` }]} />
+              <View style={[styles.confidenceBarFill, { width: `${item.confidence || 0}%` }]} />
             </View>
-            <Text style={styles.confidenceValue}>{item.confidence || 85}%</Text>
+            <Text style={styles.confidenceValue}>{item.confidence || 0}%</Text>
           </View>
           
           {item.reasoning && (
             <View style={styles.reasoningBox}>
               <View style={styles.reasoningHeader}>
                 <Feather name="lightbulb" size={13} color="#F59E0B" />
-                <Text style={styles.reasoningTitle}>Why this prediction?</Text>
+                <Text style={styles.reasoningTitle}>
+                  {item.type === 'Space Allocation' ? 'Optimization Logic' : 'Why this prediction?'}
+                </Text>
               </View>
               <Text style={styles.reasoningText}>{item.reasoning}</Text>
             </View>
@@ -60,7 +64,9 @@ const PredictionCard = ({ item, canOverride, onAccept, onOverride, onReset }) =>
 
       <View style={styles.valuesRow}>
         <View style={styles.valueItem}>
-          <Text style={styles.valueLabel}>AI Forecast</Text>
+          <Text style={styles.valueLabel}>
+            {item.type === 'Space Allocation' ? 'Action' : 'AI Forecast'}
+          </Text>
           <Text style={styles.predictedValue}>{item.predictedValue}</Text>
         </View>
         
@@ -69,7 +75,9 @@ const PredictionCard = ({ item, canOverride, onAccept, onOverride, onReset }) =>
         </View>
 
         <View style={styles.valueItem}>
-          <Text style={styles.valueLabel}>Effective Value</Text>
+          <Text style={styles.valueLabel}>
+            {item.type === 'Space Allocation' ? 'Location' : 'Comparison'}
+          </Text>
           <Text style={[
             styles.currentValue, 
             item.status === 'Overridden' ? styles.overriddenText : 

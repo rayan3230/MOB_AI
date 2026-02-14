@@ -2,8 +2,8 @@ import NetInfo from '@react-native-community/netinfo';
 import { offlineService } from './offlineService';
 
 // This should match the IP in api.js
-const BASE_URL = 'http://10.80.241.245:8000';
-const PING_URL = `${BASE_URL}/api/warehouse/ping/`; // Using an existing or expected endpoint
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+const PING_URL = `${BASE_URL}/ping/`; // Updated to match backend/urls.py
 
 let listeners = [];
 let isConnected = true;

@@ -151,8 +151,21 @@ class DataLoader:
             self.stocks = pd.DataFrame(list(stocks))
             
             # 5. Emplacements (Occupancy State)
-            emplacements = Emplacement.objects.all().values()
-            self.emplacements = pd.DataFrame(list(emplacements))
+            # REQ: Join with main storage units for real-time digital twin visualization
+            emplacements = Emplacement.objects.all().values(
+                'id_emplacement', 'code_emplacement', 'statut', 'actif', 'zone', 
+                'id_entrepot_id', 'storage_floor_id', 'picking_floor_id'
+            )
+            # Create a lookup for products in emplacements
+            stock_lookup = {s['id_emplacement_id']: s['id_produit_id'] for s in self.stocks.to_dict('records') if s.get('quantite', 0) > 0}
+            
+            empls_list = list(emplacements)
+            for e in empls_list:
+                e['id_produit_id'] = stock_lookup.get(e['id_emplacement'])
+                if e['id_produit_id']:
+                    e['statut'] = 'OCCUPIED'
+            
+            self.emplacements = pd.DataFrame(empls_list)
             
             logger.info(f"Successfully fetched {len(self.products)} products and {len(self.demand_history)} history points from Supabase.")
         except Exception as e:
@@ -270,13 +283,13 @@ class DataLoader:
         
         # 🟢 Requirement FIX: Initialize stock from the Stock snapshot if available
         sku_stock = {}
-        if self.loader.stocks is not None and not self.loader.stocks.empty:
-            if 'id_produit_id' in self.loader.stocks.columns:
-                self.loader.stocks = self.loader.stocks.rename(columns={'id_produit_id': 'id_produit'})
+        if self.stocks is not None and not self.stocks.empty:
+            if 'id_produit_id' in self.stocks.columns:
+                self.stocks = self.stocks.rename(columns={'id_produit_id': 'id_produit'})
             
-            if 'id_produit' in self.loader.stocks.columns and 'quantite' in self.loader.stocks.columns:
+            if 'id_produit' in self.stocks.columns and 'quantite' in self.stocks.columns:
                 # Group by product and sum up initial stocks across all locations
-                initial_stocks = self.loader.stocks.groupby('id_produit')['quantite'].sum().to_dict()
+                initial_stocks = self.stocks.groupby('id_produit')['quantite'].sum().to_dict()
                 for pid, qty in initial_stocks.items():
                     try:
                         sku_stock[int(pid)] = float(qty)
@@ -938,25 +951,33 @@ class ForecastingService:
         if len(series) < 14:
             confidence = max(0, min(confidence, 55))
 
+        # Build a human-readable explanation
+        trend_desc = "growing" if slope > 0.05 else "declining" if slope < -0.05 else "stable"
+        vol_desc = "high" if cv > 0.4 else "moderate" if cv > 0.15 else "low"
+        
+        explanation = f"Based on historical data, demand for this product is {trend_desc} with {vol_desc} volatility. "
+        if selected_model == 'REG':
+            explanation += "The AI detected a clear trend and prioritized growth/decline in the forecast. "
+        elif selected_model == 'SMA':
+            explanation += "The AI found demand to be mostly stable and focused on recent moving averages. "
+        else:
+            explanation += "The AI used a hybrid approach to balance historical stability with recent shifts. "
+        
+        explanation += f"Includes a safety stock buffer to handle {vol_desc} volatility."
+
         if selected_model == 'HYBRID':
             formula = (
                 f"{blend_formula} = {base_prediction:.2f}; "
                 f"Final = {base_prediction:.2f} × {adjustment_factor:.4f} = {raw_forecast:.2f}; "
                 f"GuardrailCap={cap_value:.2f} -> {guardrailed:.2f}"
             )
-            justification = (
-                "HYBRID selected due to lowest validation WAPE. "
-                "Adjustment combines trend, calibration bias, and volatility safety factor."
-            )
+            justification = explanation
         else:
             formula = (
                 f"Final = {base_prediction:.2f} × {adjustment_factor:.4f} = {raw_forecast:.2f}; "
                 f"GuardrailCap={cap_value:.2f} -> {guardrailed:.2f}"
             )
-            justification = (
-                f"{selected_model} selected due to lowest validation WAPE. "
-                "Adjustment combines trend, calibration bias, and volatility safety factor."
-            )
+            justification = explanation
 
         return {
             'selected_model': selected_model,
@@ -1210,6 +1231,29 @@ class ForecastingService:
             'status': 'DRAFT',
             'source': 'AI_FORECASTING_SERVICE'
         }
+
+    def get_all_forecasts_raw(self, limit_products=20):
+        """Returns raw forecast data without order logic, used for UI display."""
+        self.loader.load_and_clean_wrapper()
+        
+        if self.loader.demand_history is None or self.loader.demand_history.empty:
+            return {}
+            
+        all_products = self.loader.demand_history['id_produit'].unique()
+        forecast_metadata = {}
+
+        for pid in all_products[:limit_products]:
+            history = self.loader.demand_history[self.loader.demand_history['id_produit'] == pid]
+            if len(history) < 2: continue
+            
+            decision = self._select_and_compute_forecast(int(pid), history, target_date=None)
+            
+            forecast_metadata[int(pid)] = {
+                'forecast': float(decision['final_forecast']),
+                'confidence': int(decision.get('confidence', 0)),
+                'reasoning': decision.get('justification', '')
+            }
+        return forecast_metadata
 
     def run(self, limit_products=10):
         self.loader.load_and_clean_wrapper()

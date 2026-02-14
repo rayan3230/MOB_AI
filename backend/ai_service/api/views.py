@@ -32,18 +32,109 @@ floor_maps = {
 picking_service = PickingOptimizationService(floor_maps)
 storage_service = StorageOptimizationService(floor_maps, pm)
 
+def get_rack_display(code):
+    """Converts 0Q-02-03 into human readable Rack Q, Level 2, Slot 3"""
+    if not code or not isinstance(code, str):
+        return str(code)
+    parts = code.split('-')
+    if len(parts) >= 1:
+        rack = parts[0]
+        if rack.startswith('0'): rack = rack[1:]
+        
+        display = f"Rack {rack}"
+        if len(parts) >= 2:
+            level = parts[1]
+            if level.startswith('0'): level = level[1:]
+            display += f", L{level}"
+        if len(parts) >= 3:
+            slot = parts[2]
+            if slot.startswith('0'): slot = slot[1:]
+            display += f", S{slot}"
+        return display
+    return code
+
 def generate_forecast_all(request):
     """
-    Endpoint 1: Generate forecast for all SKUs (Requirement 8.1 part 1)
+    Endpoint 1: Generate full replenishment & optimization plan for dashboard.
+    Combines forecasting (Demand) and storage optimization (Movement).
     """
     try:
         limit = int(request.GET.get('limit', 20))
-        order_obj = forecast_service.run(limit_products=limit)
-        return JsonResponse({
-            'status': 'success',
-            'order': order_obj
-        })
+        # Get raw forecast data from service
+        forecast_results = forecast_service.get_all_forecasts_raw(limit_products=limit)
+        
+        # Sync physical state for storage optimization
+        if forecast_service.loader.emplacements is not None:
+            storage_service.sync_physical_state(forecast_service.loader.emplacements)
+        
+        formatted_predictions = []
+        
+        # 1. Add Space Allocation / Move Actions (PRIORITY)
+        # Check for rebalancing suggestions
+        relocations = storage_service.check_for_rebalancing(traffic_threshold=5)
+        for move in relocations:
+            # Get slot names for better UI display
+            from_floor = move['from_floor']
+            from_coord = move['from_coord']
+            to_floor = move['to_floor']
+            to_coord = move['to_coord']
+            
+            # Resolve codes from storage service mapping if they exist
+            from_name_raw = storage_service.slot_to_code.get((from_floor, from_coord[0], from_coord[1]))
+            if not from_name_raw:
+                from_name_raw = floor_maps[from_floor].get_slot_name(WarehouseCoordinate(*from_coord))
+            
+            to_name_raw = floor_maps[to_floor].get_slot_name(WarehouseCoordinate(*to_coord))
+            
+            # Format human readable
+            from_display = get_rack_display(from_name_raw)
+            to_display = get_rack_display(to_name_raw)
+            
+            # Get SKU string if possible
+            prod_obj = Produit.objects.filter(id_produit=move['product_id']).first()
+            sku_str = prod_obj.sku if prod_obj else f"SKU-{move['product_id']}"
+            
+            # AI Logic: Confidence based on relocation necessity
+            # If it's a mismatched zone, we have high confidence. If it's just congestion, slightly lower.
+            confidence = 90 if "Mismatched" in move['reason'] else 75
+
+            formatted_predictions.append({
+                'id': f"MOV-{move['product_id']}",
+                'date': "Next 24 Hours",
+                'type': 'Space Allocation',
+                'predictedValue': f"Move {sku_str} to {to_display}",
+                'currentValue': f"In {from_display}",
+                'status': 'AI Suggested',
+                'justification': '',
+                'confidence': confidence,
+                'reasoning': f"Optimize warehouse flow: {move['reason']}. This move will reduce picking distance for high-turnover items.",
+                'sku_id': move['product_id']
+            })
+            
+        # 2. Add Replenishment Actions
+        for pid, data in forecast_results.items():
+            # Filter out SKUs with zero or negligible forecast to avoid cluttering the UI
+            # Also filter out low-confidence defaults (confidence 10 is the floor)
+            if data['forecast'] <= 0.1 or data['confidence'] <= 10:
+                continue
+                
+            formatted_predictions.append({
+                'id': f"REP-{pid}",
+                'date': "Scheduled for Tomorrow",
+                'type': 'Stock Replenishment',
+                'predictedValue': f"Buy {data['forecast']:.0f} units",
+                'currentValue': f"{data['forecast']:.0f} needed",
+                'status': 'AI Predicted',
+                'justification': '',
+                'confidence': data['confidence'],
+                'reasoning': data['reasoning'],
+                'sku_id': pid
+            })
+            
+        return JsonResponse(formatted_predictions, safe=False)
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 def trigger_preparation_tomorrow(request):
@@ -278,38 +369,41 @@ def record_picking_performance(request):
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 @csrf_exempt
+@csrf_exempt
 def validate_order(request):
     """
     Endpoint 4: Supervisor Validation & Override
     Demonstrates human-in-the-loop and auditability.
+    Handles both 'order' wrapped objects and direct overrides from the UI.
     """
     if request.method != 'POST':
         return JsonResponse({'status': 'error', 'message': 'Only POST allowed.'}, status=405)
     
     try:
         data = json.loads(request.body)
+        
+        # Handle field name variations from frontend
+        sku_id = data.get('sku_id') or data.get('prediction_id')
+        override_qty = data.get('override_qty') or data.get('override_value')
+        justification = data.get('justification')
+        
+        # In the AI Actions UI, we might not have a full order object yet
         order_obj = data.get('order')
         if order_obj is None:
-            return JsonResponse({
-                'status': 'success',
-                'message': 'No order provided. Nothing to validate.',
-                'order': {
-                    'order_id': None,
-                    'date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    'items': [],
-                    'status': 'DRAFT',
-                    'source': 'AI_FORECASTING_SERVICE'
-                }
-            }, status=200)
-
-        sku_id = data.get('sku_id')
-        override_qty = data.get('override_qty')
-        justification = data.get('justification')
+            # Create a dummy container for the validation logic if only a single SKU override is sent
+            order_obj = {
+                'order_id': f"MAN-{datetime.now().strftime('%H%M%S')}",
+                'items': [{
+                    'sku_id': sku_id,
+                    'quantity': 0, 
+                    'status': 'PENDING'
+                }]
+            }
 
         updated_order = forecast_service.order_service.validate_order(
             order_obj, 
             sku_id=sku_id, 
-            override_qty=override_qty, 
+            override_qty=float(override_qty) if override_qty is not None else None, 
             justification=justification
         )
         
@@ -318,6 +412,8 @@ def validate_order(request):
             'order': updated_order
         })
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 @csrf_exempt

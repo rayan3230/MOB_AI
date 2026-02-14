@@ -5,7 +5,7 @@ from Users.models import Utilisateur
 
 class UserLoginSerializer(serializers.Serializer):
     """Serializer for user login"""
-    email = serializers.EmailField(required=False)
+    email = serializers.CharField(required=False)
     username = serializers.CharField(required=False)
     password = serializers.CharField(write_only=True)
     
@@ -15,9 +15,11 @@ class UserLoginSerializer(serializers.Serializer):
         password = data.get('password')
         
         # Check either email or username field
-        identifier = email or username
+        identifier = (email or username)
+        if identifier:
+            identifier = identifier.strip()
         
-        print(f"Validating login for: {identifier}")
+        print(f"Validating login for: '{identifier}'")
         if identifier and password:
             try:
                 # Try finding by email first, then by name or ID if it wasn't an email
@@ -28,8 +30,8 @@ class UserLoginSerializer(serializers.Serializer):
                     user = Utilisateur.objects.filter(id_utilisateur=identifier).first()
                 
                 if not user:
-                    print(f"User with identifier {identifier} not found")
-                    raise serializers.ValidationError("Invalid credentials")
+                    print(f"User with identifier '{identifier}' not found in DB")
+                    raise serializers.ValidationError("Invalid username or password")
 
                 if user.is_banned:
                     print(f"User {identifier} is banned")
@@ -37,8 +39,8 @@ class UserLoginSerializer(serializers.Serializer):
                 
                 print(f"User found: {user.id_utilisateur} ({user.nom_complet}), checking password...")
                 if not user.check_password(password):
-                    print("Password check failed")
-                    raise serializers.ValidationError("Invalid credentials")
+                    print(f"Password check failed for user {user.nom_complet}")
+                    raise serializers.ValidationError("Invalid username or password")
                 print("Password check passed")
             except Exception as e:
                 print(f"Login error: {str(e)}")
