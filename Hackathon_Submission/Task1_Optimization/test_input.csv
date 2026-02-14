@@ -1,0 +1,6 @@
+Date & Time,Product ID,Flow Type,Quantity
+09-01-2026 08:00,31554,Ingoing,100
+09-01-2026 08:30,31555,Ingoing,50
+09-01-2026 09:00,31554,Outgoing,20
+09-01-2026 09:30,31556,Ingoing,75
+09-01-2026 10:00,31555,Outgoing,30

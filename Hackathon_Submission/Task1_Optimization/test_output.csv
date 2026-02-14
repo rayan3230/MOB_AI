@@ -1,0 +1,6 @@
+Product,Action,Location,Route,Reason
+31554,Storage,0H-01-01,Receipt Zone->Corridor H->0H-01-01,Min distance (score: 14.90) | Freq: SLOW | CH-01 (load:3P)
+31555,Storage,0H-02-01,Receipt Zone->Corridor H->0H-02-01,Min distance (score: 17.78) | Freq: SLOW | CH-01 (load:2P)
+31554,Picking,0H-01-01,0H-01-01->Expedition Zone (rerouted),Stock available (FIFO) | Freq: MEDIUM | CH-02 (load:1P) | Congestion reroute
+31556,Storage,0H-03-01,Receipt Zone->Corridor G->0H-03-01 (rerouted),Min distance (score: 20.66) | Freq: SLOW | CH-01 (load:2P) | Congestion reroute
+31555,Picking,0H-02-01,0H-02-01->Expedition Zone (rerouted),Stock available (FIFO) | Freq: MEDIUM | CH-03 (load:1P) | Congestion reroute
