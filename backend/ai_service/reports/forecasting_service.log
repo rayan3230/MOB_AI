@@ -5459,3 +5459,13 @@ Final Items Sent to Warehouse:
 2026-02-14 09:18:51,555 - django.request - WARNING - Bad Request: /users/login/
 2026-02-14 09:18:52,938 - django.request - WARNING - Bad Request: /users/login/
 2026-02-14 09:19:03,447 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 09:56:40,106 - django.request - WARNING - Bad Request: /api/warehouse/warehouses/
+2026-02-14 09:57:16,024 - django.request - WARNING - Bad Request: /api/warehouse/warehouses/
+2026-02-14 09:57:26,466 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\warhouse\models.py changed, reloading.
+2026-02-14 09:58:03,567 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\warhouse\models.py changed, reloading.
+2026-02-14 10:00:07,353 - django.request - WARNING - Bad Request: /api/warehouse/warehouses/
+2026-02-14 10:00:27,867 - django.request - WARNING - Bad Request: /api/warehouse/warehouses/
+2026-02-14 10:00:41,565 - django.request - WARNING - Bad Request: /api/warehouse/warehouses/
+2026-02-14 10:00:44,435 - django.request - WARNING - Not Found: /sync-queue/
+2026-02-14 10:04:40,456 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 10:08:29,330 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\ai_service\api\views.py changed, reloading.

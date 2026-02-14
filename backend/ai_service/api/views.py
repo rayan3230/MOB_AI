@@ -11,16 +11,18 @@ from ai_service.core.picking_service import PickingOptimizationService
 from ai_service.core.storage import StorageOptimizationService
 from ai_service.core.product_manager import ProductStorageManager
 from ai_service.engine.base import WarehouseCoordinate, Role
-from ai_service.maps import GroundFloorMap
+from ai_service.maps import GroundFloorMap, IntermediateFloorMap, UpperFloorMap
 
 # Initialize services
 # If no data path passed, core/forecasting_service.py's DataLoader will use Supabase/Django ORM
 forecast_service = ForecastingService()
 pm = ProductStorageManager()
 
-# Initialize Digital Twin Maps (e.g., for floor 0)
+# Initialize Digital Twin Maps (0: RDV/Picking, 1: N1/N2, 2: N3/N4)
 floor_maps = {
-    0: GroundFloorMap()
+    0: GroundFloorMap(),
+    1: IntermediateFloorMap(floor_index=1),
+    2: UpperFloorMap(floor_index=2)
 }
 picking_service = PickingOptimizationService(floor_maps)
 storage_service = StorageOptimizationService(floor_maps, pm)

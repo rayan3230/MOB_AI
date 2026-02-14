@@ -1,6 +1,6 @@
 // Using 127.0.0.1 instead of localhost for better iOS compatibility
 //const BASE_URL = 'http://127.0.0.1:8000';
-const BASE_URL = 'http://10.80.241.252:8000'; // Computer IP (for physical devices)
+const BASE_URL = 'http://10.80.241.245:8000'; // Computer IP (for physical devices)
 // const BASE_URL = 'http://10.0.2.2:8000'; // Android Emulator
 
 import { offlineService } from './offlineService';
@@ -41,9 +41,9 @@ export const apiCall = async (endpoint, method = 'POST', body = null, token = nu
         config.body = JSON.stringify(body);
     }
     
-    // 2. Add a manageable timeout (10 seconds)
+    // 2. Add a manageable timeout (60 seconds for heavy operations like warehouse creation)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
     config.signal = controller.signal;
     
     try {
@@ -59,13 +59,17 @@ export const apiCall = async (endpoint, method = 'POST', body = null, token = nu
         const data = await response.json();
         
         if (!response.ok) {
-            throw data;
+            const error = new Error(data.detail || data.message || 'API Error');
+            error.status = response.status;
+            error.data = data;
+            throw error;
         }
         
         return data;
     } catch (error) {
         clearTimeout(timeoutId);
-        console.error(`API Call Error (${endpoint}):`, error);
+        // Only log if it's not a handled error or if we want to see it
+        // console.error(`API Call Error (${endpoint}):`, error);
         
         // Network errors (no connection) or timeout
         if (!skipQueue && method !== 'GET') {

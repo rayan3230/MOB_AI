@@ -348,7 +348,7 @@ const VrackManagement = () => {
   if (loading && !refreshing) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={lightTheme.primary} />
+        <ActivityIndicator size="large" color={lightTheme.white} />
       </View>
     );
   }
@@ -372,7 +372,7 @@ const VrackManagement = () => {
         >
           <Text style={styles.filterSelectorText}>{selectedWarehouseLabel}</Text>
           {filterLoading ? (
-            <ActivityIndicator size="small" color={lightTheme.primary} />
+            <ActivityIndicator size="small" color={lightTheme.white} />
           ) : (
             <Feather name="chevron-down" size={18} color="#666" />
           )}
