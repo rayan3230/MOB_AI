@@ -6,7 +6,9 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from .models import AIPerformanceLog
+from django.db import models
 from Produit.models import Produit
+from warhouse.models import Rack, RackProduct
 from ai_service.core.forecasting_service import ForecastingService
 from ai_service.core.picking_service import PickingOptimizationService
 from ai_service.core.storage import StorageOptimizationService
@@ -259,6 +261,8 @@ def get_warehouse_map(request, floor_idx):
     """
     try:
         floor_idx = int(floor_idx)
+        warehouse_id = request.GET.get('warehouse_id')
+        
         if floor_idx not in floor_maps:
             return JsonResponse({'status': 'error', 'message': f'Floor {floor_idx} not found.'}, status=404)
         
@@ -268,6 +272,25 @@ def get_warehouse_map(request, floor_idx):
         zones = getattr(m, 'zones', {})
         landmarks_dict = getattr(m, 'landmarks', {})
         
+        # Determine occupancy if warehouse_id is provided
+        occupancy = {}
+        if warehouse_id:
+            # Check for products directly linked to racks in this warehouse
+            occupied_codes = list(Produit.objects.filter(
+                models.Q(id_rack__storage_floor__id_entrepot_id=warehouse_id) |
+                models.Q(id_rack__picking_floor__id_entrepot_id=warehouse_id)
+            ).values_list('id_rack__code_rack', flat=True).distinct())
+            
+            # Also check RackProduct for many-to-many style storage
+            occupied_codes_rp = list(RackProduct.objects.filter(
+                models.Q(rack__storage_floor__id_entrepot_id=warehouse_id) |
+                models.Q(rack__picking_floor__id_entrepot_id=warehouse_id),
+                quantity__gt=0
+            ).values_list('rack__code_rack', flat=True).distinct())
+            
+            all_occupied = set(occupied_codes + occupied_codes_rp)
+            occupancy = {code: True for code in all_occupied}
+
         # Convert landmarks coordinates to dict format
         serializable_landmarks = {}
         for name, coord in landmarks_dict.items():
@@ -281,6 +304,7 @@ def get_warehouse_map(request, floor_idx):
             'width': m.width,
             'height': m.height,
             'zones': zones,
+            'occupancy': occupancy,
             'landmarks': serializable_landmarks
         })
     except Exception as e:

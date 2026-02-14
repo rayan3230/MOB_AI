@@ -1,0 +1,19 @@
+Product,Action,Location,Route,Reason
+31554,Storage,B6-00-02,Receipt Zone->Corridor H->B6-00-02,"Min distance (score: 14.40) | Freq: SLOW | Split-load (10 trips), CH-01"
+31565,Storage,0G-01-01,Receipt Zone->Corridor G->0G-01-01,"Min distance (score: 18.50) | Freq: SLOW | Split-load (23 trips), CH-02"
+31369,Storage,0I-01-01,Receipt Zone->Corridor I->0I-01-01,"Min distance (score: 18.50) | Freq: SLOW | Split-load (7 trips), CH-03"
+41672,Storage,0F-01-01,Receipt Zone->Corridor F->0F-01-01,Min distance (score: 22.10) | Freq: SLOW | CH-01 (load:2P)
+31554,Picking,B6-00-02,B6-00-02->Expedition Zone,"Stock available (FIFO) | Freq: MEDIUM | Split-load (17 trips), CH-02"
+31565,Picking,0G-01-01,0G-01-01->Expedition Zone,"Stock available (FIFO) | Freq: MEDIUM | Split-load (12 trips), CH-03"
+31369,Picking,0I-01-01,0I-01-01->Expedition Zone,"Stock available (FIFO) | Freq: MEDIUM | Split-load (5 trips), CH-02"
+31554,Storage,B7-N0-Quai,Receipt Zone->Corridor F->B7-N0-Quai (rerouted),"Min distance (score: 16.80) | Freq: MEDIUM | Split-load (37 trips), CH-03 | Congestion reroute"
+31565,Storage,0E-02-01,Receipt Zone->Corridor E->0E-02-01,"Min distance (score: 21.50) | Freq: MEDIUM | Split-load (9 trips), CH-01"
+35909,Storage,0G-02-01,Receipt Zone->Corridor E->0G-02-01 (rerouted),Min distance (score: 25.70) | Freq: SLOW | CH-01 (load:2P) | Congestion reroute
+31554,Picking,B7-N0-Quai,B7-N0-Quai->Expedition Zone (rerouted),"Stock available (FIFO) | Freq: FAST | Split-load (18 trips), CH-02 | Congestion reroute"
+31565,Picking,0E-02-01,0E-02-01->Expedition Zone (rerouted),"Stock available (FIFO) | Freq: FAST | Split-load (13 trips), CH-03 | Congestion reroute"
+31369,Storage,0I-02-01,Receipt Zone->Corridor J->0I-02-01 (rerouted),"Min distance (score: 21.50) | Freq: MEDIUM | Split-load (8 trips), CH-02 | Congestion reroute"
+31554,Storage,0K-01-01,Receipt Zone->Corridor K->0K-01-01,"Min distance (score: 11.00) | Freq: FAST | Split-load (35 trips), CH-03"
+31565,Picking,N/A,N/A,No stock found (chronological violation)
+31369,Picking,0I-02-01,0I-02-01->Expedition Zone (rerouted),"Stock available (FIFO) | Freq: FAST | Split-load (2 trips), CH-01 | Congestion reroute"
+35909,Picking,0G-02-01,0G-02-01->Expedition Zone (rerouted),Stock available (FIFO) | Freq: MEDIUM | CH-01 (load:1P) | Congestion reroute
+31554,Picking,0K-01-01,0K-01-01->Expedition Zone (rerouted),"Stock available (FIFO) | Freq: FAST | Split-load (24 trips), CH-03 | Congestion reroute"

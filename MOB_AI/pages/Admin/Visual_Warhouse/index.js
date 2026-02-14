@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { warehouseService } from '../../../services/warehouseService';
-import { aiService } from '../../../services/aiService';
 import { lightTheme } from '../../../constants/theme';
 import WarehouseMap from '../../../components/WarehouseMap';
 import OptionSelector from '../../../components/OptionSelector';
@@ -16,8 +15,6 @@ const VisualWarehouse = () => {
   const [floors, setFloors] = useState([]);
   const [isOffline, setIsOffline] = useState(false);
   const [floorIdx, setFloorIdx] = useState(0);
-  const [mode, setMode] = useState('route'); // 'route' or 'zoning'
-  const [zoningData, setZoningData] = useState(null);
 
   const selectedWarehouse = warehouses.find(w => String(w.id_entrepot) === selectedWarehouseId);
   const floorOptions = [
@@ -43,21 +40,6 @@ const VisualWarehouse = () => {
       console.error('Error loading warehouses:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (mode === 'zoning') {
-      fetchZoning();
-    }
-  }, [floorIdx, mode, selectedWarehouseId]);
-
-  const fetchZoning = async () => {
-    try {
-      const data = await aiService.getWarehouseZoning(floorIdx);
-      setZoningData(data.data || data);
-    } catch (error) {
-      console.error('Error fetching zoning:', error);
     }
   };
 
@@ -125,31 +107,13 @@ const VisualWarehouse = () => {
               icon="layers"
             />
           </View>
-          
-          <View style={styles.modeToggle}>
-            <TouchableOpacity 
-              style={[styles.modeButton, mode === 'route' && styles.activeMode]}
-              onPress={() => setMode('route')}
-            >
-              <Feather name="map" size={16} color={mode === 'route' ? '#FFF' : '#666'} />
-              <Text style={[styles.modeText, mode === 'route' && styles.activeModeText]}>Layout</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.modeButton, mode === 'zoning' && styles.activeMode]}
-              onPress={() => setMode('zoning')}
-            >
-              <Feather name="grid" size={16} color={mode === 'zoning' ? '#FFF' : '#666'} />
-              <Text style={[styles.modeText, mode === 'zoning' && styles.activeModeText]}>AI Zoning</Text>
-            </TouchableOpacity>
-          </View>
         </View>
 
         {/* Map Visualization Container */}
         <View style={styles.mapContainer}>
           <WarehouseMap 
+            warehouseId={selectedWarehouseId}
             floorIdx={floorIdx} 
-            mode={mode} 
-            zoningData={zoningData}
           />
         </View>
 
@@ -166,23 +130,25 @@ const VisualWarehouse = () => {
           </View>
         </View>
         
-        {mode === 'zoning' && (
-          <View style={styles.legendContainer}>
-            <Text style={styles.legendTitle}>Zoning Legend</Text>
-            <View style={styles.legendRow}>
-              <View style={[styles.legendDot, { backgroundColor: '#27ae60' }]} />
-              <Text style={styles.legendText}>Fast-Moving (Close to exit)</Text>
-            </View>
-            <View style={styles.legendRow}>
-              <View style={[styles.legendDot, { backgroundColor: '#f1c40f' }]} />
-              <Text style={styles.legendText}>Medium-Moving</Text>
-            </View>
-            <View style={styles.legendRow}>
-              <View style={[styles.legendDot, { backgroundColor: '#e74c3c' }]} />
-              <Text style={styles.legendText}>Slow-Moving (Back area)</Text>
-            </View>
+        <View style={styles.legendContainer}>
+          <Text style={styles.legendTitle}>Rack Status Legend</Text>
+          <View style={styles.legendRow}>
+            <View style={[styles.legendDot, { backgroundColor: '#2ecc71' }]} />
+            <Text style={styles.legendText}>OCCUPIED (Contains Products)</Text>
           </View>
-        )}
+          <View style={styles.legendRow}>
+            <View style={[styles.legendDot, { backgroundColor: '#3498db' }]} />
+            <Text style={styles.legendText}>FREE (Available Space)</Text>
+          </View>
+          <View style={styles.legendRow}>
+            <View style={[styles.legendDot, { backgroundColor: '#9b59b6' }]} />
+            <Text style={styles.legendText}>Transitions / Stairs</Text>
+          </View>
+          <View style={styles.legendRow}>
+            <View style={[styles.legendDot, { backgroundColor: '#fbc531' }]} />
+            <Text style={styles.legendText}>Loading & Shipping Zones</Text>
+          </View>
+        </View>
       </ScrollView>
 
       <ManagementModal

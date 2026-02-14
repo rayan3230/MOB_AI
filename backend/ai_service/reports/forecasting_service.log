@@ -5392,7 +5392,7 @@ Final Items Sent to Warehouse:
 2026-02-14 04:37:36,417 - ForecastingService - INFO - Validation WAPE (HYBRID): 98.37%
 2026-02-14 04:37:36,418 - ForecastingService - INFO - Selected Model: REG
 2026-02-14 04:37:36,418 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0457, combined_factor=1.2025
-2026-02-14 04:37:36,418 - ForecastingService - INFO - Final Forecast Formula: Final = 80.41 × 1.2025 = 96.70; GuardrailCap=240.00 -> 96.70
+2026-02-14 04:37:36,418 - ForecastingService - INFO - Final Forecast Formula: Final = 80.41 ï¿½ 1.2025 = 96.70; GuardrailCap=240.00 -> 96.70
 2026-02-14 04:37:36,419 - ForecastingService - INFO - Final Forecast: 96.70
 2026-02-14 04:37:36,419 - ForecastingService - INFO - Confidence Score: 50%
 2026-02-14 04:37:36,419 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
@@ -5404,7 +5404,7 @@ Final Items Sent to Warehouse:
 2026-02-14 04:37:36,474 - ForecastingService - INFO - Validation WAPE (HYBRID): 79.21%
 2026-02-14 04:37:36,475 - ForecastingService - INFO - Selected Model: REG
 2026-02-14 04:37:36,475 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0460, combined_factor=1.2029
-2026-02-14 04:37:36,475 - ForecastingService - INFO - Final Forecast Formula: Final = 84.33 × 1.2029 = 101.44; GuardrailCap=240.00 -> 101.44
+2026-02-14 04:37:36,475 - ForecastingService - INFO - Final Forecast Formula: Final = 84.33 ï¿½ 1.2029 = 101.44; GuardrailCap=240.00 -> 101.44
 2026-02-14 04:37:36,475 - ForecastingService - INFO - Final Forecast: 101.44
 2026-02-14 04:37:36,475 - ForecastingService - INFO - Confidence Score: 54%
 2026-02-14 04:37:36,475 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
@@ -5416,7 +5416,7 @@ Final Items Sent to Warehouse:
 2026-02-14 04:37:36,534 - ForecastingService - INFO - Validation WAPE (HYBRID): 84.23%
 2026-02-14 04:37:36,534 - ForecastingService - INFO - Selected Model: HYBRID
 2026-02-14 04:37:36,534 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0496, combined_factor=1.2070
-2026-02-14 04:37:36,535 - ForecastingService - INFO - Final Forecast Formula: (0.498×SES + 0.502×REG) = 125.49; Final = 125.49 × 1.2070 = 151.47; GuardrailCap=340.00 -> 151.47
+2026-02-14 04:37:36,535 - ForecastingService - INFO - Final Forecast Formula: (0.498ï¿½SES + 0.502ï¿½REG) = 125.49; Final = 125.49 ï¿½ 1.2070 = 151.47; GuardrailCap=340.00 -> 151.47
 2026-02-14 04:37:36,535 - ForecastingService - INFO - Final Forecast: 151.47
 2026-02-14 04:37:36,536 - ForecastingService - INFO - Confidence Score: 46%
 2026-02-14 04:37:36,536 - ForecastingService - INFO - Justification: HYBRID selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
@@ -5488,7 +5488,7 @@ Final Items Sent to Warehouse:
 2026-02-14 10:54:31,631 - ForecastingService - INFO - Validation WAPE (HYBRID): 98.37%
 2026-02-14 10:54:31,639 - ForecastingService - INFO - Selected Model: REG
 2026-02-14 10:54:31,639 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0457, combined_factor=1.2025
-2026-02-14 10:54:31,639 - ForecastingService - INFO - Final Forecast Formula: Final = 80.41 × 1.2025 = 96.70; GuardrailCap=240.00 -> 96.70
+2026-02-14 10:54:31,639 - ForecastingService - INFO - Final Forecast Formula: Final = 80.41 ï¿½ 1.2025 = 96.70; GuardrailCap=240.00 -> 96.70
 2026-02-14 10:54:31,639 - ForecastingService - INFO - Final Forecast: 96.70
 2026-02-14 10:54:31,639 - ForecastingService - INFO - Confidence Score: 50%
 2026-02-14 10:54:31,640 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
@@ -5500,7 +5500,7 @@ Final Items Sent to Warehouse:
 2026-02-14 10:54:31,845 - ForecastingService - INFO - Validation WAPE (HYBRID): 79.21%
 2026-02-14 10:54:31,845 - ForecastingService - INFO - Selected Model: REG
 2026-02-14 10:54:31,845 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0460, combined_factor=1.2029
-2026-02-14 10:54:31,845 - ForecastingService - INFO - Final Forecast Formula: Final = 84.33 × 1.2029 = 101.44; GuardrailCap=240.00 -> 101.44
+2026-02-14 10:54:31,845 - ForecastingService - INFO - Final Forecast Formula: Final = 84.33 ï¿½ 1.2029 = 101.44; GuardrailCap=240.00 -> 101.44
 2026-02-14 10:54:31,845 - ForecastingService - INFO - Final Forecast: 101.44
 2026-02-14 10:54:31,845 - ForecastingService - INFO - Confidence Score: 54%
 2026-02-14 10:54:31,849 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
@@ -5512,7 +5512,7 @@ Final Items Sent to Warehouse:
 2026-02-14 10:54:31,990 - ForecastingService - INFO - Validation WAPE (HYBRID): 84.23%
 2026-02-14 10:54:31,990 - ForecastingService - INFO - Selected Model: HYBRID
 2026-02-14 10:54:31,992 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0496, combined_factor=1.2070
-2026-02-14 10:54:31,992 - ForecastingService - INFO - Final Forecast Formula: (0.498×SES + 0.502×REG) = 125.49; Final = 125.49 × 1.2070 = 151.47; GuardrailCap=340.00 -> 151.47
+2026-02-14 10:54:31,992 - ForecastingService - INFO - Final Forecast Formula: (0.498ï¿½SES + 0.502ï¿½REG) = 125.49; Final = 125.49 ï¿½ 1.2070 = 151.47; GuardrailCap=340.00 -> 151.47
 2026-02-14 10:54:31,992 - ForecastingService - INFO - Final Forecast: 151.47
 2026-02-14 10:54:31,998 - ForecastingService - INFO - Confidence Score: 46%
 2026-02-14 10:54:32,000 - ForecastingService - INFO - Justification: HYBRID selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
@@ -5524,7 +5524,7 @@ Final Items Sent to Warehouse:
 2026-02-14 10:54:32,118 - ForecastingService - INFO - Validation WAPE (HYBRID): 66.79%
 2026-02-14 10:54:32,118 - ForecastingService - INFO - Selected Model: REG
 2026-02-14 10:54:32,118 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0481, combined_factor=1.2053
-2026-02-14 10:54:32,118 - ForecastingService - INFO - Final Forecast Formula: Final = 53.39 × 1.2053 = 64.35; GuardrailCap=150.00 -> 64.35
+2026-02-14 10:54:32,118 - ForecastingService - INFO - Final Forecast Formula: Final = 53.39 ï¿½ 1.2053 = 64.35; GuardrailCap=150.00 -> 64.35
 2026-02-14 10:54:32,118 - ForecastingService - INFO - Final Forecast: 64.35
 2026-02-14 10:54:32,118 - ForecastingService - INFO - Confidence Score: 39%
 2026-02-14 10:54:32,118 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
@@ -5536,7 +5536,7 @@ Final Items Sent to Warehouse:
 2026-02-14 10:54:32,253 - ForecastingService - INFO - Validation WAPE (HYBRID): 98.19%
 2026-02-14 10:54:32,253 - ForecastingService - INFO - Selected Model: REG
 2026-02-14 10:54:32,253 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0483, combined_factor=1.2056
-2026-02-14 10:54:32,253 - ForecastingService - INFO - Final Forecast Formula: Final = 152.22 × 1.2056 = 183.52; GuardrailCap=450.00 -> 183.52
+2026-02-14 10:54:32,253 - ForecastingService - INFO - Final Forecast Formula: Final = 152.22 ï¿½ 1.2056 = 183.52; GuardrailCap=450.00 -> 183.52
 2026-02-14 10:54:32,253 - ForecastingService - INFO - Final Forecast: 183.52
 2026-02-14 10:54:32,253 - ForecastingService - INFO - Confidence Score: 37%
 2026-02-14 10:54:32,253 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
@@ -5555,7 +5555,7 @@ Final Items Sent to Warehouse:
 2026-02-14 10:56:42,247 - ForecastingService - INFO - Validation WAPE (HYBRID): 98.37%
 2026-02-14 10:56:42,247 - ForecastingService - INFO - Selected Model: REG
 2026-02-14 10:56:42,247 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0457, combined_factor=1.2025
-2026-02-14 10:56:42,247 - ForecastingService - INFO - Final Forecast Formula: Final = 80.41 × 1.2025 = 96.70; GuardrailCap=240.00 -> 96.70
+2026-02-14 10:56:42,247 - ForecastingService - INFO - Final Forecast Formula: Final = 80.41 ï¿½ 1.2025 = 96.70; GuardrailCap=240.00 -> 96.70
 2026-02-14 10:56:42,247 - ForecastingService - INFO - Final Forecast: 96.70
 2026-02-14 10:56:42,247 - ForecastingService - INFO - Confidence Score: 50%
 2026-02-14 10:56:42,247 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
@@ -5567,7 +5567,7 @@ Final Items Sent to Warehouse:
 2026-02-14 10:56:42,373 - ForecastingService - INFO - Validation WAPE (HYBRID): 79.21%
 2026-02-14 10:56:42,375 - ForecastingService - INFO - Selected Model: REG
 2026-02-14 10:56:42,375 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0460, combined_factor=1.2029
-2026-02-14 10:56:42,375 - ForecastingService - INFO - Final Forecast Formula: Final = 84.33 × 1.2029 = 101.44; GuardrailCap=240.00 -> 101.44
+2026-02-14 10:56:42,375 - ForecastingService - INFO - Final Forecast Formula: Final = 84.33 ï¿½ 1.2029 = 101.44; GuardrailCap=240.00 -> 101.44
 2026-02-14 10:56:42,375 - ForecastingService - INFO - Final Forecast: 101.44
 2026-02-14 10:56:42,375 - ForecastingService - INFO - Confidence Score: 54%
 2026-02-14 10:56:42,375 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
