@@ -5469,3 +5469,225 @@ Final Items Sent to Warehouse:
 2026-02-14 10:00:44,435 - django.request - WARNING - Not Found: /sync-queue/
 2026-02-14 10:04:40,456 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\ai_service\api\views.py changed, reloading.
 2026-02-14 10:08:29,330 - django.utils.autoreload - INFO - C:\Users\HP\Desktop\WORK\Projects_Freelance\Real\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 10:53:18,722 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 10:53:23,722 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 10:53:25,272 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 10:53:25,272 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 10:54:05,175 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 10:54:23,187 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 10:54:25,045 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 10:54:25,045 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 10:54:31,478 - ForecastingService - WARNING - Chronological Violation: 10018 operations attempted to reduce stock below zero.
+2026-02-14 10:54:31,478 - ForecastingService - INFO - Calculated stock for 888 SKUs with chronological validation.
+2026-02-14 10:54:31,491 - ForecastingService - INFO - Analyzing 5 products with Statistical & Decision Engine...
+2026-02-14 10:54:31,631 - ForecastingService - INFO - Product 31334
+2026-02-14 10:54:31,631 - ForecastingService - INFO - SES Forecast: 62.40
+2026-02-14 10:54:31,631 - ForecastingService - INFO - REG Forecast: 80.41
+2026-02-14 10:54:31,631 - ForecastingService - INFO - Validation WAPE (SES): 105.01%
+2026-02-14 10:54:31,631 - ForecastingService - INFO - Validation WAPE (REG): 93.54%
+2026-02-14 10:54:31,631 - ForecastingService - INFO - Validation WAPE (HYBRID): 98.37%
+2026-02-14 10:54:31,639 - ForecastingService - INFO - Selected Model: REG
+2026-02-14 10:54:31,639 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0457, combined_factor=1.2025
+2026-02-14 10:54:31,639 - ForecastingService - INFO - Final Forecast Formula: Final = 80.41 × 1.2025 = 96.70; GuardrailCap=240.00 -> 96.70
+2026-02-14 10:54:31,639 - ForecastingService - INFO - Final Forecast: 96.70
+2026-02-14 10:54:31,639 - ForecastingService - INFO - Confidence Score: 50%
+2026-02-14 10:54:31,640 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
+2026-02-14 10:54:31,844 - ForecastingService - INFO - Product 31335
+2026-02-14 10:54:31,844 - ForecastingService - INFO - SES Forecast: 75.39
+2026-02-14 10:54:31,844 - ForecastingService - INFO - REG Forecast: 84.33
+2026-02-14 10:54:31,844 - ForecastingService - INFO - Validation WAPE (SES): 84.07%
+2026-02-14 10:54:31,845 - ForecastingService - INFO - Validation WAPE (REG): 76.84%
+2026-02-14 10:54:31,845 - ForecastingService - INFO - Validation WAPE (HYBRID): 79.21%
+2026-02-14 10:54:31,845 - ForecastingService - INFO - Selected Model: REG
+2026-02-14 10:54:31,845 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0460, combined_factor=1.2029
+2026-02-14 10:54:31,845 - ForecastingService - INFO - Final Forecast Formula: Final = 84.33 × 1.2029 = 101.44; GuardrailCap=240.00 -> 101.44
+2026-02-14 10:54:31,845 - ForecastingService - INFO - Final Forecast: 101.44
+2026-02-14 10:54:31,845 - ForecastingService - INFO - Confidence Score: 54%
+2026-02-14 10:54:31,849 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
+2026-02-14 10:54:31,989 - ForecastingService - INFO - Product 31336
+2026-02-14 10:54:31,990 - ForecastingService - INFO - SES Forecast: 136.60
+2026-02-14 10:54:31,990 - ForecastingService - INFO - REG Forecast: 114.48
+2026-02-14 10:54:31,990 - ForecastingService - INFO - Validation WAPE (SES): 85.46%
+2026-02-14 10:54:31,990 - ForecastingService - INFO - Validation WAPE (REG): 84.81%
+2026-02-14 10:54:31,990 - ForecastingService - INFO - Validation WAPE (HYBRID): 84.23%
+2026-02-14 10:54:31,990 - ForecastingService - INFO - Selected Model: HYBRID
+2026-02-14 10:54:31,992 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0496, combined_factor=1.2070
+2026-02-14 10:54:31,992 - ForecastingService - INFO - Final Forecast Formula: (0.498×SES + 0.502×REG) = 125.49; Final = 125.49 × 1.2070 = 151.47; GuardrailCap=340.00 -> 151.47
+2026-02-14 10:54:31,992 - ForecastingService - INFO - Final Forecast: 151.47
+2026-02-14 10:54:31,998 - ForecastingService - INFO - Confidence Score: 46%
+2026-02-14 10:54:32,000 - ForecastingService - INFO - Justification: HYBRID selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
+2026-02-14 10:54:32,118 - ForecastingService - INFO - Product 31337
+2026-02-14 10:54:32,118 - ForecastingService - INFO - SES Forecast: 76.43
+2026-02-14 10:54:32,118 - ForecastingService - INFO - REG Forecast: 53.39
+2026-02-14 10:54:32,118 - ForecastingService - INFO - Validation WAPE (SES): 71.44%
+2026-02-14 10:54:32,118 - ForecastingService - INFO - Validation WAPE (REG): 65.62%
+2026-02-14 10:54:32,118 - ForecastingService - INFO - Validation WAPE (HYBRID): 66.79%
+2026-02-14 10:54:32,118 - ForecastingService - INFO - Selected Model: REG
+2026-02-14 10:54:32,118 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0481, combined_factor=1.2053
+2026-02-14 10:54:32,118 - ForecastingService - INFO - Final Forecast Formula: Final = 53.39 × 1.2053 = 64.35; GuardrailCap=150.00 -> 64.35
+2026-02-14 10:54:32,118 - ForecastingService - INFO - Final Forecast: 64.35
+2026-02-14 10:54:32,118 - ForecastingService - INFO - Confidence Score: 39%
+2026-02-14 10:54:32,118 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
+2026-02-14 10:54:32,253 - ForecastingService - INFO - Product 31338
+2026-02-14 10:54:32,253 - ForecastingService - INFO - SES Forecast: 63.75
+2026-02-14 10:54:32,253 - ForecastingService - INFO - REG Forecast: 152.22
+2026-02-14 10:54:32,253 - ForecastingService - INFO - Validation WAPE (SES): 103.99%
+2026-02-14 10:54:32,253 - ForecastingService - INFO - Validation WAPE (REG): 93.01%
+2026-02-14 10:54:32,253 - ForecastingService - INFO - Validation WAPE (HYBRID): 98.19%
+2026-02-14 10:54:32,253 - ForecastingService - INFO - Selected Model: REG
+2026-02-14 10:54:32,253 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0483, combined_factor=1.2056
+2026-02-14 10:54:32,253 - ForecastingService - INFO - Final Forecast Formula: Final = 152.22 × 1.2056 = 183.52; GuardrailCap=450.00 -> 183.52
+2026-02-14 10:54:32,253 - ForecastingService - INFO - Final Forecast: 183.52
+2026-02-14 10:54:32,253 - ForecastingService - INFO - Confidence Score: 37%
+2026-02-14 10:54:32,253 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
+2026-02-14 10:56:31,868 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 10:56:34,544 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 10:56:36,155 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 10:56:36,157 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 10:56:42,104 - ForecastingService - WARNING - Chronological Violation: 10018 operations attempted to reduce stock below zero.
+2026-02-14 10:56:42,104 - ForecastingService - INFO - Calculated stock for 888 SKUs with chronological validation.
+2026-02-14 10:56:42,111 - ForecastingService - INFO - Analyzing 2 products with Statistical & Decision Engine...
+2026-02-14 10:56:42,243 - ForecastingService - INFO - Product 31334
+2026-02-14 10:56:42,243 - ForecastingService - INFO - SES Forecast: 62.40
+2026-02-14 10:56:42,247 - ForecastingService - INFO - REG Forecast: 80.41
+2026-02-14 10:56:42,247 - ForecastingService - INFO - Validation WAPE (SES): 105.01%
+2026-02-14 10:56:42,247 - ForecastingService - INFO - Validation WAPE (REG): 93.54%
+2026-02-14 10:56:42,247 - ForecastingService - INFO - Validation WAPE (HYBRID): 98.37%
+2026-02-14 10:56:42,247 - ForecastingService - INFO - Selected Model: REG
+2026-02-14 10:56:42,247 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0457, combined_factor=1.2025
+2026-02-14 10:56:42,247 - ForecastingService - INFO - Final Forecast Formula: Final = 80.41 × 1.2025 = 96.70; GuardrailCap=240.00 -> 96.70
+2026-02-14 10:56:42,247 - ForecastingService - INFO - Final Forecast: 96.70
+2026-02-14 10:56:42,247 - ForecastingService - INFO - Confidence Score: 50%
+2026-02-14 10:56:42,247 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
+2026-02-14 10:56:42,371 - ForecastingService - INFO - Product 31335
+2026-02-14 10:56:42,373 - ForecastingService - INFO - SES Forecast: 75.39
+2026-02-14 10:56:42,373 - ForecastingService - INFO - REG Forecast: 84.33
+2026-02-14 10:56:42,373 - ForecastingService - INFO - Validation WAPE (SES): 84.07%
+2026-02-14 10:56:42,373 - ForecastingService - INFO - Validation WAPE (REG): 76.84%
+2026-02-14 10:56:42,373 - ForecastingService - INFO - Validation WAPE (HYBRID): 79.21%
+2026-02-14 10:56:42,375 - ForecastingService - INFO - Selected Model: REG
+2026-02-14 10:56:42,375 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0460, combined_factor=1.2029
+2026-02-14 10:56:42,375 - ForecastingService - INFO - Final Forecast Formula: Final = 84.33 × 1.2029 = 101.44; GuardrailCap=240.00 -> 101.44
+2026-02-14 10:56:42,375 - ForecastingService - INFO - Final Forecast: 101.44
+2026-02-14 10:56:42,375 - ForecastingService - INFO - Confidence Score: 54%
+2026-02-14 10:56:42,375 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
+2026-02-14 10:57:31,438 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 10:57:42,305 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 10:57:43,768 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 10:57:43,768 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 10:57:48,191 - ForecastingService - WARNING - Chronological Violation: 10018 operations attempted to reduce stock below zero.
+2026-02-14 10:57:48,191 - ForecastingService - INFO - Calculated stock for 888 SKUs with chronological validation.
+2026-02-14 10:58:44,973 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 10:58:52,945 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 10:58:54,864 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 10:59:17,618 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 10:59:26,543 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 10:59:28,727 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 11:02:53,997 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 11:03:07,866 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 11:04:25,230 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 11:04:26,176 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 11:06:29,440 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\Users\serializers.py changed, reloading.
+2026-02-14 11:11:03,840 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 11:11:41,136 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 11:11:45,914 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 11:11:47,261 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 11:18:16,434 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 11:18:18,783 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 11:18:20,088 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 11:18:41,210 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 11:18:45,109 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 11:18:46,442 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 11:19:03,626 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\core\storage.py changed, reloading.
+2026-02-14 11:19:15,511 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 11:19:18,591 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 11:19:19,908 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 11:19:43,895 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 11:20:51,945 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 11:20:55,441 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 11:20:56,758 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 11:21:16,708 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\core\storage.py changed, reloading.
+2026-02-14 11:22:18,618 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 11:22:23,684 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 11:22:24,923 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 11:24:18,219 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\core\storage.py changed, reloading.
+2026-02-14 11:24:51,586 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 11:24:59,617 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 11:25:01,998 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 11:25:01,999 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 11:25:02,119 - StorageService - INFO - Loaded 0 occupied slots into Digital Twin.
+2026-02-14 11:25:20,421 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 11:26:14,289 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 11:26:41,942 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 11:26:44,509 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 11:26:44,510 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 11:26:44,622 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.
+2026-02-14 11:28:13,926 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 11:28:21,623 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 11:28:22,851 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 11:28:22,851 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 11:28:22,885 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.
+2026-02-14 11:28:45,136 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 11:28:49,272 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 11:28:50,551 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 11:28:50,551 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 11:28:50,584 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.
+2026-02-14 11:29:50,034 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 11:39:48,382 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 11:52:01,464 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 12:04:26,109 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 12:04:33,044 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 12:04:35,068 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 12:04:38,513 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 12:04:38,626 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.
+2026-02-14 12:07:04,075 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\backend\settings.py changed, reloading.
+2026-02-14 12:07:32,213 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 12:07:35,358 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 12:07:36,741 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 12:07:38,413 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 12:07:38,441 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.
+2026-02-14 12:07:46,785 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\core\decision_layer.py changed, reloading.
+2026-02-14 12:08:17,635 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 12:08:22,195 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 12:08:23,425 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 12:08:25,180 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 12:08:25,212 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.
+2026-02-14 12:09:26,492 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\backend\settings.py changed, reloading.
+2026-02-14 12:10:06,222 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 12:10:26,878 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 12:10:30,979 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 12:10:31,439 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 12:10:35,485 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 12:10:36,734 - ForecastingService - INFO - Successfully fetched 1577 products and 80651 history points from Supabase.
+2026-02-14 12:10:38,597 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 12:10:42,487 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 12:10:42,600 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.
+2026-02-14 12:10:44,977 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 12:10:45,089 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.
+2026-02-14 12:10:49,405 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 12:10:57,867 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 12:10:58,015 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.
+2026-02-14 12:11:19,477 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 12:11:35,503 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 12:11:39,115 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 12:11:40,352 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 12:11:42,132 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 12:11:42,476 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 12:11:42,532 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.
+2026-02-14 12:11:44,680 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 12:11:44,708 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.
+2026-02-14 12:13:24,648 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 12:14:06,652 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 12:14:09,468 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 12:14:10,745 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 12:14:12,402 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 12:14:12,446 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.
+2026-02-14 12:15:13,251 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 12:15:14,876 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 12:15:14,909 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.
+2026-02-14 12:16:28,126 - django.utils.autoreload - INFO - C:\Users\hp\OneDrive\Bureau\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 12:21:15,999 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 12:21:20,659 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 12:21:22,113 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 12:21:23,973 - StorageService - INFO - Synchronizing AI state with 558 physical locations...
+2026-02-14 12:21:24,019 - StorageService - INFO - Loaded 30 occupied slots into Digital Twin.

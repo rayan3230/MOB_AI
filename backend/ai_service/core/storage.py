@@ -30,6 +30,7 @@ class StorageOptimizationService:
 
         # --- REBALANCING: Mapping of occupied slots to products ---
         self.slot_to_product: Dict[Tuple[int, int, int], int] = {} # (floor, x, y) -> product_id
+        self.slot_to_code: Dict[Tuple[int, int, int], str] = {}    # (floor, x, y) -> code_emplacement
         
         # --- STEP 3: Weights for Multi-Factor Scoring ---
         self.weights = {
@@ -80,7 +81,16 @@ class StorageOptimizationService:
             if coord:
                 f_idx = int(floor_req) if str(floor_req).isdigit() else 0
                 if f_idx in self.floors:
-                    self.floors[f_idx].occupied_slots.add((int(coord.x), int(coord.y)))
+                    coord_tuple = (int(coord.x), int(coord.y))
+                    self.floors[f_idx].occupied_slots.add(coord_tuple)
+                    self.slot_to_code[(f_idx, coord_tuple[0], coord_tuple[1])] = code
+                    
+                    # Track product ID in this slot if available
+                    # 'id_produit_id' is often the FK name in Django values()
+                    product_id = row.get('id_produit_id') or row.get('id_produit')
+                    if product_id and str(product_id).isdigit():
+                        self.slot_to_product[(f_idx, coord_tuple[0], coord_tuple[1])] = int(product_id)
+                    
                     count += 1
                     
         logger.info(f"Loaded {count} occupied slots into Digital Twin.")
@@ -330,39 +340,55 @@ class StorageOptimizationService:
     def check_for_rebalancing(self, traffic_threshold: int = 15) -> List[Dict]:
         """
         Slot Rebalancing Engine. 
-        Detects if a zone is overcrowded (traffic > threshold) and suggests relocations.
+        1. Heatmap Check: Detects overcrowding (Traffic > threshold).
+        2. Misplacement Check: Detects items in wrong efficiency zones (e.g. FAST item in SLOW zone).
         """
+        self._classify_all_floors() # Ensure zoning is fresh
         relocation_suggestions = []
         
-        # 1. Identify hotspots from the heatmap
+        # --- 1. Identify hotspots from the heatmap ---
         for floor_idx, heatmap in self.traffic_heatmap.items():
             for coord_tuple, traffic_count in heatmap.items():
                 if traffic_count >= traffic_threshold:
-                    # Zone is overcrowded!
-                    # 2. Check which product is in this slot
                     product_id = self.slot_to_product.get((floor_idx, coord_tuple[0], coord_tuple[1]))
                     if product_id:
-                        # 3. Find a better (lower score) slot for this product in a low-traffic area
-                        current_coord = WarehouseCoordinate(coord_tuple[0], coord_tuple[1])
-                        current_score = self.calculate_slot_score(floor_idx, current_coord, product_id)
-                        
-                        # Temporarily release the slot to find alternative suggestions
-                        self.floors[floor_idx].occupied_slots.discard(coord_tuple)
-                        new_suggestion = self.suggest_slot(product_id)
-                        self.floors[floor_idx].occupied_slots.add(coord_tuple) # Restore state
-                        
-                        if new_suggestion and new_suggestion['score'] < current_score * 0.8:
-                            # If we found a slot at least 20% better
-                            relocation_suggestions.append({
-                                "product_id": product_id,
-                                "from_floor": floor_idx,
-                                "from_coord": coord_tuple,
-                                "to_floor": new_suggestion['floor_idx'],
-                                "to_coord": (new_suggestion['coord'].x, new_suggestion['coord'].y),
-                                "reason": f"Overcrowded zone (Traffic: {traffic_count})"
-                            })
-                            
+                        suggestion = self._find_better_slot_for_relocation(product_id, floor_idx, coord_tuple, f"Overcrowded zone (Traffic: {traffic_count})")
+                        if suggestion: relocation_suggestions.append(suggestion)
+
+        # --- 2. Identify Misplaced Items (Zoning Optimization) ---
+        # If we have no heatmap hits, we still want to optimize for travel speed
+        for (floor_idx, x, y), product_id in self.slot_to_product.items():
+            # Get the zone class of current slot
+            current_slot_class = self.storage_zoning.get(floor_idx, {}).get((x, y))
+            # Get the ideal class for the product based on demand frequency
+            ideal_class = self.product_manager.get_product_class(product_id)
+            
+            # If a FAST product is in a SLOW or MEDIUM zone, it should move
+            if ideal_class == StorageClass.FAST and current_slot_class != StorageClass.FAST:
+                suggestion = self._find_better_slot_for_relocation(product_id, floor_idx, (x, y), f"Mismatched Zone: Highly active product in {current_slot_class.name} zone.")
+                if suggestion: relocation_suggestions.append(suggestion)
+
         return relocation_suggestions
+
+    def _find_better_slot_for_relocation(self, product_id, floor_idx, coord_tuple, reason):
+        current_coord = WarehouseCoordinate(coord_tuple[0], coord_tuple[1])
+        current_score = self.calculate_slot_score(floor_idx, current_coord, product_id)
+        
+        # Temporarily release the slot to find alternative suggestions
+        self.floors[floor_idx].occupied_slots.discard(coord_tuple)
+        new_suggestion = self.suggest_slot(product_id)
+        self.floors[floor_idx].occupied_slots.add(coord_tuple) # Restore
+        
+        if new_suggestion and new_suggestion['score'] < current_score * 0.8:
+            return {
+                "product_id": product_id,
+                "from_floor": floor_idx,
+                "from_coord": coord_tuple,
+                "to_floor": new_suggestion['floor_idx'],
+                "to_coord": (new_suggestion['coordinate'].x, new_suggestion['coordinate'].y),
+                "reason": reason
+            }
+        return None
 
     def _is_rack_compatible(self, product_id: int, floor_idx: int, coord: WarehouseCoordinate) -> bool:
         """

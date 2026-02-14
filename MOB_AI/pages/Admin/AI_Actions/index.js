@@ -16,6 +16,7 @@ import { Feather } from '@expo/vector-icons';
 import { lightTheme } from '../../../constants/theme.js';
 import TopHeader from '../../../components/AdminHeader';
 import PredictionCard from '../../../components/PredictionCard';
+import { aiService } from '../../../services/aiService';
 
 import ManagementModal from '../../../components/ManagementModal';
 
@@ -37,50 +38,24 @@ const AIActions = ({ user, onOpenDrawer }) => {
   }, []);
 
   const fetchPredictions = async () => {
-    // Simulated fetch - predictions for the next 3 days
     setLoading(true);
-    setTimeout(() => {
-      const mockData = [
-        {
-          id: '1',
-          date: 'Tomorrow, Feb 14',
-          type: 'Stock Replenishment',
-          predictedValue: '150 units',
-          currentValue: '150 units',
-          status: 'AI Predicted',
-          justification: '',
-          confidence: 92,
-          reasoning: 'Based on 14-day moving average and upcoming promotional campaign. Historical data shows 23% increase during similar events.',
-        },
-        {
-          id: '2',
-          date: 'Feb 15, 2026',
-          type: 'Production Demand',
-          predictedValue: '420 units',
-          currentValue: '420 units',
-          status: 'AI Predicted',
-          justification: '',
-          confidence: 87,
-          reasoning: 'Seasonal trend analysis + order backlog pattern. Peak production period detected with 15% variance.',
-        },
-        {
-          id: '3',
-          date: 'Feb 16, 2026',
-          type: 'Space Allocation',
-          predictedValue: 'Zone B (20% free)',
-          currentValue: 'Zone B (20% free)',
-          status: 'AI Predicted',
-          justification: '',
-          confidence: 78,
-          reasoning: 'Zone B optimal due to proximity to shipping dock and current inventory turnover rate. Reduces pick time by 18%.',
-        },
-      ];
-      setPredictions(mockData);
+    try {
+      const data = await aiService.getGeneralForecasts();
+      if (data && Array.isArray(data) && data.length > 0) {
+        setPredictions(data);
+      } else {
+        // Only if API returns nothing, keep empty or show a message
+        setPredictions([]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch AI predictions:', error);
+      Alert.alert('Error', 'Could not connect to AI service. Please check your connection.');
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
-  const handleAccept = (prediction) => {
+  const handleAccept = async (prediction) => {
     Alert.alert(
       'Accept Prediction',
       'Are you sure you want to accept this AI prediction as the effective value?',
@@ -88,20 +63,36 @@ const AIActions = ({ user, onOpenDrawer }) => {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Accept',
-          onPress: () => {
-            const updatedPredictions = predictions.map(p => {
-              if (p.id === prediction.id) {
-                return {
-                  ...p,
-                  status: 'Accepted',
-                  acceptedBy: user?.nom_complet || 'Authorized User',
-                  acceptDate: new Date().toLocaleString()
-                };
-              }
-              return p;
-            });
-            setPredictions(updatedPredictions);
-            Alert.alert('Success', 'AI prediction accepted.');
+          onPress: async () => {
+            setSubmitting(true);
+            try {
+              // Req 8.4: Human-in-the-loop Governance
+              await aiService.validateOrder({
+                prediction_id: prediction.id,
+                sku_id: prediction.sku_id,
+                action: 'ACCEPT',
+                justification: 'Accepted as proposed'
+              });
+
+              const updatedPredictions = predictions.map(p => {
+                if (p.id === prediction.id) {
+                  return {
+                    ...p,
+                    status: 'Accepted',
+                    acceptedBy: user?.nom_complet || 'Authorized User',
+                    acceptDate: new Date().toLocaleString()
+                  };
+                }
+                return p;
+              });
+              setPredictions(updatedPredictions);
+              Alert.alert('Success', 'AI prediction accepted and recorded.');
+            } catch (err) {
+              console.error('Accept error:', err);
+              Alert.alert('Error', 'Server sync failed. Please check connection.');
+            } finally {
+              setSubmitting(false);
+            }
           }
         }
       ]
@@ -115,29 +106,46 @@ const AIActions = ({ user, onOpenDrawer }) => {
     setModalVisible(true);
   };
 
-  const handleSaveOverride = () => {
+  const handleSaveOverride = async () => {
     if (!overrideValue.trim() || !justification.trim()) {
       Alert.alert('Missing Information', 'Please provide both the new value and a justification.');
       return;
     }
 
-    const updatedPredictions = predictions.map(p => {
-      if (p.id === selectedPrediction.id) {
-        return {
-          ...p,
-          currentValue: overrideValue,
-          status: 'Overridden',
-          justification: justification,
-          overriddenBy: user?.nom_complet || 'Authorized User',
-          overrideDate: new Date().toLocaleString()
-        };
-      }
-      return p;
-    });
+    setSubmitting(true);
+    try {
+      // Req 8.4: Human-in-the-loop validation
+      await aiService.validateOrder({
+        prediction_id: selectedPrediction.id,
+        sku_id: selectedPrediction.sku_id,
+        action: 'OVERRIDE',
+        override_value: overrideValue,
+        justification: justification
+      });
 
-    setPredictions(updatedPredictions);
-    setModalVisible(false);
-    Alert.alert('Success', 'Prediction has been overridden successfully.');
+      const updatedPredictions = predictions.map(p => {
+        if (p.id === selectedPrediction.id) {
+          return {
+            ...p,
+            currentValue: overrideValue,
+            status: 'Overridden',
+            justification: justification,
+            overriddenBy: user?.nom_complet || 'Authorized User',
+            overrideDate: new Date().toLocaleString()
+          };
+        }
+        return p;
+      });
+
+      setPredictions(updatedPredictions);
+      setModalVisible(false);
+      Alert.alert('Success', 'Prediction has been overridden successfully.');
+    } catch (err) {
+      console.error('Override error:', err);
+      Alert.alert('Error', 'Unable to sync with server. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleReset = (prediction) => {

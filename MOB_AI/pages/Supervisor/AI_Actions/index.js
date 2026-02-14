@@ -46,60 +46,21 @@ const SupervisorAIActions = ({ user, onOpenDrawer }) => {
       // Attempt to get real forecasts from the AI service
       const data = await aiService.getGeneralForecasts();
       
-      // If we got data but it's empty, use mock data as fallback for UI demonstration
       if (!data || (Array.isArray(data) && data.length === 0)) {
-        throw new Error('Empty forecasts');
+        setPredictions([]);
+      } else {
+        setPredictions(data);
       }
-      
-      setPredictions(data);
     } catch (error) {
-      console.log('AI Fetch failed or empty, checking cache/mock');
+      console.log('AI Fetch failed, checking cache');
       
-      // Check if we have cached data first
       const cached = await aiService.getGeneralForecasts().catch(() => null);
       
       if (cached && (Array.isArray(cached) && cached.length > 0)) {
         setPredictions(cached);
         setIsOffline(true);
       } else {
-        // Fallback to high-quality mock data for the demo
-        const mockData = [
-          {
-            id: '1',
-            date: 'Tomorrow, Feb 14',
-            type: 'Stock Replenishment',
-            predictedValue: '150 units',
-            currentValue: '150 units',
-            status: 'AI Predicted',
-            justification: '',
-            confidence: 92,
-            reasoning: 'Based on 14-day moving average and upcoming promotional campaign. Historical data shows 23% increase during similar events.',
-          },
-          {
-            id: '2',
-            date: 'Feb 15, 2026',
-            type: 'Production Demand',
-            predictedValue: '420 units',
-            currentValue: '420 units',
-            status: 'AI Predicted',
-            justification: '',
-            confidence: 87,
-            reasoning: 'Seasonal trend analysis + order backlog pattern. Peak production period detected with 15% variance.',
-          },
-          {
-            id: '3',
-            date: 'Feb 16, 2026',
-            type: 'Space Allocation',
-            predictedValue: 'Zone B (20% free)',
-            currentValue: 'Zone B (20% free)',
-            status: 'AI Predicted',
-            justification: '',
-            confidence: 78,
-            reasoning: 'Zone B optimal due to proximity to shipping dock and current inventory turnover rate. Reduces pick time by 18%.',
-          },
-        ];
-        setPredictions(mockData);
-        // Note: we don't set isOffline for mock data, only for cached real data
+        setPredictions([]);
       }
     } finally {
       setLoading(false);

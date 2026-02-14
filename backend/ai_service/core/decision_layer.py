@@ -16,7 +16,7 @@ class ForecastDecisionLayer:
     def __init__(self, api_key=None):
         load_dotenv()
         self.api_key = api_key or os.getenv("MISTRAL_API_KEY")
-        self.model = "mistral-tiny" # Or mistral-small-latest, open-mistral-7b, etc.
+        self.model = os.getenv("MISTRAL_MODEL", "mistral-tiny")
         self.enable_llm_numeric_forecast = os.getenv("ENABLE_LLM_NUMERIC_FORECAST", "0") == "1"
         if self.api_key:
             self.client = Mistral(api_key=self.api_key)
