@@ -105,13 +105,17 @@ export const aiService = {
     /**
      * Get Digital Twin map data for a specific floor
      */
-    getDigitalTwinMap: async (floorIdx) => {
+    getDigitalTwinMap: async (floorIdx, warehouseId = null) => {
         try {
-            const data = await apiCall(`/api/forecast/map/${floorIdx}/`, 'GET');
-            await offlineService.cacheData(`digital_twin_map_${floorIdx}`, data);
+            let url = `/api/forecast/map/${floorIdx}/`;
+            if (warehouseId) {
+                url += `?warehouse_id=${warehouseId}`;
+            }
+            const data = await apiCall(url, 'GET');
+            await offlineService.cacheData(`digital_twin_map_${floorIdx}_${warehouseId}`, data);
             return data;
         } catch (error) {
-            const cached = await offlineService.getCachedData(`digital_twin_map_${floorIdx}`);
+            const cached = await offlineService.getCachedData(`digital_twin_map_${floorIdx}_${warehouseId}`);
             if (cached) return cached;
             throw error;
         }

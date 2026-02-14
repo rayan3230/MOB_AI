@@ -65,14 +65,18 @@ class Entrepot(models.Model):
                 description='Storage Floor 1'
             )
 
-            # Create VRacks for existing products
+            # Create VRacks for existing products (Optimized with bulk_create)
             from Produit.models import Produit
-            for produit in Produit.objects.all():
-                Vrack.objects.get_or_create(
+            products = Produit.objects.all()
+            vracks = []
+            for produit in products:
+                vracks.append(Vrack(
+                    id_vrack=f"VRK_{self.id_entrepot}_{produit.id_produit}",
                     id_entrepot=self,
                     id_produit=produit,
-                    defaults={'quantite': 0}
-                )
+                    quantite=0
+                ))
+            Vrack.objects.bulk_create(vracks, ignore_conflicts=True)
 
     def __str__(self):
         return f"{self.id_entrepot} - {self.nom_entrepot}"
@@ -156,15 +160,17 @@ class NiveauStockage(models.Model):
                 # Row E (Floor 3-4): E1-E17(9)
                 for i in range(1, 18): racks_data.append((f"E{i}", 9))
 
+            racks = []
             for code, cap in racks_data:
-                Rack.objects.get_or_create(
+                rack_id = f"{self.id_entrepot_id}_{self.id_niveau}_{code}"
+                racks.append(Rack(
+                    id_rack=rack_id,
                     storage_floor=self,
                     code_rack=code,
-                    defaults={
-                        'capacity': cap,
-                        'description': f"Automatic Storage Rack {code}"
-                    }
-                )
+                    capacity=cap,
+                    description=f"Automatic Storage Rack {code}"
+                ))
+            Rack.objects.bulk_create(racks, ignore_conflicts=True)
 
     class Meta:
         db_table = 'niveaux_stockage'
@@ -218,6 +224,7 @@ class NiveauPicking(models.Model):
 
             # Create default racks for the picking floor (FR-13 extension)
             racks_codes = "ABCDEFGHIKMNPQRSTVWX"
+            racks = []
             for code in racks_codes:
                 # Capacity logic based on code
                 cap = 10  # Default
@@ -228,14 +235,15 @@ class NiveauPicking(models.Model):
                 elif code in 'NV': cap = 9
                 elif code == 'X': cap = 17
 
-                Rack.objects.get_or_create(
+                rack_id = f"{self.id_entrepot_id}_{self.id_niveau_picking}_{code}"
+                racks.append(Rack(
+                    id_rack=rack_id,
                     picking_floor=self,
                     code_rack=code,
-                    defaults={
-                        'capacity': cap,
-                        'description': f"Automatic Picking Rack {code}"
-                    }
-                )
+                    capacity=cap,
+                    description=f"Automatic Picking Rack {code}"
+                ))
+            Rack.objects.bulk_create(racks, ignore_conflicts=True)
 
     class Meta:
         db_table = 'niveaux_picking'

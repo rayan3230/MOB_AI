@@ -67,7 +67,7 @@ export const offlineService = {
                     // 2. Log to backend OperationOffline table for audit
                     if (user && response) {
                         try {
-                            await apiCall('/sync-queue/', 'POST', {
+                            await apiCall('/api/warehouse/sync-queue/', 'POST', {
                                 id_operation: String(request.id).substring(0, 30),
                                 type_operation: `${request.method} ${request.endpoint}`,
                                 donnees_operation: request.body || {},
@@ -83,8 +83,30 @@ export const offlineService = {
 
                     console.log(`[Offline] Successfully synced: ${request.endpoint}`);
                 } catch (e) {
-                    console.error(`[Offline] Sync failed for ${request.endpoint}, keeping in queue:`, e);
-                    remainingQueue.push(request);
+                    const isValidationError = e.status >= 400 && e.status < 500;
+                    
+                    if (isValidationError) {
+                        console.error(`[Offline] Permanent failure for ${request.endpoint} (${e.status}):`, e.data);
+                        // Log to backend as FAILED
+                        if (user) {
+                            try {
+                                await apiCall('/api/warehouse/sync-queue/', 'POST', {
+                                    id_operation: String(request.id).substring(0, 30),
+                                    type_operation: `${request.method} ${request.endpoint}`,
+                                    donnees_operation: request.body || {},
+                                    statut: 'FAILED',
+                                    timestamp_local: request.timestamp,
+                                    timestamp_sync: new Date().toISOString(),
+                                    id_utilisateur_id: user.id_utilisateur,
+                                    notes: JSON.stringify(e.data)
+                                }, request.token, true);
+                            } catch (logError) {}
+                        }
+                        // We do NOT add it to remainingQueue, so it gets dropped
+                    } else {
+                        console.error(`[Offline] Transient sync failure for ${request.endpoint}, keeping in queue:`, e.message);
+                        remainingQueue.push(request);
+                    }
                 }
             }
             

@@ -2,8 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiCall } from './api';
 
 export const authService = {
-    login: async (username, password) => {
-        const response = await apiCall('/users/login/', 'POST', { username, password });
+    login: async (email, password) => {
+        const response = await apiCall('/users/login/', 'POST', { email, password });
         if (response && response.user) {
             await AsyncStorage.setItem('user', JSON.stringify(response.user));
         }

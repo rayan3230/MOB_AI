@@ -1,38 +1,63 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { warehouseService } from '../../../services/warehouseService';
 import { lightTheme } from '../../../constants/theme';
+import WarehouseMap from '../../../components/WarehouseMap';
+import OptionSelector from '../../../components/OptionSelector';
+import ManagementModal from '../../../components/ManagementModal';
 
 const VisualWarehouse = () => {
   const [loading, setLoading] = useState(true);
   const [warehouses, setWarehouses] = useState([]);
-  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+  const [selectedWarehouseId, setSelectedId] = useState('');
+  const [warehouseFilterModalVisible, setWarehouseFilterModalVisible] = useState(false);
   const [floors, setFloors] = useState([]);
   const [isOffline, setIsOffline] = useState(false);
+  const [floorIdx, setFloorIdx] = useState(0);
+
+  const selectedWarehouse = warehouses.find(w => String(w.id_entrepot) === selectedWarehouseId);
+  const floorOptions = [
+    { label: 'Ground / Picking', value: 0 },
+    { label: 'Level 1 & 2', value: 1 },
+    { label: 'Level 3 & 4', value: 2 },
+  ];
 
   useEffect(() => {
-    loadMapData();
+    loadWarehouses();
   }, []);
 
-  const loadMapData = async () => {
-    setLoading(true);
+  const loadWarehouses = async () => {
     try {
+      setLoading(true);
       const whs = await warehouseService.getWarehouses();
       setWarehouses(whs);
-      
       if (whs.length > 0) {
-        const firstWh = whs[0];
-        setSelectedWarehouse(firstWh);
-        const floorData = await warehouseService.getWarehouseFloors(firstWh.id_entrepot);
-        setFloors(floorData);
+        setSelectedId(String(whs[0].id_entrepot));
+        loadMapData(String(whs[0].id_entrepot));
       }
+    } catch (error) {
+      console.error('Error loading warehouses:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMapData = async (whId) => {
+    try {
+      const floorData = await warehouseService.getWarehouseFloors(whId);
+      setFloors(floorData);
       setIsOffline(false);
     } catch (error) {
       setIsOffline(true);
       console.log('Using cached map data');
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const handleApplyFilter = () => {
+    setWarehouseFilterModalVisible(false);
+    if (selectedWarehouseId) {
+      loadMapData(selectedWarehouseId);
     }
   };
 
@@ -40,7 +65,7 @@ const VisualWarehouse = () => {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color={lightTheme.primary} />
-        <Text style={styles.loadingText}>Loading warehouse maps...</Text>
+        <Text style={styles.loadingText}>Loading warehouse data...</Text>
       </View>
     );
   }
@@ -56,25 +81,46 @@ const VisualWarehouse = () => {
       
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.title}>Visual Warehouse</Text>
-          <Text style={styles.subtitle}>
-            {selectedWarehouse ? `Viewing: ${selectedWarehouse.nom_entrepot}` : 'No warehouse selected'}
-          </Text>
+          <View>
+            <Text style={styles.title}>Visual Warehouse</Text>
+            <Text style={styles.subtitle}>
+              {selectedWarehouse ? selectedWarehouse.nom_entrepot : 'Select Warehouse'}
+            </Text>
+          </View>
+          <View style={styles.headerActions}>
+            <TouchableOpacity 
+              style={styles.filterButton} 
+              onPress={() => setWarehouseFilterModalVisible(true)}
+            >
+              <Feather name="filter" size={20} color="#007AFF" />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.controls}>
+          <View style={styles.selectorContainer}>
+            <OptionSelector
+              label="Select Floor"
+              options={floorOptions}
+              selectedValue={floorIdx}
+              onValueChange={setFloorIdx}
+              icon="layers"
+            />
+          </View>
         </View>
 
         {/* Map Visualization Container */}
         <View style={styles.mapContainer}>
-          <View style={styles.placeholderMap}>
-            <Feather name="map" size={64} color={lightTheme.border} />
-            <Text style={styles.mapHint}>Map visualization and zoning layers</Text>
-            <Text style={styles.infoText}>{floors.length} Floors Loaded</Text>
-          </View>
+          <WarehouseMap 
+            warehouseId={selectedWarehouseId}
+            floorIdx={floorIdx} 
+          />
         </View>
 
         <View style={styles.statsRow}>
           <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Floors</Text>
-            <Text style={styles.statValue}>{floors.length}</Text>
+            <Text style={styles.statLabel}>Selected Floor</Text>
+            <Text style={styles.statValue}>{floorOptions.find(f => f.value === floorIdx)?.label}</Text>
           </View>
           <View style={styles.statCard}>
             <Text style={styles.statLabel}>Status</Text>
@@ -83,7 +129,44 @@ const VisualWarehouse = () => {
             </Text>
           </View>
         </View>
+        
+        <View style={styles.legendContainer}>
+          <Text style={styles.legendTitle}>Rack Status Legend</Text>
+          <View style={styles.legendRow}>
+            <View style={[styles.legendDot, { backgroundColor: '#2ecc71' }]} />
+            <Text style={styles.legendText}>OCCUPIED (Contains Products)</Text>
+          </View>
+          <View style={styles.legendRow}>
+            <View style={[styles.legendDot, { backgroundColor: '#3498db' }]} />
+            <Text style={styles.legendText}>FREE (Available Space)</Text>
+          </View>
+          <View style={styles.legendRow}>
+            <View style={[styles.legendDot, { backgroundColor: '#9b59b6' }]} />
+            <Text style={styles.legendText}>Transitions / Stairs</Text>
+          </View>
+          <View style={styles.legendRow}>
+            <View style={[styles.legendDot, { backgroundColor: '#fbc531' }]} />
+            <Text style={styles.legendText}>Loading & Shipping Zones</Text>
+          </View>
+        </View>
       </ScrollView>
+
+      <ManagementModal
+        visible={warehouseFilterModalVisible}
+        onClose={() => setWarehouseFilterModalVisible(false)}
+        title="Select Warehouse"
+        submitLabel="Apply"
+        onSubmit={handleApplyFilter}
+      >
+        <OptionSelector
+          label="Warehouse"
+          options={warehouses.map(w => ({ label: w.nom_entrepot, value: String(w.id_entrepot) }))}
+          selectedValue={selectedWarehouseId}
+          onValueChange={(val) => setSelectedId(val)}
+          placeholder="Select a warehouse"
+          icon="home"
+        />
+      </ManagementModal>
     </View>
   );
 };
@@ -101,6 +184,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+    paddingBottom: 40,
   },
   offlineBanner: {
     backgroundColor: lightTheme.warning,
@@ -118,6 +202,24 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 20,
     marginTop: 40,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  filterButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: '#FFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   title: {
     fontSize: 24,
@@ -129,34 +231,57 @@ const styles = StyleSheet.create({
     color: lightTheme.textSecondary,
     marginTop: 4,
   },
+  controls: {
+    marginBottom: 20,
+    gap: 12,
+  },
+  selectorContainer: {
+    backgroundColor: '#FFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  modeToggle: {
+    flexDirection: 'row',
+    backgroundColor: '#E2E8F0',
+    padding: 4,
+    borderRadius: 10,
+  },
+  modeButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    gap: 8,
+    borderRadius: 8,
+  },
+  activeMode: {
+    backgroundColor: lightTheme.primary,
+  },
+  modeText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#64748B',
+  },
+  activeModeText: {
+    color: '#FFF',
+  },
   mapContainer: {
     height: 400,
     backgroundColor: lightTheme.white,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: lightTheme.border,
-    overflow: 'hidden',
-    marginBottom: 16,
-  },
-  placeholderMap: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  mapHint: {
-    marginTop: 16,
-    color: lightTheme.textSecondary,
-    fontSize: 14,
-  },
-  infoText: {
-    marginTop: 8,
-    color: lightTheme.primary,
-    fontWeight: '600',
+    overflow: 'hidden',
+    marginBottom: 16,
   },
   statsRow: {
     flexDirection: 'row',
     gap: 12,
+    marginBottom: 16,
   },
   statCard: {
     flex: 1,
@@ -173,10 +298,38 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   statValue: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '700',
     color: lightTheme.textPrimary,
     marginTop: 4,
+  },
+  legendContainer: {
+    backgroundColor: lightTheme.white,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: lightTheme.border,
+  },
+  legendTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: lightTheme.textPrimary,
+    marginBottom: 12,
+  },
+  legendRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 8,
+  },
+  legendDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  legendText: {
+    fontSize: 13,
+    color: lightTheme.textSecondary,
   },
   loadingText: {
     marginTop: 12,
@@ -185,3 +338,4 @@ const styles = StyleSheet.create({
 });
 
 export default VisualWarehouse;
+

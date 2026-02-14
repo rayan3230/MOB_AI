@@ -348,7 +348,7 @@ const VrackManagement = () => {
   if (loading && !refreshing) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color={lightTheme.primary} />
+        <ActivityIndicator size="large" color={lightTheme.white} />
       </View>
     );
   }
@@ -372,7 +372,7 @@ const VrackManagement = () => {
         >
           <Text style={styles.filterSelectorText}>{selectedWarehouseLabel}</Text>
           {filterLoading ? (
-            <ActivityIndicator size="small" color={lightTheme.primary} />
+            <ActivityIndicator size="small" color={lightTheme.white} />
           ) : (
             <Feather name="chevron-down" size={18} color="#666" />
           )}
@@ -539,7 +539,7 @@ const VrackManagement = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: lightTheme.primary },
+  container: { flex: 1, backgroundColor: lightTheme.white },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   emptyText: { color: '#94A3B8', marginTop: 20, fontSize: 16 },
   header: {

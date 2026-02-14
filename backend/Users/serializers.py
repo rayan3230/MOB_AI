@@ -5,33 +5,40 @@ from Users.models import Utilisateur
 
 class UserLoginSerializer(serializers.Serializer):
     """Serializer for user login"""
-    username = serializers.CharField()
+    email = serializers.EmailField(required=False)
+    username = serializers.CharField(required=False)
     password = serializers.CharField(write_only=True)
     
     def validate(self, data):
+        email = data.get('email')
         username = data.get('username')
         password = data.get('password')
         
-        print(f"Validating login for: {username}")
-        if username and password:
+        # Check either email or username field
+        identifier = email or username
+        
+        print(f"Validating login for: {identifier}")
+        if identifier and password:
             try:
-                # Try to find user by nom_complet first as requested, then by id_utilisateur
-                user = Utilisateur.objects.filter(nom_complet=username).first()
+                # Try finding by email first, then by name or ID if it wasn't an email
+                user = Utilisateur.objects.filter(email=identifier).first()
                 if not user:
-                    user = Utilisateur.objects.filter(id_utilisateur=username).first()
+                    user = Utilisateur.objects.filter(nom_complet=identifier).first()
+                if not user:
+                    user = Utilisateur.objects.filter(id_utilisateur=identifier).first()
                 
                 if not user:
-                    print(f"User {username} not found")
-                    raise serializers.ValidationError("Invalid username or password")
+                    print(f"User with identifier {identifier} not found")
+                    raise serializers.ValidationError("Invalid credentials")
 
                 if user.is_banned:
-                    print(f"User {username} is banned")
+                    print(f"User {identifier} is banned")
                     raise serializers.ValidationError({"banned": "Your account has been banned. Please contact the administrator."})
                 
                 print(f"User found: {user.id_utilisateur} ({user.nom_complet}), checking password...")
                 if not user.check_password(password):
                     print("Password check failed")
-                    raise serializers.ValidationError("Invalid username or password")
+                    raise serializers.ValidationError("Invalid credentials")
                 print("Password check passed")
             except Exception as e:
                 print(f"Login error: {str(e)}")
@@ -39,7 +46,7 @@ class UserLoginSerializer(serializers.Serializer):
                     raise e
                 raise serializers.ValidationError("An error occurred during login")
         else:
-            raise serializers.ValidationError("Must include 'username' and 'password'")
+            raise serializers.ValidationError("Must provide email/username and password")
             
         data['user'] = user
         return data

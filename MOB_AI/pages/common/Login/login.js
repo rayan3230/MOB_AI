@@ -25,7 +25,7 @@ import { lightTheme } from '../../../constants/theme';
 
 const Signin = () => {
   const navigation = useNavigation();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberPassword, setRememberPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -43,12 +43,12 @@ const Signin = () => {
 
   const handleContinue = async () => {
     // Validation with specific feedback
-    if (!username && !password) {
-        setError('⚠️ Please enter your username and password');
+    if (!email && !password) {
+        setError('⚠️ Please enter your email and password');
         return;
     }
-    if (!username) {
-        setError('⚠️ Username is required');
+    if (!email) {
+        setError('📧 Email is required');
         return;
     }
     if (!password) {
@@ -60,7 +60,7 @@ const Signin = () => {
     setError('');
 
     try {
-      const response = await authService.login(username, password);
+      const response = await authService.login(email, password);
       console.log('Login Success:', response);
       
       const user = response.user;
@@ -147,8 +147,8 @@ const Signin = () => {
                   style={styles.input}
                   placeholder="Email"
                   placeholderTextColor="#adb5bd"
-                  value={username}
-                  onChangeText={setUsername}
+                  value={email}
+                  onChangeText={setEmail}
                   autoCapitalize="none"
                   keyboardType="email-address"
                 />

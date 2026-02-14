@@ -1,19 +1,32 @@
 // Using 127.0.0.1 instead of localhost for better iOS compatibility
 //const BASE_URL = 'http://127.0.0.1:8000';
-const BASE_URL = 'http://10.80.241.252:8000'; // Computer IP (for physical devices)
+const BASE_URL = 'http://10.80.241.245:8000'; // Computer IP (for physical devices)
 // const BASE_URL = 'http://10.0.2.2:8000'; // Android Emulator
 
 import { offlineService } from './offlineService';
 import { connectionService } from './connectionService';
 
+const EXCLUDED_OFFLINE_ENDPOINTS = [
+    'login',
+    'signup',
+    'token',
+    'logout'
+];
+
 export const apiCall = async (endpoint, method = 'POST', body = null, token = null, skipQueue = false) => {
     // 1. Proactive check - if we already know we are offline, don't even try the network
-    // (unless it's skipQueue, then we might be in manual retry or sync mode)
     const status = connectionService.getStatus();
     const isActuallyOffline = !status.isConnected || !status.isInternetReachable;
     
-    if (isActuallyOffline && !skipQueue && method !== 'GET') {
-        console.log(`[API] Proactive offline detection for ${endpoint}`);
+    // Normalize endpoint for comparison (remove leading/trailing slashes)
+    const normalizedEndpoint = endpoint.replace(/^\/+|\/+$/g, '');
+    
+    // Check if this endpoint should NEVER be queued (e.g. Auth)
+    const isExcluded = EXCLUDED_OFFLINE_ENDPOINTS.some(ex => normalizedEndpoint.includes(ex));
+    const canQueue = !skipQueue && !isExcluded && method !== 'GET';
+
+    if (isActuallyOffline && canQueue) {
+        console.log(`[Offline] Proactive queue for ${endpoint}`);
         const queued = await offlineService.queueRequest(endpoint, method, body, token);
         if (queued) return { _queued: true };
     }
@@ -41,9 +54,9 @@ export const apiCall = async (endpoint, method = 'POST', body = null, token = nu
         config.body = JSON.stringify(body);
     }
     
-    // 2. Add a manageable timeout (10 seconds)
+    // 2. Add a manageable timeout (60 seconds for heavy operations like warehouse creation)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
     config.signal = controller.signal;
     
     try {
@@ -51,7 +64,7 @@ export const apiCall = async (endpoint, method = 'POST', body = null, token = nu
         clearTimeout(timeoutId);
         
         // If it's a server error (500+) or timeout, we might want to queue it for POST/PUT/PATCH/DELETE
-        if (!response.ok && response.status >= 500 && !skipQueue && method !== 'GET') {
+        if (!response.ok && response.status >= 500 && canQueue) {
             const queued = await offlineService.queueRequest(endpoint, method, body, token);
             if (queued) return { _queued: true };
         }
@@ -59,16 +72,20 @@ export const apiCall = async (endpoint, method = 'POST', body = null, token = nu
         const data = await response.json();
         
         if (!response.ok) {
-            throw data;
+            const error = new Error(data.detail || data.message || 'API Error');
+            error.status = response.status;
+            error.data = data;
+            throw error;
         }
         
         return data;
     } catch (error) {
         clearTimeout(timeoutId);
-        console.error(`API Call Error (${endpoint}):`, error);
+        // Only log if it's not a handled error or if we want to see it
+        // console.error(`API Call Error (${endpoint}):`, error);
         
         // Network errors (no connection) or timeout
-        if (!skipQueue && method !== 'GET') {
+        if (canQueue) {
             // Update reachability status based on failure
             connectionService.checkServerPresence();
             
