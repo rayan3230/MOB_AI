@@ -1,0 +1,20 @@
+{
+  "model_type": "Hybrid Statistical Forecast",
+  "description": "Combined SMA + Linear Regression with adaptive calibration",
+  "sma_window": 7,
+  "hybrid_weights": {
+    "regression": 0.7,
+    "sma": 0.3
+  },
+  "calibration_factor": 1.27,
+  "training_metrics": {
+    "WAP_percent": 34.31,
+    "Bias_percent": 1.84,
+    "MAE": 450.0,
+    "RMSE": 658.0
+  },
+  "validation_method": "Rolling backtest (no data leakage)",
+  "trained_date": "2026-02-14T00:00:00",
+  "version": "1.0",
+  "python_version": "3.11+"
+}

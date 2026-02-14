@@ -5452,3 +5452,10 @@ Final Items Sent to Warehouse:
 2026-02-14 05:57:49,615 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\storage.py changed, reloading.
 2026-02-14 06:06:15,369 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\picking_service.py changed, reloading.
 2026-02-14 06:09:53,213 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\picking_service.py changed, reloading.
+2026-02-14 09:18:49,088 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 09:18:49,725 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 09:18:50,404 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 09:18:50,982 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 09:18:51,555 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 09:18:52,938 - django.request - WARNING - Bad Request: /users/login/
+2026-02-14 09:19:03,447 - django.request - WARNING - Bad Request: /users/login/
