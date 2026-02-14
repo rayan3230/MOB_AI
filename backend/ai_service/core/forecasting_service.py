@@ -4,6 +4,7 @@ import logging
 import uuid
 from datetime import datetime, timedelta
 import os
+from typing import Dict
 from sklearn.linear_model import LinearRegression
 from .decision_layer import ForecastDecisionLayer
 from .learning_engine import LearningFeedbackEngine
@@ -631,6 +632,301 @@ class ForecastingService:
         self.decision_layer = ForecastDecisionLayer()
         self.order_service = PreparationOrderService()
 
+    def _compute_model_validation_wape(self, history: pd.DataFrame, pid: int, horizon_points: int = 14) -> Dict[str, float]:
+        """
+        Computes SKU-level validation WAPE for SES, REG, and HYBRID using rolling one-step backtest.
+        HYBRID uses inverse-WAPE blending derived from SES/REG performance.
+        """
+        if history is None or history.empty:
+            return {
+                'wape_ses': 100.0,
+                'wape_reg': 100.0,
+                'wape_hybrid': 100.0,
+                'hybrid_weight_ses': 0.5,
+                'hybrid_weight_reg': 0.5,
+                'error_var_ses': 0.0,
+                'error_var_reg': 0.0,
+                'error_var_hybrid': 0.0,
+            }
+
+        local = history.sort_values('date').reset_index(drop=True)
+        if len(local) < 12:
+            return {
+                'wape_ses': 100.0,
+                'wape_reg': 100.0,
+                'wape_hybrid': 100.0,
+                'hybrid_weight_ses': 0.5,
+                'hybrid_weight_reg': 0.5,
+                'error_var_ses': 0.0,
+                'error_var_reg': 0.0,
+                'error_var_hybrid': 0.0,
+            }
+
+        start_idx = max(7, len(local) - max(5, int(horizon_points)))
+        indices = list(range(start_idx, len(local)))
+
+        ses_errors = []
+        reg_errors = []
+        ses_abs_sum = 0.0
+        reg_abs_sum = 0.0
+        actual_sum = 0.0
+
+        for idx in indices:
+            train = local.iloc[:idx].copy()
+            actual = float(local.iloc[idx]['quantite_demande'])
+            if train.empty:
+                continue
+
+            ses_pred = float(self.deterministic.simple_exponential_smoothing(
+                train['quantite_demande'].astype(float),
+                alpha=self.deterministic.default_alpha_fast
+            ))
+            reg_pred = float(self.regression.analyze(train, pid).get('prediction', ses_pred))
+
+            ses_error = ses_pred - actual
+            reg_error = reg_pred - actual
+
+            ses_errors.append(ses_error)
+            reg_errors.append(reg_error)
+            ses_abs_sum += abs(ses_error)
+            reg_abs_sum += abs(reg_error)
+            actual_sum += abs(actual)
+
+        if actual_sum <= 0:
+            wape_ses = 100.0
+            wape_reg = 100.0
+        else:
+            wape_ses = (ses_abs_sum / actual_sum) * 100.0
+            wape_reg = (reg_abs_sum / actual_sum) * 100.0
+
+        inv_ses = 1.0 / max(wape_ses, 1e-6)
+        inv_reg = 1.0 / max(wape_reg, 1e-6)
+        hybrid_weight_ses = float(inv_ses / (inv_ses + inv_reg))
+        hybrid_weight_reg = float(inv_reg / (inv_ses + inv_reg))
+
+        hybrid_errors = [
+            (hybrid_weight_ses * se) + (hybrid_weight_reg * re)
+            for se, re in zip(ses_errors, reg_errors)
+        ]
+        hybrid_abs_sum = float(sum(abs(e) for e in hybrid_errors))
+        wape_hybrid = (hybrid_abs_sum / actual_sum) * 100.0 if actual_sum > 0 else 100.0
+
+        return {
+            'wape_ses': float(round(wape_ses, 4)),
+            'wape_reg': float(round(wape_reg, 4)),
+            'wape_hybrid': float(round(wape_hybrid, 4)),
+            'hybrid_weight_ses': float(hybrid_weight_ses),
+            'hybrid_weight_reg': float(hybrid_weight_reg),
+            'error_var_ses': float(np.var(ses_errors)) if ses_errors else 0.0,
+            'error_var_reg': float(np.var(reg_errors)) if reg_errors else 0.0,
+            'error_var_hybrid': float(np.var(hybrid_errors)) if hybrid_errors else 0.0,
+        }
+
+    def _compute_dynamic_confidence(
+        self,
+        series: pd.Series,
+        ses_pred: float,
+        reg_pred: float,
+        selected_error_var: float,
+    ) -> int:
+        """
+        Dynamic confidence in [0, 100] using:
+        - volatility (std/mean)
+        - model agreement (SES vs REG distance)
+        - historical error variance
+        """
+        mean_demand = float(max(series.mean(), 1.0))
+        std_demand = float(series.std()) if len(series) > 1 else 0.0
+        cv = std_demand / mean_demand
+
+        model_gap_ratio = abs(float(ses_pred) - float(reg_pred)) / mean_demand
+        error_std_ratio = (float(np.sqrt(max(selected_error_var, 0.0))) / mean_demand)
+
+        volatility_component = 1.0 - min(cv / 2.0, 1.0)
+        agreement_component = 1.0 - min(model_gap_ratio / 1.0, 1.0)
+        error_component = 1.0 - min(error_std_ratio / 1.0, 1.0)
+
+        score = (
+            0.40 * volatility_component +
+            0.30 * agreement_component +
+            0.30 * error_component
+        ) * 100.0
+
+        return int(round(max(0.0, min(100.0, score))))
+
+    def _select_and_compute_forecast(self, pid: int, history: pd.DataFrame, target_date=None) -> Dict:
+        """
+        Internal deterministic decision engine:
+        - Selects winner by lowest SKU-level validation WAPE (SES/REG/HYBRID)
+        - Applies transparent adjustment factor to base prediction
+        - Enforces guardrails and returns explainable trace
+        """
+        prepared = self.deterministic._prepare_series(history, pid)
+        if prepared is None or prepared.empty:
+            return {
+                'selected_model': 'SMA',
+                'ses_pred': 0.0,
+                'reg_pred': 0.0,
+                'base_prediction': 0.0,
+                'wape_ses': 100.0,
+                'wape_reg': 100.0,
+                'wape_hybrid': 100.0,
+                'adjustment_factor': 1.0,
+                'adjustment_detail': {'trend_multiplier': 1.0, 'bias_correction': 1.0, 'safety_factor': 1.0},
+                'raw_forecast': 0.0,
+                'final_forecast': 0.0,
+                'confidence': 0,
+                'justification': 'No history available. Conservative zero forecast.',
+                'formula': '0.00 × 1.00 = 0.00',
+            }
+
+        series = prepared['quantite_demande'].astype(float)
+        if series.sum() <= 0:
+            return {
+                'selected_model': 'SMA',
+                'ses_pred': 0.0,
+                'reg_pred': 0.0,
+                'base_prediction': 1.0,
+                'wape_ses': 100.0,
+                'wape_reg': 100.0,
+                'wape_hybrid': 100.0,
+                'adjustment_factor': 1.0,
+                'adjustment_detail': {'trend_multiplier': 1.0, 'bias_correction': 1.0, 'safety_factor': 1.0},
+                'raw_forecast': 1.0,
+                'final_forecast': 1.0,
+                'confidence': 5,
+                'justification': 'Sparse/zero demand history. Minimal non-negative baseline used.',
+                'formula': '1.00 × 1.00 = 1.00',
+            }
+
+        demand_class = self.deterministic.classify_demand(series)
+        alpha = self.deterministic.default_alpha_fast if demand_class != 'slow_mover' else self.deterministic.default_alpha_slow
+        ses_pred = float(self.deterministic.simple_exponential_smoothing(series, alpha=alpha))
+        reg_results = self.regression.analyze(prepared, pid)
+        reg_pred = float(reg_results.get('prediction', ses_pred))
+
+        validation = self._compute_model_validation_wape(prepared, int(pid))
+        wape_map = {
+            'SMA': validation['wape_ses'],
+            'REG': validation['wape_reg'],
+            'HYBRID': validation['wape_hybrid'],
+        }
+        selected_model = min(wape_map, key=wape_map.get)
+
+        if selected_model == 'SMA':
+            base_prediction = ses_pred
+            selected_error_var = validation['error_var_ses']
+            blend_formula = None
+        elif selected_model == 'REG':
+            base_prediction = reg_pred
+            selected_error_var = validation['error_var_reg']
+            blend_formula = None
+        else:
+            ws = validation['hybrid_weight_ses']
+            wr = validation['hybrid_weight_reg']
+            base_prediction = (ws * ses_pred) + (wr * reg_pred)
+            selected_error_var = validation['error_var_hybrid']
+            blend_formula = f"({ws:.3f}×SES + {wr:.3f}×REG)"
+
+        trend_multiplier = 1.0
+        trend_significant = bool(reg_results.get('trend_significant', False))
+        slope = float(reg_results.get('slope', 0.0))
+        mean_demand = float(max(series.mean(), 1.0))
+        if trend_significant:
+            trend_ratio = slope / mean_demand
+            trend_multiplier = float(np.clip(1.0 + trend_ratio, 0.90, 1.15))
+
+        bias_correction = float(np.clip(self.learning_engine.get_calibration_factor(pid), 0.85, 1.15))
+
+        std_dev = float(series.std()) if len(series) > 1 else 0.0
+        cv = std_dev / mean_demand
+        safety_factor = float(np.clip(1.0 + (0.06 * min(cv, 1.0)), 1.0, 1.06))
+
+        adjustment_factor = float(trend_multiplier * bias_correction * safety_factor)
+        raw_forecast = float(base_prediction * adjustment_factor)
+
+        hist_max = float(series.max()) if len(series) > 0 else 0.0
+        sparse_multiplier = 1.15 if len(series) < 14 else 1.25
+        cap_value = max(1.0, hist_max * sparse_multiplier)
+
+        guardrailed = max(0.0, raw_forecast)
+        guardrailed = min(guardrailed, cap_value)
+
+        confidence = self._compute_dynamic_confidence(
+            series=series,
+            ses_pred=ses_pred,
+            reg_pred=reg_pred,
+            selected_error_var=selected_error_var,
+        )
+        if len(series) < 14:
+            confidence = max(0, min(confidence, 55))
+
+        if selected_model == 'HYBRID':
+            formula = (
+                f"{blend_formula} = {base_prediction:.2f}; "
+                f"Final = {base_prediction:.2f} × {adjustment_factor:.4f} = {raw_forecast:.2f}; "
+                f"GuardrailCap={cap_value:.2f} -> {guardrailed:.2f}"
+            )
+            justification = (
+                "HYBRID selected due to lowest validation WAPE. "
+                "Adjustment combines trend, calibration bias, and volatility safety factor."
+            )
+        else:
+            formula = (
+                f"Final = {base_prediction:.2f} × {adjustment_factor:.4f} = {raw_forecast:.2f}; "
+                f"GuardrailCap={cap_value:.2f} -> {guardrailed:.2f}"
+            )
+            justification = (
+                f"{selected_model} selected due to lowest validation WAPE. "
+                "Adjustment combines trend, calibration bias, and volatility safety factor."
+            )
+
+        return {
+            'selected_model': selected_model,
+            'ses_pred': float(ses_pred),
+            'reg_pred': float(reg_pred),
+            'base_prediction': float(base_prediction),
+            'wape_ses': float(validation['wape_ses']),
+            'wape_reg': float(validation['wape_reg']),
+            'wape_hybrid': float(validation['wape_hybrid']),
+            'adjustment_factor': adjustment_factor,
+            'adjustment_detail': {
+                'trend_multiplier': trend_multiplier,
+                'bias_correction': bias_correction,
+                'safety_factor': safety_factor,
+            },
+            'raw_forecast': float(raw_forecast),
+            'final_forecast': float(round(guardrailed, 2)),
+            'confidence': int(confidence),
+            'justification': justification,
+            'formula': formula,
+            'trend': str(reg_results.get('trend', 'stable')),
+            'volatility': str(reg_results.get('volatility', 'stable')),
+            'demand_class': demand_class,
+            'trend_strength': float(reg_results.get('trend_strength', 0.0)),
+            'safety_stock': float(self.deterministic.compute_safety_stock(series, demand_class)),
+        }
+
+    def _log_decision_trace(self, pid: int, decision: Dict):
+        logger.info(f"Product {pid}")
+        logger.info(f"SES Forecast: {decision['ses_pred']:.2f}")
+        logger.info(f"REG Forecast: {decision['reg_pred']:.2f}")
+        logger.info(f"Validation WAPE (SES): {decision['wape_ses']:.2f}%")
+        logger.info(f"Validation WAPE (REG): {decision['wape_reg']:.2f}%")
+        logger.info(f"Validation WAPE (HYBRID): {decision['wape_hybrid']:.2f}%")
+        logger.info(f"Selected Model: {decision['selected_model']}")
+        logger.info(
+            "Adjustment Applied: "
+            f"trend_multiplier={decision['adjustment_detail']['trend_multiplier']:.4f}, "
+            f"bias_correction={decision['adjustment_detail']['bias_correction']:.4f}, "
+            f"safety_factor={decision['adjustment_detail']['safety_factor']:.4f}, "
+            f"combined_factor={decision['adjustment_factor']:.4f}"
+        )
+        logger.info(f"Final Forecast Formula: {decision['formula']}")
+        logger.info(f"Final Forecast: {decision['final_forecast']:.2f}")
+        logger.info(f"Confidence Score: {decision['confidence']}%")
+        logger.info(f"Justification: {decision['justification']}")
+
     def evaluate_models(self, limit_products=50, test_days=1):
         """
         Leakage-safe evaluation with train/test split + rolling one-step forecast.
@@ -774,42 +1070,22 @@ class ForecastingService:
         if len(history) < 2:
             return None
         
-        # 1. Deterministic engine outputs
-        deterministic = self.deterministic.predict(history, int(pid), self.regression, target_date=None)
-        reg_results = self.regression.analyze(history, int(pid))
-
-        # 2. Guarded hybrid decision (LLM cannot freely drift)
-        llm_input = {
-            'id': int(pid),
-            'sma': deterministic['ses'],
-            'prediction': deterministic['regression'],
-            'yoy_seasonal': deterministic.get('yoy_seasonal', 0.0),
-            'yoy_pattern_detected': deterministic.get('yoy_pattern_detected', False),
-            'trend': deterministic['trend'],
-            'volatility': deterministic['volatility'],
-            'safety_stock': deterministic['safety_stock'],
-            'trend_significant': bool(reg_results.get('trend_significant', False)),
-            'deterministic_base': deterministic['forecast'],
-            'candidates': {
-                'ses': deterministic['ses'],
-                'regression': deterministic['regression']
-            }
-        }
-        llm_decision = self.decision_layer.call_mistral_api(llm_input)
+        decision = self._select_and_compute_forecast(int(pid), history, target_date=None)
+        self._log_decision_trace(int(pid), decision)
         
         result = {
             'pid': int(pid),
-            'ses': float(deterministic['ses']),
-            'regression': float(deterministic['regression']),
-            'yoy_seasonal': float(deterministic.get('yoy_seasonal', 0.0)),
-            'yoy_pattern_detected': bool(deterministic.get('yoy_pattern_detected', False)),
-            'safety_stock': float(deterministic.get('safety_stock', 0)),
-            'trend': str(deterministic.get('trend', 'unknown')),
-            'volatility': str(deterministic.get('volatility', 'unknown')),
-            'demand_class': str(deterministic.get('demand_class', 'unknown')),
-            'trend_strength': float(deterministic.get('trend_strength', 0.0)),
-            'final_forecast': float(llm_decision.get('final_forecast', deterministic['forecast'])),
-            'explanation': str(llm_decision.get('explanation', "No explanation provided")),
+            'ses': float(decision['ses_pred']),
+            'regression': float(decision['reg_pred']),
+            'yoy_seasonal': 0.0,
+            'yoy_pattern_detected': False,
+            'safety_stock': float(decision.get('safety_stock', 0)),
+            'trend': str(decision.get('trend', 'unknown')),
+            'volatility': str(decision.get('volatility', 'unknown')),
+            'demand_class': str(decision.get('demand_class', 'unknown')),
+            'trend_strength': float(decision.get('trend_strength', 0.0)),
+            'final_forecast': float(decision['final_forecast']),
+            'explanation': str(decision.get('justification', "No explanation provided")),
             'current_stock': float(current_stock.get(int(pid), 0))
         }
         return result
@@ -833,32 +1109,13 @@ class ForecastingService:
             history = self.loader.demand_history[self.loader.demand_history['id_produit'] == pid]
             if len(history) < 2: continue
             
-            # Predict for the specific target date (e.g. Tomorrow)
-            deterministic = self.deterministic.predict(history, pid, self.regression, target_date=target_date)
-            reg_results = self.regression.analyze(history, pid)
-            
-            guarded_input = {
-                'id': pid,
-                'sma': deterministic['ses'],
-                'prediction': deterministic['regression'],
-                'yoy_seasonal': deterministic.get('yoy_seasonal', 0.0),
-                'yoy_pattern_detected': deterministic.get('yoy_pattern_detected', False),
-                'trend': deterministic['trend'],
-                'volatility': deterministic['volatility'],
-                'safety_stock': deterministic['safety_stock'],
-                'trend_significant': bool(reg_results.get('trend_significant', False)),
-                'deterministic_base': deterministic['forecast'],
-                'candidates': {
-                    'ses': deterministic['ses'],
-                    'regression': deterministic['regression']
-                }
-            }
-            
-            llm_decision = self.decision_layer.call_mistral_api(guarded_input)
+            decision = self._select_and_compute_forecast(int(pid), history, target_date=target_date)
+            self._log_decision_trace(int(pid), decision)
             
             forecast_metadata[pid] = {
-                'forecast': float(llm_decision.get('final_forecast', deterministic['forecast'])),
-                'reasoning': f"AI-Refined: {llm_decision.get('explanation')}"
+                'forecast': float(decision['final_forecast']),
+                'confidence': int(decision['confidence']),
+                'reasoning': f"[{decision['selected_model']}] {decision.get('justification', '')}"
             }
             
         # Generate Orders based on Forecast - Stock
@@ -903,45 +1160,15 @@ class ForecastingService:
             history = self.loader.demand_history[self.loader.demand_history['id_produit'] == pid]
             if len(history) < 2: continue
             
-            # 1. Deterministic Engine Outputs
-            deterministic = self.deterministic.predict(history, int(pid), self.regression, target_date=None, learning_engine=self.learning_engine)
-            reg_results = self.regression.analyze(history, int(pid))
-            guarded_input = {
-                'id': int(pid),
-                'sma': deterministic['ses'],
-                'prediction': deterministic['regression'],
-                'yoy_seasonal': deterministic.get('yoy_seasonal', 0.0),
-                'yoy_pattern_detected': deterministic.get('yoy_pattern_detected', False),
-                'trend': deterministic['trend'],
-                'volatility': deterministic['volatility'],
-                'safety_stock': deterministic['safety_stock'],
-                'trend_significant': bool(reg_results.get('trend_significant', False)),
-                'deterministic_base': deterministic['forecast'],
-                'candidates': {
-                    'ses': deterministic['ses'],
-                    'regression': deterministic['regression']
-                }
-            }
-            
-            # 2. Decision Layer (LLM Logic)
-            llm_prompt = self.decision_layer.prepare_llm_prompt(guarded_input)
-            logger.debug(f"Prompt for SKU {pid}:\n{llm_prompt}")
-            
-            # Use Mistral API
-            llm_decision = self.decision_layer.call_mistral_api(guarded_input)
-            
-            # Explicit logging of selection
-            selected_model = llm_decision.get('model_selected', 'UNKNOWN')
-            confidence = deterministic.get('confidence', 0)
-            logger.info(f"Product {pid} | SES: {deterministic['ses']:.2f} | Reg: {deterministic['regression']:.2f} | Confidence: {confidence}%")
-            logger.info(f"WINNER -> Model: {selected_model} | Forecast: {llm_decision.get('final_forecast')} | Reason: {llm_decision.get('explanation')}")
+            decision = self._select_and_compute_forecast(int(pid), history, target_date=None)
+            self._log_decision_trace(int(pid), decision)
             
             # Format combined results for Order Service
             forecast_metadata[pid] = {
-                'forecast': float(llm_decision.get('final_forecast', deterministic['forecast'])),
-                'safety_stock': float(deterministic.get('safety_stock', 0)), 
-                'confidence': confidence,
-                'reasoning': f"[{selected_model}] {llm_decision.get('explanation', '')}"
+                'forecast': float(decision['final_forecast']),
+                'safety_stock': float(decision.get('safety_stock', 0)), 
+                'confidence': int(decision.get('confidence', 0)),
+                'reasoning': f"[{decision['selected_model']}] {decision.get('justification', '')}"
             }
 
         # Generate Orders

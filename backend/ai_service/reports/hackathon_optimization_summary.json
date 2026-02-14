@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-02-14T04:39:46.962721",
+  "assumptions": {
+    "location_actif_true_considered_occupied_or_unavailable": true,
+    "chariots": [
+      {
+        "code": "CH-01",
+        "capacity": 3
+      },
+      {
+        "code": "CH-02",
+        "capacity": 1
+      },
+      {
+        "code": "CH-03",
+        "capacity": 1
+      }
+    ],
+    "corridor_H_used_as_expedition_anchor": true,
+    "palette_unit_size": 40
+  },
+  "kpis": {
+    "operations_count": 5,
+    "reroutes_count": 0,
+    "estimated_total_distance_units": 17.0,
+    "unique_products_processed": 5
+  },
+  "output_file": "hackathon_optimization_simulation.csv"
+}

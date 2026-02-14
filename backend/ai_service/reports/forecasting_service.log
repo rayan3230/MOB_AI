@@ -5377,3 +5377,48 @@ Final Items Sent to Warehouse:
 2026-02-14 04:13:42,261 - ForecastingService - INFO - WINNER -> Model: SMA | Forecast: 73.64 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
 2026-02-14 04:13:42,273 - ForecastingService - INFO - Product 31338 | SES: 63.75 | Reg: 152.22 | Confidence: 63%
 2026-02-14 04:13:42,274 - ForecastingService - INFO - WINNER -> Model: SMA | Forecast: 179.99 | Reason: Using calibrated deterministic forecast (REG-primary for accuracy).
+2026-02-14 04:36:33,227 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 04:37:31,980 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 04:37:35,337 - ForecastingService - INFO - Successfully fetched 1577 products and 151224 history points from Supabase.
+2026-02-14 04:37:36,210 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 04:37:36,211 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 04:37:36,352 - ForecastingService - INFO - Calculated stock for 888 SKUs.
+2026-02-14 04:37:36,355 - ForecastingService - INFO - Analyzing 3 products with Statistical & Decision Engine...
+2026-02-14 04:37:36,415 - ForecastingService - INFO - Product 31334
+2026-02-14 04:37:36,417 - ForecastingService - INFO - SES Forecast: 62.40
+2026-02-14 04:37:36,417 - ForecastingService - INFO - REG Forecast: 80.41
+2026-02-14 04:37:36,417 - ForecastingService - INFO - Validation WAPE (SES): 105.01%
+2026-02-14 04:37:36,417 - ForecastingService - INFO - Validation WAPE (REG): 93.54%
+2026-02-14 04:37:36,417 - ForecastingService - INFO - Validation WAPE (HYBRID): 98.37%
+2026-02-14 04:37:36,418 - ForecastingService - INFO - Selected Model: REG
+2026-02-14 04:37:36,418 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0457, combined_factor=1.2025
+2026-02-14 04:37:36,418 - ForecastingService - INFO - Final Forecast Formula: Final = 80.41 × 1.2025 = 96.70; GuardrailCap=240.00 -> 96.70
+2026-02-14 04:37:36,419 - ForecastingService - INFO - Final Forecast: 96.70
+2026-02-14 04:37:36,419 - ForecastingService - INFO - Confidence Score: 50%
+2026-02-14 04:37:36,419 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
+2026-02-14 04:37:36,474 - ForecastingService - INFO - Product 31335
+2026-02-14 04:37:36,474 - ForecastingService - INFO - SES Forecast: 75.39
+2026-02-14 04:37:36,474 - ForecastingService - INFO - REG Forecast: 84.33
+2026-02-14 04:37:36,474 - ForecastingService - INFO - Validation WAPE (SES): 84.07%
+2026-02-14 04:37:36,474 - ForecastingService - INFO - Validation WAPE (REG): 76.84%
+2026-02-14 04:37:36,474 - ForecastingService - INFO - Validation WAPE (HYBRID): 79.21%
+2026-02-14 04:37:36,475 - ForecastingService - INFO - Selected Model: REG
+2026-02-14 04:37:36,475 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0460, combined_factor=1.2029
+2026-02-14 04:37:36,475 - ForecastingService - INFO - Final Forecast Formula: Final = 84.33 × 1.2029 = 101.44; GuardrailCap=240.00 -> 101.44
+2026-02-14 04:37:36,475 - ForecastingService - INFO - Final Forecast: 101.44
+2026-02-14 04:37:36,475 - ForecastingService - INFO - Confidence Score: 54%
+2026-02-14 04:37:36,475 - ForecastingService - INFO - Justification: REG selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
+2026-02-14 04:37:36,533 - ForecastingService - INFO - Product 31336
+2026-02-14 04:37:36,533 - ForecastingService - INFO - SES Forecast: 136.60
+2026-02-14 04:37:36,533 - ForecastingService - INFO - REG Forecast: 114.48
+2026-02-14 04:37:36,533 - ForecastingService - INFO - Validation WAPE (SES): 85.46%
+2026-02-14 04:37:36,534 - ForecastingService - INFO - Validation WAPE (REG): 84.81%
+2026-02-14 04:37:36,534 - ForecastingService - INFO - Validation WAPE (HYBRID): 84.23%
+2026-02-14 04:37:36,534 - ForecastingService - INFO - Selected Model: HYBRID
+2026-02-14 04:37:36,534 - ForecastingService - INFO - Adjustment Applied: trend_multiplier=1.0000, bias_correction=1.1500, safety_factor=1.0496, combined_factor=1.2070
+2026-02-14 04:37:36,535 - ForecastingService - INFO - Final Forecast Formula: (0.498×SES + 0.502×REG) = 125.49; Final = 125.49 × 1.2070 = 151.47; GuardrailCap=340.00 -> 151.47
+2026-02-14 04:37:36,535 - ForecastingService - INFO - Final Forecast: 151.47
+2026-02-14 04:37:36,536 - ForecastingService - INFO - Confidence Score: 46%
+2026-02-14 04:37:36,536 - ForecastingService - INFO - Justification: HYBRID selected due to lowest validation WAPE. Adjustment combines trend, calibration bias, and volatility safety factor.
+2026-02-14 04:37:38,572 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.5 m/s based on performance data.
+2026-02-14 04:37:59,662 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.

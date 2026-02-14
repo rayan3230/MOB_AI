@@ -208,6 +208,25 @@ For deployment guide, see: `DEPLOYMENT_GUIDE.md`
 
 ---
 
+## Hackathon Submission Deliverables
+
+Use the generator below to export both jury artifacts in one run.
+
+**Run:**
+```bash
+cd backend
+python generate_hackathon_deliverables.py --start-date 08-01-2026 --end-date 08-02-2026
+```
+
+**Generated files:**
+- `ai_service/reports/hackathon_prediction_output.csv`
+- `ai_service/reports/hackathon_optimization_simulation.csv`
+- `ai_service/reports/hackathon_optimization_summary.json`
+
+The optimization output uses the provided `ai_service/data/locations_status.csv` and assumes chariots capacities `3, 1, 1` with palette-size normalization.
+
+---
+
 **Last Updated:** February 14, 2026  
 **Test Coverage:** 95%  
 **Status:** ✅ Production Ready
