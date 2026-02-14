@@ -15,10 +15,13 @@ const mapTransactionToTask = (transaction) => ({
 });
 
 export const taskService = {
-  getTasks: async () => {
-    const data = await apiCall('/api/transaction-management/', 'GET');
-    if (!Array.isArray(data)) return [];
-    return data.map(mapTransactionToTask);
+  getTasks: async (page = 1) => {
+    const data = await apiCall(`/api/transaction-management/?page=${page}`, 'GET');
+    
+    // Handle DRF Paginated Response
+    const tasksArray = data.results || (Array.isArray(data) ? data : []);
+    
+    return tasksArray.map(mapTransactionToTask);
   },
 
   markTaskDone: async (taskId) => {

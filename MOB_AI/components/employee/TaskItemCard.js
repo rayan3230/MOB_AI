@@ -19,24 +19,25 @@ const formatDateTime = (value) => {
 
 const TaskItemCard = ({ task, onDone, onStart, onViewMap, loading }) => {
   const statusColor = statusColorMap[task.status] || lightTheme.textSecondary;
-  const canBeCompleted = task.status === 'CONFIRMED' || task.status === 'PENDING';
+  const isCompleted = task.status === 'COMPLETED' || task.status === 'DONE';
+  const canBeCompleted = !isCompleted;
   const canBeStarted = task.status === 'PENDING';
-  const isPickTask = task.title?.toLowerCase().includes('pick');
+  const isPickTask = task.title?.toLowerCase().includes('pick') || task.type === 'ISSUE';
   
-  // Priority logic (can be from backend or calculated)
-  const priority = task.priority || 'NORMAL'; // HIGH, NORMAL, LOW
+  // Priority logic
+  const priority = task.priority || 'NORMAL';
   const isUrgent = priority === 'HIGH' || priority === 'URGENT';
   
-  // Calculate if task is due soon (within 2 hours)
   const isDueSoon = task.dueDate && (new Date(task.dueDate).getTime() - Date.now()) < 2 * 60 * 60 * 1000;
 
   return (
     <View style={[
       styles.card,
       isUrgent && styles.urgentCard,
-      isDueSoon && styles.dueSoonCard
+      isDueSoon && styles.dueSoonCard,
+      isCompleted && styles.completedCard
     ]}>
-      {(isUrgent || isDueSoon) && (
+      {(isUrgent || isDueSoon) && !isCompleted && (
         <View style={[styles.priorityBanner, isUrgent ? styles.urgentBanner : styles.dueSoonBanner]}>
           <Feather name="alert-circle" size={12} color={lightTheme.white} />
           <Text style={styles.priorityText}>
@@ -46,9 +47,14 @@ const TaskItemCard = ({ task, onDone, onStart, onViewMap, loading }) => {
       )}
       
       <View style={styles.headerRow}>
-        <Text style={styles.title}>{task.title}</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.typeBadge}>{task.type || 'TASK'}</Text>
+          <Text style={styles.title}>{task.title}</Text>
+        </View>
         <View style={[styles.statusChip, { backgroundColor: statusColor }]}>
-          <Text style={styles.statusText}>{task.status === 'CONFIRMED' ? 'IN PROGRESS' : task.status}</Text>
+          <Text style={styles.statusText}>
+            {task.status === 'CONFIRMED' ? 'IN PROGRESS' : task.status}
+          </Text>
         </View>
       </View>
 
@@ -119,6 +125,25 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 10,
     overflow: 'hidden',
+  },
+  completedCard: {
+    backgroundColor: '#F9FAFB',
+    opacity: 0.8,
+  },
+  titleContainer: {
+    flex: 1,
+  },
+  typeBadge: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: lightTheme.primary,
+    backgroundColor: 'rgba(0, 85, 255, 0.08)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    alignSelf: 'flex-start',
+    marginBottom: 4,
+    textTransform: 'uppercase',
   },
   actionContainer: {
     flexDirection: 'row',

@@ -21,6 +21,8 @@ const Sidebar = ({ role, user, activePage = 'User_managment', onNavigate, onClos
 
   const supervisorLinks = [
     { name: 'Dashboard', id: 'Dashboard', icon: 'dashboard' },
+    { name: 'AI Action', id: 'AI_Actions', icon: 'magic' },
+
     { name: 'Floor management', id: 'Floor_managment', icon: 'th' },
     { name: 'Visual representation', id: 'Visual_Warhouse', icon: 'eye' },
   ];

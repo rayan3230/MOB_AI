@@ -199,7 +199,7 @@ const DashboardContent = ({ navigation, onNavigate }) => {
               <Feather name="map-pin" size={20} color="#F59E0B" />
               <Text style={styles.quickLinkText}>Locations</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.quickLinkItem} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.quickLinkItem} activeOpacity={0.7} onPress={() => onNavigate && onNavigate('AI_Actions')}>
               <Feather name="zap" size={20} color="#8B5CF6" />
               <Text style={styles.quickLinkText}>AI Actions</Text>
             </TouchableOpacity>

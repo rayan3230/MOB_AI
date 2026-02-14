@@ -53,7 +53,9 @@ const LocationManagement = () => {
       const safeWarehouses = Array.isArray(whData) ? whData : [];
       setWarehouses(safeWarehouses);
 
-      const effectiveWhId = (warehouseIdOverride || selectedWarehouseId || '').toString().trim();
+      // Auto-select first warehouse if none selected
+      const firstWhId = safeWarehouses[0]?.id_entrepot ? String(safeWarehouses[0].id_entrepot) : '';
+      const effectiveWhId = (warehouseIdOverride || selectedWarehouseId || firstWhId || '').toString().trim();
       setSelectedWarehouseId(effectiveWhId);
 
       if (!effectiveWhId) {

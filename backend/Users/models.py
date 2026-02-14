@@ -12,7 +12,7 @@ class Utilisateur(models.Model):
     password = models.CharField(max_length=128)
     nom_complet = models.CharField(max_length=255)
     role = models.CharField(max_length=50, choices=ROLE_CHOICES)
-    email = models.EmailField(null=True, blank=True)
+    email = models.EmailField(unique=True, null=True, blank=True)
     telephone = models.CharField(max_length=20, null=True, blank=True)
     adresse = models.TextField(null=True, blank=True)
     actif = models.BooleanField(default=True)

@@ -102,8 +102,21 @@ export const aiService = {
         }
     },
 
-    /**
-     * Get Digital Twin map data for a specific floor
+    /**     * Get AI-optimized task list for employee
+     */
+    getOptimizedTasks: async () => {
+        try {
+            const data = await apiCall('/api/forecast/optimize-tasks/', 'GET');
+            await offlineService.cacheData('ai_optimized_tasks', data.data);
+            return data.data;
+        } catch (error) {
+            const cached = await offlineService.getCachedData('ai_optimized_tasks');
+            if (cached) return cached;
+            throw error;
+        }
+    },
+
+    /**     * Get Digital Twin map data for a specific floor
      */
     getDigitalTwinMap: async (floorIdx, warehouseId = null) => {
         try {

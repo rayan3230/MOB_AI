@@ -46,6 +46,7 @@ import SupervisorProfile from '../pages/Supervisor/Profile';
 // Employee Pages
 import EmployeeListActions from '../pages/employee/List_Actions';
 import EmployeeProfile from '../pages/employee/Profile';
+import ScanBarcode from '../pages/employee/ScanBarcode';
 import EmployeeNavbar from '../components/EmployeeNavbar';
 
 // Common Pages
@@ -261,6 +262,7 @@ const Router = () => {
                   {(props) => <RoleDashboardLayout {...props} role="supervisor" />}
                 </Stack.Screen>
                 <Stack.Screen name="EmployeeHome" component={EmployeeTabs} initialParams={user && initialRoute === 'EmployeeHome' ? { user } : undefined} />
+                <Stack.Screen name="ScanQR" component={ScanBarcode} options={{ headerShown: false }} />
             </Stack.Navigator>
         </NavigationContainer>
     );

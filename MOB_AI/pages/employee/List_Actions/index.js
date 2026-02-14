@@ -16,7 +16,7 @@ import NotificationBell from '../../../components/employee/NotificationBell';
 import TaskNotificationPanel from '../../../components/employee/TaskNotificationPanel';
 import WarehouseMap from '../../../components/WarehouseMap';
 
-const EmployeeListActions = ({ route }) => {
+const EmployeeListActions = ({ route, navigation }) => {
   const employeeName = route?.params?.user?.user_name || route?.params?.user?.username;
   const [tasks, setTasks] = useState([]);
   const [stats, setStats] = useState(null);
@@ -24,6 +24,10 @@ const EmployeeListActions = ({ route }) => {
   const [updatingTaskId, setUpdatingTaskId] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [error, setError] = useState(null);
+  const [isOptimized, setIsOptimized] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isMoreLoading, setIsMoreLoading] = useState(false);
 
   // Route Optimization State
   const [routeVisible, setRouteVisible] = useState(false);
@@ -37,123 +41,83 @@ const EmployeeListActions = ({ route }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
 
-  const loadData = useCallback(async () => {
-    setLoading(true);
+  const loadData = useCallback(async (forcedOptimized = null, loadMore = false) => {
+    const useOptimization = forcedOptimized !== null ? forcedOptimized : isOptimized;
+    
+    if (loadMore) {
+      if (!hasMore || isMoreLoading) return;
+      setIsMoreLoading(true);
+    } else {
+      setLoading(true);
+      setPage(1);
+      setHasMore(true);
+    }
+    
     setError(null);
 
     // Try to sync any offline actions first
     await offlineService.syncQueue();
 
-    // Initial load from cache to show something immediately
-    const [cachedStats, cachedTasks] = await Promise.all([
-      offlineService.getCachedData('employee_dashboard_stats'),
-      offlineService.getCachedData('employee_dashboard_tasks')
-    ]);
-
-    if (cachedStats) setStats(cachedStats);
-    if (cachedTasks) setTasks(cachedTasks);
-
+    const currentPage = loadMore ? page + 1 : 1;
+    
     try {
-      const [statsRes, taskRes] = await Promise.allSettled([
-        warehouseService.getDashboardStats(),
-        taskService.getTasks(),
-      ]);
-
-      if (statsRes.status === 'fulfilled') {
-        setStats(statsRes.value);
-        await offlineService.cacheData('employee_dashboard_stats', statsRes.value);
-      }
-
-      // Hardcoded tasks with priority indicators
-      const dueSoonDate = new Date();
-      dueSoonDate.setMinutes(dueSoonDate.getMinutes() + 90); // 1.5 hours from now
-      
-      const hardcodedTasks = [
-        {
-          id: 'TASK-001',
-          title: 'Urgent: Stock Replenishment Zone A',
-          description: 'Immediate replenishment needed for high-demand products in Zone A. Critical stock level reached.',
-          status: 'PENDING',
-          priority: 'HIGH',
-          createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-          createdBy: 'Manager',
-        },
-        {
-          id: 'TASK-002',
-          title: 'Pick Order #12458',
-          description: 'Customer order ready for picking. Contains 15 items from multiple zones.',
-          status: 'CONFIRMED',
-          dueDate: dueSoonDate.toISOString(),
-          createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // 1 hour ago
-          createdBy: 'System',
-        },
-        {
-          id: 'TASK-003',
-          title: 'Move Items to Zone B',
-          description: 'Transfer 50 units of SKU-2847 from Zone C to Zone B for better accessibility.',
-          status: 'PENDING',
-          priority: 'NORMAL',
-          createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(), // 3 hours ago
-          createdBy: 'Supervisor',
-        },
-        {
-          id: 'TASK-004',
-          title: 'Quality Check - Incoming Shipment',
-          description: 'Inspect and verify incoming shipment #SH-9832. Check for damages and count accuracy.',
-          status: 'PENDING',
-          priority: 'NORMAL',
-          createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
-          createdBy: 'Admin',
-        },
-        {
-          id: 'TASK-005',
-          title: 'Organize Storage Rack R-15',
-          description: 'Reorganize items in Rack R-15 to optimize space utilization and improve picking efficiency.',
-          status: 'PENDING',
-          priority: 'LOW',
-          createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
-          createdBy: 'Manager',
-        },
+      const requests = [
+        useOptimization ? aiService.getOptimizedTasks() : taskService.getTasks(currentPage)
       ];
-
-      if (taskRes.status === 'fulfilled' && taskRes.value && taskRes.value.length > 0) {
-        // If API returns tasks, enhance them with priority
-        const tasksWithPriority = (taskRes.value || []).map((task, index) => {
-          if (index === 0) {
-            return { ...task, priority: 'HIGH' };
-          }
-          if (index === 1) {
-            return { ...task, dueDate: dueSoonDate.toISOString() };
-          }
-          return task;
-        });
-        const finalTasks = [...hardcodedTasks, ...tasksWithPriority];
-        setTasks(finalTasks);
-        await offlineService.cacheData('employee_dashboard_tasks', finalTasks);
-      } else if (!cachedTasks) {
-        // Use only hardcoded tasks if no cache exists
-        setTasks(hardcodedTasks);
-      }
       
-      // Check if both failed and no cache
-      if (statsRes.status === 'rejected' && taskRes.status === 'rejected' && !cachedTasks && !cachedStats) {
-        setError('Unable to connect to server. Please check your internet connection.');
+      if (!loadMore) {
+        requests.push(warehouseService.getDashboardStats());
       }
+
+      const results = await Promise.allSettled(requests);
+      const taskRes = results[0];
+      const statsRes = !loadMore ? (results.length > 1 ? results[1] : null) : null;
+
+      if (statsRes && statsRes.status === 'fulfilled') {
+        const statsData = statsRes.value;
+        setStats(statsData);
+        await offlineService.cacheData('employee_dashboard_stats', statsData);
+      }
+
+      if (taskRes.status === 'fulfilled') {
+        const fetchedTasks = taskRes.value || [];
+        
+        if (fetchedTasks.length < 10 || useOptimization) {
+          setHasMore(false);
+        } else {
+          setHasMore(true);
+        }
+
+        const processedTasks = fetchedTasks.map((task, index) => ({
+          ...task,
+          priority: index < 2 && useOptimization ? 'HIGH' : (task.priority || 'NORMAL'),
+        }));
+
+        if (loadMore) {
+          setTasks(prev => [...prev, ...processedTasks]);
+          setPage(currentPage);
+        } else {
+          setTasks(processedTasks);
+          const cacheKey = useOptimization ? 'ai_optimized_tasks' : 'employee_dashboard_tasks';
+          await offlineService.cacheData(cacheKey, processedTasks);
+        }
+      } 
     } catch (error) {
-      console.error(error);
-      setError('An unexpected error occurred. Pull down to retry.');
+      console.error('Data loading error:', error);
+      setError('Failed to load tasks.');
     } finally {
       setLoading(false);
+      setIsMoreLoading(false);
     }
-  }, []);
+  }, [isOptimized, page, hasMore, isMoreLoading]);
 
   useEffect(() => {
     loadData();
     
-    // Set up a background sync interval every 30 seconds
+    // Set up a background sync interval every 60 seconds (Optimized Interval)
     const syncInterval = setInterval(() => {
       offlineService.syncQueue();
-    }, 30000);
+    }, 60000);
 
     return () => clearInterval(syncInterval);
   }, [loadData]);
@@ -168,8 +132,8 @@ const EmployeeListActions = ({ route }) => {
       (acc, task) => {
         const status = (task.status || '').toUpperCase();
         if (status === 'PENDING') acc.pending += 1;
-        if (status === 'CONFIRMED') acc.confirmed += 1;
-        if (status === 'COMPLETED') acc.completed += 1;
+        if (status === 'CONFIRMED' || status === 'STARTED') acc.confirmed += 1;
+        if (status === 'COMPLETED' || status === 'DONE') acc.completed += 1;
         return acc;
       },
       { pending: 0, confirmed: 0, completed: 0 }
@@ -177,12 +141,9 @@ const EmployeeListActions = ({ route }) => {
   }, [tasks]);
 
   const visibleTasks = useMemo(() => {
-    if (!employeeName) return tasks;
-    return tasks.filter((task) => {
-      if (!task.createdBy) return true;
-      return task.createdBy.toLowerCase() !== employeeName.toLowerCase();
-    });
-  }, [tasks, employeeName]);
+    // Show all real tasks from backend
+    return tasks;
+  }, [tasks]);
 
   const sortedTasks = useMemo(() => {
     return [...visibleTasks].sort((a, b) => {
@@ -200,6 +161,12 @@ const EmployeeListActions = ({ route }) => {
     () => visibleTasks.filter((task) => task.status === 'PENDING' || task.status === 'CONFIRMED').length,
     [visibleTasks]
   );
+
+  const toggleOptimization = async () => {
+    const newVal = !isOptimized;
+    setIsOptimized(newVal);
+    await loadData(newVal);
+  };
 
   const handleMarkDone = async (taskId) => {
     setUpdatingTaskId(taskId);
@@ -262,20 +229,8 @@ const EmployeeListActions = ({ route }) => {
     }
   };
 
-  const handleReceive = () => {
-    Alert.alert(
-      '📦 Receive Goods',
-      'Start receiving incoming inventory?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Start',
-          onPress: () => {
-            Alert.alert('✅ Success', 'Receive mode activated. Scan incoming goods to add to inventory.');
-          }
-        }
-      ]
-    );
+  const handleScanQR = () => {
+    navigation.navigate('ScanQR');
   };
 
   const handlePick = async () => {
@@ -327,7 +282,163 @@ const EmployeeListActions = ({ route }) => {
     );
   };
 
-  if (loading) {
+  const renderHeader = () => (
+    <View style={styles.headerContainer}>
+      <View style={styles.topRow}>
+        <Text style={styles.pageTitle}>Employee Tasks</Text>
+        <NotificationBell
+          count={pendingNotifications}
+          onPress={() => setShowNotifications((prev) => !prev)}
+        />
+      </View>
+
+      {/* Network Error Banner */}
+      {error && (
+        <View style={styles.errorBanner}>
+          <Feather name="wifi-off" size={18} color={lightTheme.error} />
+          <View style={styles.errorTextContainer}>
+            <Text style={styles.errorTitle}>Connection Error</Text>
+            <Text style={styles.errorMessage}>{error}</Text>
+          </View>
+          <TouchableOpacity onPress={() => loadData()} style={styles.retryButton}>
+            <Feather name="refresh-cw" size={16} color={lightTheme.white} />
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {showNotifications && (
+        <TaskNotificationPanel notifications={notifications} />
+      )}
+
+      {/* Quick Actions - Core Warehouse Operations */}
+      <View style={styles.quickActionsContainer}>
+        <View style={styles.sectionHeader}>
+          <View>
+            <Text style={styles.sectionTitle}>Quick Actions</Text>
+            <Text style={styles.sectionSubtitle}>Choose your operation</Text>
+          </View>
+        </View>
+
+        <View style={styles.actionsGrid}>
+          {/* Row 1 */}
+          <View style={styles.actionsRow}>
+            <TouchableOpacity 
+              style={[styles.actionCard, styles.scannerCard]} 
+              activeOpacity={0.85}
+              onPress={handleScanQR}
+            >
+              <View style={styles.actionTop}>
+                <View style={[styles.actionIconCircle, styles.scannerIcon]}>
+                  <Feather name="maximize" size={24} color="#6366F1" />
+                </View>
+                <View style={[styles.actionBadge, styles.scannerBadge]}>
+                  <Feather name="qr-code" size={12} color="#6366F1" />
+                </View>
+              </View>
+              <View style={styles.actionBottom}>
+                <Text style={styles.actionTitle}>Scan QR</Text>
+                <Text style={styles.actionSubtitle}>Barcode Scanner</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.actionCard, styles.pickCard]} 
+              activeOpacity={0.85}
+              onPress={handlePick}
+            >
+              <View style={styles.actionTop}>
+                <View style={[styles.actionIconCircle, styles.pickIcon]}>
+                  <Feather name="shopping-bag" size={24} color="#5DB86D" />
+                </View>
+                <View style={[styles.actionBadge, styles.pickBadge]}>
+                  <Feather name="arrow-up" size={12} color="#5DB86D" />
+                </View>
+              </View>
+              <View style={styles.actionBottom}>
+                <Text style={styles.actionTitle}>Pick</Text>
+                <Text style={styles.actionSubtitle}>Prepare orders</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* Row 2 */}
+          <View style={styles.actionsRow}>
+            <TouchableOpacity 
+              style={[styles.actionCard, styles.moveCard]} 
+              activeOpacity={0.85}
+              onPress={handleMove}
+            >
+              <View style={styles.actionTop}>
+                <View style={[styles.actionIconCircle, styles.moveIcon]}>
+                  <Feather name="move" size={24} color="#FFA500" />
+                </View>
+                <View style={[styles.actionBadge, styles.moveBadge]}>
+                  <Feather name="arrow-right" size={12} color="#FFA500" />
+                </View>
+              </View>
+              <View style={styles.actionBottom}>
+                <Text style={styles.actionTitle}>Move</Text>
+                <Text style={styles.actionSubtitle}>Transfer items</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.actionCard, styles.scanCard]} 
+              activeOpacity={0.85}
+              onPress={() => setLocatorVisible(true)}
+            >
+              <View style={styles.actionTop}>
+                <View style={[styles.actionIconCircle, styles.scanIcon]}>
+                  <Feather name="search" size={24} color={lightTheme.white} />
+                </View>
+                <View style={[styles.actionBadge, styles.scanBadge]}>
+                  <Feather name="map-pin" size={12} color={lightTheme.white} />
+                </View>
+              </View>
+              <View style={styles.actionBottom}>
+                <Text style={[styles.actionTitle, { color: lightTheme.white }]}>Locate</Text>
+                <Text style={[styles.actionSubtitle, { color: 'rgba(255,255,255,0.9)' }]}>Find items</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+
+      <HeroMetricCard title="Total Warehouses" value={stats?.warehouse?.count || 0} />
+
+      <View style={styles.metricsRow}>
+        <MetricCard title="Active Locations" value={stats?.warehouse?.locations || 0} icon="home" />
+        <MetricCard title="Products" value={stats?.inventory?.products || 0} icon="box" />
+      </View>
+
+      <TaskDonutCard stats={donutStats} />
+
+      <View style={styles.tasksHeaderRow}>
+        <Text style={styles.tasksHeader}>Assigned Tasks</Text>
+        <View style={styles.headerActions}>
+          <TouchableOpacity 
+            onPress={toggleOptimization} 
+            style={[
+              styles.optimizeToggle, 
+              isOptimized && styles.activeOptimize
+            ]}
+          >
+            <Feather name="zap" size={12} color={isOptimized ? '#FFF' : lightTheme.primary} />
+            <Text style={[styles.optimizeText, isOptimized && styles.activeOptimizeText]}>
+              {isOptimized ? 'AI Optimized' : 'Optimize'}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => loadData()} style={styles.refreshButton}>
+            <Feather name="refresh-cw" size={14} color={lightTheme.primary} />
+            <Text style={styles.refreshText}>Refresh</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+
+  if (loading && page === 1) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={lightTheme.primary} />
@@ -377,21 +488,21 @@ const EmployeeListActions = ({ route }) => {
             {/* Row 1 */}
             <View style={styles.actionsRow}>
               <TouchableOpacity 
-                style={[styles.actionCard, styles.receiveCard]} 
+                style={[styles.actionCard, styles.scannerCard]} 
                 activeOpacity={0.85}
-                onPress={handleReceive}
+                onPress={handleScanQR}
               >
                 <View style={styles.actionTop}>
-                  <View style={[styles.actionIconCircle, styles.receiveIcon]}>
-                    <Feather name="package" size={24} color="#0055FF" />
+                  <View style={[styles.actionIconCircle, styles.scannerIcon]}>
+                    <Feather name="maximize" size={24} color="#6366F1" />
                   </View>
-                  <View style={styles.actionBadge}>
-                    <Feather name="arrow-down" size={12} color="#0055FF" />
+                  <View style={[styles.actionBadge, styles.scannerBadge]}>
+                    <Feather name="qr-code" size={12} color="#6366F1" />
                   </View>
                 </View>
                 <View style={styles.actionBottom}>
-                  <Text style={styles.actionTitle}>Receive</Text>
-                  <Text style={styles.actionSubtitle}>Incoming goods</Text>
+                  <Text style={styles.actionTitle}>Scan QR</Text>
+                  <Text style={styles.actionSubtitle}>Barcode Scanner</Text>
                 </View>
               </TouchableOpacity>
 
@@ -469,10 +580,25 @@ const EmployeeListActions = ({ route }) => {
 
         <View style={styles.tasksHeaderRow}>
           <Text style={styles.tasksHeader}>Assigned Tasks</Text>
-          <TouchableOpacity onPress={loadData} style={styles.refreshButton}>
-            <Feather name="refresh-cw" size={14} color={lightTheme.primary} />
-            <Text style={styles.refreshText}>Refresh</Text>
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            <TouchableOpacity 
+              onPress={toggleOptimization} 
+              style={[
+                styles.optimizeToggle, 
+                isOptimized && styles.activeOptimize
+              ]}
+            >
+              <Feather name="zap" size={12} color={isOptimized ? '#FFF' : lightTheme.primary} />
+              <Text style={[styles.optimizeText, isOptimized && styles.activeOptimizeText]}>
+                {isOptimized ? 'AI Optimized' : 'Optimize'}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => loadData()} style={styles.refreshButton}>
+              <Feather name="refresh-cw" size={14} color={lightTheme.primary} />
+              <Text style={styles.refreshText}>Refresh</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {sortedTasks.length === 0 ? (
@@ -770,6 +896,34 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontStyle: 'italic',
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  optimizeToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#EBF5FF',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#BFDBFE',
+    gap: 4,
+  },
+  activeOptimize: {
+    backgroundColor: lightTheme.primary,
+    borderColor: lightTheme.primary,
+  },
+  optimizeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: lightTheme.primary,
+  },
+  activeOptimizeText: {
+    color: '#FFF',
+  },
   refreshButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -883,8 +1037,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.8)',
   },
-  receiveCard: {
-    backgroundColor: '#E3F2FD',
+  scannerCard: {
+    backgroundColor: '#EEF2FF',
   },
   pickCard: {
     backgroundColor: '#E8F5E9',
@@ -914,7 +1068,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 4,
   },
-  receiveIcon: {
+  scannerIcon: {
     backgroundColor: '#FFFFFF',
   },
   pickIcon: {
@@ -933,6 +1087,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 85, 255, 0.12)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  scannerBadge: {
+    backgroundColor: 'rgba(99, 102, 241, 0.12)',
   },
   pickBadge: {
     backgroundColor: 'rgba(93, 184, 109, 0.12)',

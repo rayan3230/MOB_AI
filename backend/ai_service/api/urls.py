@@ -8,6 +8,7 @@ urlpatterns = [
     path('explanation/<int:sku_id>/', views.get_explanation, name='forecast_explanation'),
     path('validate/', views.validate_order, name='forecast_validate'),
     path('optimize-route/', views.get_optimized_route, name='optimize_route'),
+    path('optimize-tasks/', views.optimize_tasks, name='optimize_tasks'),
     path('map/<int:floor_idx>/', views.get_warehouse_map, name='warehouse_map'),
     path('zoning/<int:floor_idx>/', views.get_zoning, name='warehouse_zoning'),
     path('record-performance/', views.record_picking_performance, name='record_performance'),

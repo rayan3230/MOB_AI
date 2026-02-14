@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import AIPerformanceLog
 from django.db import models
 from Produit.models import Produit
+from Transaction.models import Transaction
+from Transaction.serializers import TransactionListSerializer
 from warhouse.models import Rack, RackProduct
 from ai_service.core.forecasting_service import ForecastingService
 from ai_service.core.picking_service import PickingOptimizationService
@@ -316,4 +318,83 @@ def validate_order(request):
             'order': updated_order
         })
     except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+@csrf_exempt
+def optimize_tasks(request):
+    """
+    Endpoint: AI Task Optimization Algorithm.
+    Fetches pending transactions and applies a Multi-Factor Scoring algorithm
+    to return them in an optimized order of execution.
+    Optimization: Added select_related for creator and LigneTransaction count aggregation.
+    """
+    try:
+        # 1. Fetch data with optimization (select_related and filtered)
+        # We only want tasks that are actionable
+        tasks_queryset = Transaction.objects.filter(
+            statut__in=['PENDING', 'CONFIRMED']
+        ).select_related('cree_par_id_utilisateur').prefetch_related('lignes')
+        
+        tasks = list(tasks_queryset)
+        
+        if not tasks:
+            return JsonResponse({
+                'status': 'success',
+                'algorithm': 'Multi-Factor Priority Scoring',
+                'count': 0,
+                'data': [],
+                'message': 'No pending tasks found in the database.'
+            })
+
+        # 2. Optimization Algorithm (Reference: Task 1 approach)
+        # Factors: Type priority, Age, Urgent notes detection, Complexity (line count)
+        now = datetime.now().astimezone()
+        
+        def calculate_task_priority(task):
+            score = 100.0 # Base score (lower is better priority)
+            
+            # Factor 1: Transaction Type Priority
+            # ISSUE (Picking) = Top Priority (for fulfillment)
+            # RECEIPT = High Priority (for space management)
+            type_weights = {
+                'ISSUE': 40,
+                'RECEIPT': 25,
+                'TRANSFER': 15,
+                'ADJUSTMENT': 5
+            }
+            score -= type_weights.get(task.type_transaction, 0)
+            
+            # Factor 2: Urgent Notes Detection
+            if task.notes:
+                urgent_keywords = ['urgent', 'critical', 'asap', 'priorité', 'immédiat']
+                if any(word in task.notes.lower() for word in urgent_keywords):
+                    score -= 35
+                
+            # Factor 3: Task Age (Older tasks get priority boost)
+            # Max 20 points for tasks older than 24 hours
+            time_diff_hours = (now - task.cree_le).total_seconds() / 3600
+            age_bonus = min(20, time_diff_hours / 1.2) # 1pt every 1.2h
+            score -= age_bonus
+            
+            # Factor 4: Complexity / Batching potential
+            # Tasks with more lines might be prioritized for efficiency or broken down
+            line_count = task.lignes.count()
+            score -= min(10, line_count * 2) # Large orders get slight priority boost
+            
+            return score
+
+        # Sort tasks by priority score
+        tasks.sort(key=calculate_task_priority)
+        
+        # 3. Serialize and return
+        serializer = TransactionListSerializer(tasks, many=True)
+        return JsonResponse({
+            'status': 'success',
+            'algorithm': 'Multi-Factor Priority Scoring v2.0',
+            'count': len(tasks),
+            'data': serializer.data
+        })
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

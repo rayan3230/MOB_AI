@@ -14,7 +14,7 @@
 # Authentication: All endpoints require user authentication (IsAuthenticated)
 # ============================================================================
 
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, pagination
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -30,6 +30,12 @@ from .serializers import (
     LigneTransactionDetailSerializer,
     LigneTransactionSimpleSerializer
 )
+
+
+class StandardResultsSetPagination(pagination.PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
 
 
 # ============================================================================
@@ -69,9 +75,10 @@ class TransactionViewSet(viewsets.ModelViewSet):
     - POST   /transaction-management/{id}/complete_transaction/
     - POST   /transaction-management/{id}/cancel_transaction/
     """
-    queryset = Transaction.objects.all()
+    queryset = Transaction.objects.all().order_by('-cree_le')
     lookup_field = 'id_transaction'
     permission_classes = [AllowAny]  # Changed from IsAuthenticated for development
+    pagination_class = StandardResultsSetPagination
 
     def get_serializer_class(self):
         """Use different serializers based on action"""
