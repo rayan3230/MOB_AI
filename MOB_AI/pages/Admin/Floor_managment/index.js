@@ -327,7 +327,7 @@ const FloorManagement = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: lightTheme.primary },
+  container: { flex: 1, backgroundColor: lightTheme.white },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   emptyText: { color: '#666', fontSize: 16 },
   header: {

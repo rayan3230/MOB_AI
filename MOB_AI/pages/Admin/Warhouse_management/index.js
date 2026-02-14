@@ -295,7 +295,7 @@ const WarehouseManagement = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: lightTheme.primary },
+  container: { flex: 1, backgroundColor: lightTheme.white },
   header: {
     paddingHorizontal: 24,
     paddingBottom: 24,

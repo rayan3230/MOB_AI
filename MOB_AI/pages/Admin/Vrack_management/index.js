@@ -539,7 +539,7 @@ const VrackManagement = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: lightTheme.primary },
+  container: { flex: 1, backgroundColor: lightTheme.white },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   emptyText: { color: '#94A3B8', marginTop: 20, fontSize: 16 },
   header: {

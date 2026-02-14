@@ -235,7 +235,7 @@ const AIActions = ({ user, onOpenDrawer }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: lightTheme.primary,
+    backgroundColor: lightTheme.white,
   },
   contentHeader: {
     paddingHorizontal: 25,
