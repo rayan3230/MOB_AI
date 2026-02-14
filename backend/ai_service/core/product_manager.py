@@ -25,6 +25,7 @@ class ProductStorageManager:
                     self.products_df.columns = self.products_df.columns.str.strip()
                 if not self.demand_df.empty:
                     self.demand_df.columns = self.demand_df.columns.str.strip()
+                self._normalize_columns()
             except Exception as e:
                 print(f"Error loading data from Supabase: {e}")
         else:
@@ -33,8 +34,15 @@ class ProductStorageManager:
                 self.products_df.columns = self.products_df.columns.str.strip()
                 self.demand_df = pd.read_csv(self.demand_path)
                 self.demand_df.columns = self.demand_df.columns.str.strip()
+                self._normalize_columns()
             except Exception as e:
                 print(f"Error loading CSV data: {e}")
+
+    def _normalize_columns(self):
+        if not self.products_df.empty and 'id_produit' not in self.products_df.columns and 'id_produit_id' in self.products_df.columns:
+            self.products_df = self.products_df.rename(columns={'id_produit_id': 'id_produit'})
+        if not self.demand_df.empty and 'id_produit' not in self.demand_df.columns and 'id_produit_id' in self.demand_df.columns:
+            self.demand_df = self.demand_df.rename(columns={'id_produit_id': 'id_produit'})
 
     def calculate_product_classes(self):
         """

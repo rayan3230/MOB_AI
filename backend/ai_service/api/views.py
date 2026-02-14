@@ -1,5 +1,6 @@
 import os
 import json
+from datetime import datetime
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
@@ -259,6 +260,19 @@ def validate_order(request):
     try:
         data = json.loads(request.body)
         order_obj = data.get('order')
+        if order_obj is None:
+            return JsonResponse({
+                'status': 'success',
+                'message': 'No order provided. Nothing to validate.',
+                'order': {
+                    'order_id': None,
+                    'date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    'items': [],
+                    'status': 'DRAFT',
+                    'source': 'AI_FORECASTING_SERVICE'
+                }
+            }, status=200)
+
         sku_id = data.get('sku_id')
         override_qty = data.get('override_qty')
         justification = data.get('justification')

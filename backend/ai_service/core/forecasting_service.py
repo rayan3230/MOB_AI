@@ -38,7 +38,13 @@ class DataLoader:
         self.products = None
 
     def load_and_clean(self):
-        if hasattr(self, 'demand_history') and self.demand_history is not None:
+        if (
+            self.demand_history is not None
+            and self.transaction_lines is not None
+            and self.products is not None
+            and self.transactions is not None
+            and not self.demand_history.empty
+        ):
             return
             
         if self.data_path is None:
@@ -68,6 +74,43 @@ class DataLoader:
             if df is not None and not df.empty:
                 # Convert column names to strings first, then strip whitespace
                 df.columns = [str(col).strip() for col in df.columns]
+
+        self._normalize_forecasting_columns()
+
+    def _normalize_forecasting_columns(self):
+        """Normalize ORM FK column names to the schema expected by forecasting logic."""
+        if self.demand_history is not None and not self.demand_history.empty:
+            if 'id_produit' not in self.demand_history.columns and 'id_produit_id' in self.demand_history.columns:
+                self.demand_history = self.demand_history.rename(columns={'id_produit_id': 'id_produit'})
+
+        if self.transaction_lines is not None and not self.transaction_lines.empty:
+            rename_map = {}
+            if 'id_transaction' not in self.transaction_lines.columns and 'id_transaction_id' in self.transaction_lines.columns:
+                rename_map['id_transaction_id'] = 'id_transaction'
+            if 'id_produit' not in self.transaction_lines.columns and 'id_produit_id' in self.transaction_lines.columns:
+                rename_map['id_produit_id'] = 'id_produit'
+            if rename_map:
+                self.transaction_lines = self.transaction_lines.rename(columns=rename_map)
+
+        self._normalize_id_types()
+
+    def _normalize_id_types(self):
+        """Force consistent dtypes for keys used in joins and filters."""
+        for attr_name in ['demand_history', 'transaction_lines', 'products']:
+            df = getattr(self, attr_name, None)
+            if df is None or df.empty or 'id_produit' not in df.columns:
+                continue
+
+            numeric_ids = pd.to_numeric(df['id_produit'], errors='coerce')
+            df = df.loc[numeric_ids.notna()].copy()
+            df['id_produit'] = numeric_ids.loc[numeric_ids.notna()].astype(int)
+            setattr(self, attr_name, df)
+
+        if self.transactions is not None and not self.transactions.empty and 'id_transaction' in self.transactions.columns:
+            self.transactions['id_transaction'] = self.transactions['id_transaction'].astype(str).str.strip()
+
+        if self.transaction_lines is not None and not self.transaction_lines.empty and 'id_transaction' in self.transaction_lines.columns:
+            self.transaction_lines['id_transaction'] = self.transaction_lines['id_transaction'].astype(str).str.strip()
 
     def _load_from_django(self):
         """Fetches data directly from Supabase via Django ORM."""
@@ -102,10 +145,11 @@ class DataLoader:
     def load_and_clean_wrapper(self):
         """Main entry point for loading and cleaning."""
         self.load_and_clean()
+        self._normalize_forecasting_columns()
         
         # Clean Demand History
         if self.demand_history is not None and not self.demand_history.empty:
-            if 'date' in self.demand_history.columns:
+            if 'date' in self.demand_history.columns and 'quantite_demande' in self.demand_history.columns and 'id_produit' in self.demand_history.columns:
                 self.demand_history['date'] = pd.to_datetime(self.demand_history['date'], errors='coerce')
                 self.demand_history['quantite_demande'] = pd.to_numeric(self.demand_history['quantite_demande'], errors='coerce')
                 self.demand_history = self.demand_history.dropna(subset=['date', 'id_produit', 'quantite_demande'])
@@ -823,7 +867,15 @@ class ForecastingService:
         if order:
             logger.info(f"SUCCESS: Created Preparation Order {order['order_id']} for tomorrow.")
             # Note: In a real Django app, we would also save to the Transaction model here.
-        return order
+            return order
+
+        return {
+            'order_id': f"PREP-{uuid.uuid4().hex[:8].upper()}",
+            'date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'items': [],
+            'status': 'DRAFT',
+            'source': 'AI_FORECASTING_SERVICE'
+        }
 
     def run(self, limit_products=10):
         self.loader.load_and_clean_wrapper()
@@ -894,7 +946,16 @@ class ForecastingService:
 
         # Generate Orders
         orders = self.order_service.generate_order_advanced(forecast_metadata, current_stock)
-        return orders
+        if orders is not None:
+            return orders
+
+        return {
+            'order_id': f"PREP-{uuid.uuid4().hex[:8].upper()}",
+            'date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'items': [],
+            'status': 'DRAFT',
+            'source': 'AI_FORECASTING_SERVICE'
+        }
 
     def get_high_demand_skus(self, threshold_quantile=0.85):
         """
