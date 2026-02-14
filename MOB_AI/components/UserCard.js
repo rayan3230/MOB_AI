@@ -102,7 +102,7 @@ const UserCard = ({ user, currentUserRole, onToggleStatus, onEdit, onDelete }) =
             <View style={styles.detailsGrid}>
               <View style={styles.detailItem}>
                 <View style={styles.detailIconContainer}>
-                  <Feather name="mail" size={14} color="#00a3ff" />
+                  <Feather name="mail" size={14} color={lightTheme.primary} />
                 </View>
                 <View>
                   <Text style={styles.detailLabel}>Email Address</Text>
@@ -112,7 +112,7 @@ const UserCard = ({ user, currentUserRole, onToggleStatus, onEdit, onDelete }) =
 
               <View style={styles.detailItem}>
                 <View style={styles.detailIconContainer}>
-                  <Feather name="phone" size={14} color="#00a3ff" />
+                  <Feather name="phone" size={14} color={lightTheme.primary} />
                 </View>
                 <View>
                   <Text style={styles.detailLabel}>Phone Number</Text>
@@ -122,7 +122,7 @@ const UserCard = ({ user, currentUserRole, onToggleStatus, onEdit, onDelete }) =
 
               <View style={styles.detailItem}>
                 <View style={styles.detailIconContainer}>
-                  <Feather name="map-pin" size={14} color="#00a3ff" />
+                  <Feather name="map-pin" size={14} color={lightTheme.primary} />
                 </View>
                 <View>
                   <Text style={styles.detailLabel}>Address</Text>
@@ -132,7 +132,7 @@ const UserCard = ({ user, currentUserRole, onToggleStatus, onEdit, onDelete }) =
 
               <View style={styles.detailItem}>
                 <View style={styles.detailIconContainer}>
-                  <Feather name="hash" size={14} color="#00a3ff" />
+                  <Feather name="hash" size={14} color={lightTheme.primary} />
                 </View>
                 <View>
                   <Text style={styles.detailLabel}>User ID</Text>
@@ -146,7 +146,7 @@ const UserCard = ({ user, currentUserRole, onToggleStatus, onEdit, onDelete }) =
                 style={styles.editButton} 
                 onPress={() => onEdit(user)}
               >
-                <Feather name="edit-2" size={16} color="#00a3ff" />
+                <Feather name="edit-2" size={16} color={lightTheme.primary} />
                 <Text style={styles.editButtonText}>Edit</Text>
               </TouchableOpacity>
 
@@ -180,10 +180,11 @@ const UserCard = ({ user, currentUserRole, onToggleStatus, onEdit, onDelete }) =
 const styles = StyleSheet.create({
   cardWrapper: {
     paddingHorizontal: 0,
+    backgroundColor: lightTheme.primary,
     paddingVertical: 8,
   },
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: lightTheme.primary,
     borderRadius: 20,
     padding: 16,
     shadowColor: '#000',
@@ -192,10 +193,10 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 4,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: lightTheme.border,
   },
   containerExpanded: {
-    borderColor: '#E0E0E0',
+    borderColor: lightTheme.border,
     shadowOpacity: 0.1,
     shadowRadius: 15,
   },
@@ -314,15 +315,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F0F9FF',
+    backgroundColor: lightTheme.bgHighlight,
     paddingVertical: 12,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#00a3ff20',
+    borderColor: lightTheme.primary + '20',
   },
   editButtonText: {
     marginLeft: 8,
-    color: '#00a3ff',
+    color: lightTheme.primary,
     fontSize: 14,
     fontWeight: '700',
   },

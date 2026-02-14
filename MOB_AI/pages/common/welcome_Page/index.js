@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { lightTheme } from '../../../constants/theme';
 
 const WelcomePage = () => {
   const navigation = useNavigation();
@@ -22,7 +23,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: lightTheme.white,
     padding: 20,
   },
   text: {
@@ -32,13 +33,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   button: {
-    backgroundColor: '#00a3ff',
+    backgroundColor: lightTheme.primary,
     paddingHorizontal: 40,
     paddingVertical: 15,
     borderRadius: 25,
   },
   buttonText: {
-    color: '#fff',
+    color: lightTheme.white,
     fontSize: 18,
     fontWeight: '600',
   },

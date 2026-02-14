@@ -80,16 +80,13 @@ class TransactionSerializer(serializers.ModelSerializer):
 
     def get_lignes(self, obj):
         lignes = obj.lignes.all()
-        return LigneTransactionSerializer(lignes, many=True).data
+        # Use detail serializer to avoid circular dependency
+        return LigneTransactionDetailSerializer(lignes, many=True).data
 
 
 class LigneTransactionSerializer(serializers.ModelSerializer):
-    id_transaction = TransactionSerializer(read_only=True)
-    id_transaction_id = serializers.PrimaryKeyRelatedField(
-        queryset=Transaction.objects.all(),
-        source='id_transaction',
-        write_only=True
-    )
+    # Removed TransactionSerializer to prevent circular dependency
+    id_transaction_id = serializers.CharField(source='id_transaction.id_transaction', read_only=True)
     id_produit = ProduitSerializer(read_only=True)
     id_produit_id = serializers.PrimaryKeyRelatedField(
         queryset=Produit.objects.all(),
@@ -115,7 +112,7 @@ class LigneTransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = LigneTransaction
         fields = [
-            'id_transaction', 'id_transaction_id', 'no_ligne', 'id_produit',
+            'id_transaction_id', 'no_ligne', 'id_produit',
             'id_produit_id', 'quantite', 'id_emplacement_source',
             'id_emplacement_source_id', 'id_emplacement_destination',
             'id_emplacement_destination_id', 'lot_serie', 'code_motif'

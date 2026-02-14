@@ -22,7 +22,7 @@ const Intro = () => {
 
             <View style={styles.contentSection}>
                 <View style={styles.logoWrapper}>
-                    <Logo width={60} height={60} color="#1E13FE" />
+                    <Logo width={60} height={60} />
                 </View>
 
                 <Text style={styles.description}>

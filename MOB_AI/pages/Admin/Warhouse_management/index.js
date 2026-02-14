@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { warehouseService } from '../../../services/warehouseService';
 import CollapsibleManagementCard from '../../../components/CollapsibleManagementCard';
 import ManagementModal from '../../../components/ManagementModal';
+import { lightTheme } from '../../../constants/theme';
 
 const WarehouseManagement = () => {
   const [warehouses, setWarehouses] = useState([]);
@@ -191,7 +192,7 @@ const WarehouseManagement = () => {
       
       {loading && !refreshing ? (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#007AFF" />
+          <ActivityIndicator size="large" color={lightTheme.primary} />
           <Text style={styles.loadingText}>Loading warehouses...</Text>
         </View>
       ) : warehouses.length === 0 ? (
@@ -284,7 +285,7 @@ const WarehouseManagement = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
+  container: { flex: 1, backgroundColor: lightTheme.primary },
   header: {
     paddingHorizontal: 24,
     paddingTop: 60,
@@ -299,9 +300,9 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: '800', color: '#0F172A' },
   subtitle: { fontSize: 14, color: '#64748B', marginTop: 2 },
   addButton: {
-    width: 48, height: 48, borderRadius: 14, backgroundColor: '#2196F3',
+    width: 48, height: 48, borderRadius: 14, backgroundColor: lightTheme.primary,
     justifyContent: 'center', alignItems: 'center', marginLeft: 12,
-    elevation: 4, shadowColor: '#2196F3', shadowOffset: { width: 0, height: 4 },
+    elevation: 4, shadowColor: lightTheme.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8
   },
   listContent: { paddingVertical: 12, paddingBottom: 100 },

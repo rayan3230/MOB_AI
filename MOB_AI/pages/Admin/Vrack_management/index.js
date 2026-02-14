@@ -16,6 +16,7 @@ import { warehouseService } from '../../../services/warehouseService';
 import { productService } from '../../../services/productService';
 import CollapsibleManagementCard from '../../../components/CollapsibleManagementCard';
 import ManagementModal from '../../../components/ManagementModal';
+import { lightTheme } from '../../../constants/theme';
 
 const PRODUCTS_PAGE_SIZE = 1000;
 
@@ -347,7 +348,7 @@ const VrackManagement = () => {
   if (loading && !refreshing) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#2196F3" />
+        <ActivityIndicator size="large" color={lightTheme.primary} />
       </View>
     );
   }
@@ -371,7 +372,7 @@ const VrackManagement = () => {
         >
           <Text style={styles.filterSelectorText}>{selectedWarehouseLabel}</Text>
           {filterLoading ? (
-            <ActivityIndicator size="small" color="#2196F3" />
+            <ActivityIndicator size="small" color={lightTheme.primary} />
           ) : (
             <Feather name="chevron-down" size={18} color="#666" />
           )}
@@ -538,7 +539,7 @@ const VrackManagement = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
+  container: { flex: 1, backgroundColor: lightTheme.primary },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   emptyText: { color: '#94A3B8', marginTop: 20, fontSize: 16 },
   header: {
@@ -556,10 +557,10 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: '800', color: '#0F172A' },
   subtitle: { fontSize: 14, color: '#64748B', marginTop: 2 },
   addButton: {
-    width: 100, height: 48, borderRadius: 14, backgroundColor: '#2196F3',
+    width: 100, height: 48, borderRadius: 14, backgroundColor: lightTheme.primary,
     justifyContent: 'center', alignItems: 'center', marginLeft: 12,
     flexDirection: 'row',
-    elevation: 4, shadowColor: '#2196F3', shadowOffset: { width: 0, height: 4 },
+    elevation: 4, shadowColor: lightTheme.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8
   },
   addButtonText: { color: '#FFF', fontWeight: '700', marginLeft: 8 },

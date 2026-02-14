@@ -236,7 +236,7 @@ const SupervisorAIActions = ({ user, onOpenDrawer }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7FAFC',
+    backgroundColor: lightTheme.primary,
   },
   contentHeader: {
     paddingHorizontal: 25,

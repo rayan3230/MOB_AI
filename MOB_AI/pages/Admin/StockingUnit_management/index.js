@@ -17,6 +17,7 @@ import { productService } from '../../../services/productService';
 import { warehouseService } from '../../../services/warehouseService';
 import CollapsibleManagementCard from '../../../components/CollapsibleManagementCard';
 import ManagementModal from '../../../components/ManagementModal';
+import { lightTheme } from '../../../constants/theme';
 
 const PAGE_SIZE = 20;
 
@@ -203,7 +204,7 @@ const StockingUnitManagement = () => {
       </View>
 
       {loading && !refreshing ? (
-        <View style={styles.centered}><ActivityIndicator size="large" color="#2196F3" /></View>
+        <View style={styles.centered}><ActivityIndicator size="large" color={lightTheme.primary} /></View>
       ) : (
         <FlatList
           data={products}
@@ -214,7 +215,7 @@ const StockingUnitManagement = () => {
           refreshing={refreshing}
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}
-          ListFooterComponent={loadingMore ? <ActivityIndicator size="small" color="#2196F3" style={{ padding: 10 }} /> : null}
+          ListFooterComponent={loadingMore ? <ActivityIndicator size="small" color={lightTheme.primary} style={{ padding: 10 }} /> : null}
           ListEmptyComponent={
             <View style={styles.centered}>
                 <Text style={styles.emptyText}>Aucun produit trouvé</Text>
@@ -377,7 +378,7 @@ const StockingUnitManagement = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
+  container: { flex: 1, backgroundColor: lightTheme.primary },
   header: {
     paddingHorizontal: 24,
     paddingTop: 60,
@@ -393,9 +394,9 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: '800', color: '#0F172A' },
   subtitle: { fontSize: 14, color: '#64748B', marginTop: 2 },
   addButton: {
-    width: 48, height: 48, borderRadius: 14, backgroundColor: '#2196F3',
+    width: 48, height: 48, borderRadius: 14, backgroundColor: lightTheme.primary,
     justifyContent: 'center', alignItems: 'center', marginLeft: 12,
-    elevation: 4, shadowColor: '#2196F3', shadowOffset: { width: 0, height: 4 },
+    elevation: 4, shadowColor: lightTheme.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8
   },
   filterButton: {

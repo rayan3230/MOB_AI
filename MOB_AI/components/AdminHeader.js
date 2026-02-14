@@ -1,21 +1,21 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-
+import { lightTheme } from '../constants/theme';
 const TopHeader = ({ onMenuPress, onSettingsPress, onNotificationPress }) => {
   return (
     <View style={styles.outerContainer}>
       <View style={styles.innerContainer}>
         <TouchableOpacity onPress={onMenuPress}>
-          <Feather name="menu" size={24} color="#333" />
+          <Feather name="menu" size={24} color={lightTheme.primary} />
         </TouchableOpacity>
         
         <View style={styles.rightIcons}>
           <TouchableOpacity onPress={onNotificationPress} style={styles.iconButton}>
-            <Feather name="bell" size={24} color="#333" />
+            <Feather name="bell" size={24} color={lightTheme.primary} />
           </TouchableOpacity>
           <TouchableOpacity onPress={onSettingsPress}>
-            <Feather name="settings" size={24} color="#333" />
+            <Feather name="settings" size={24} color={lightTheme.primary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -25,7 +25,7 @@ const TopHeader = ({ onMenuPress, onSettingsPress, onNotificationPress }) => {
 
 const styles = StyleSheet.create({
   outerContainer: {
-    backgroundColor: '#04324C', // Original dark background
+    backgroundColor: lightTheme.primary, // Original dark background
     paddingTop: 10,
   },
   innerContainer: {

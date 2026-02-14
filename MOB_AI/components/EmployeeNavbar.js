@@ -41,13 +41,25 @@ const EmployeeNavbar = ({ state, navigation }) => {
            */
           let iconName;
           let label;
-          if (route.name === 'Tasks') {
+          let iconSize = 22;
+          
+          if (route.name === 'Home') {
+            iconName = isFocused ? 'home' : 'home-outline';
+            label = 'Home';
+          } else if (route.name === 'Tasks') {
             iconName = isFocused ? 'list' : 'list-outline';
-            label = 'Tâches';
+            label = 'Tasks';
+          } else if (route.name === 'Scan') {
+            iconName = isFocused ? 'scan' : 'scan-outline';
+            label = 'Scan';
+            iconSize = 28; // Larger for emphasis
           } else if (route.name === 'Profile') {
             iconName = isFocused ? 'person' : 'person-outline';
-            label = 'Profil';
+            label = 'Profile';
           }
+
+          // Special styling for Scan button
+          const isScanButton = route.name === 'Scan';
 
           return (
             <TouchableOpacity
@@ -58,15 +70,29 @@ const EmployeeNavbar = ({ state, navigation }) => {
             >
               <View style={[
                 styles.iconContainer,
-                isFocused && styles.activeIconContainer
+                isFocused && styles.activeIconContainer,
+                isScanButton && styles.scanButton,
+                isScanButton && isFocused && styles.scanButtonActive
               ]}>
                 <Ionicons 
                   name={iconName} 
-                  size={22}
-                  color={isFocused ? lightTheme.primary : lightTheme.textSecondary}
+                  size={iconSize}
+                  color={
+                    isScanButton && isFocused ? lightTheme.white :
+                    isScanButton ? lightTheme.primary :
+                    isFocused ? lightTheme.primary : 
+                    lightTheme.textSecondary
+                  }
                 />
-                <Text style={[styles.label, isFocused && styles.activeLabel]}>{label}</Text>
+                {!isScanButton && (
+                  <Text style={[styles.label, isFocused && styles.activeLabel]}>{label}</Text>
+                )}
               </View>
+              {isScanButton && (
+                <Text style={[styles.scanLabel, isFocused && styles.scanLabelActive]}>
+                  {label}
+                </Text>
+              )}
             </TouchableOpacity>
           );
         })}
@@ -125,6 +151,33 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   activeLabel: {
+    color: lightTheme.primary,
+    fontWeight: '700',
+  },
+  scanButton: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: lightTheme.white,
+    borderWidth: 3,
+    borderColor: lightTheme.primary,
+    marginTop: -20,
+    shadowColor: lightTheme.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  scanButtonActive: {
+    backgroundColor: lightTheme.primary,
+  },
+  scanLabel: {
+    fontSize: 11,
+    color: lightTheme.textSecondary,
+    fontWeight: '600',
+    marginTop: 4,
+  },
+  scanLabelActive: {
     color: lightTheme.primary,
     fontWeight: '700',
   },

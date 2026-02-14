@@ -152,7 +152,7 @@ const RoleDashboardLayout = ({ role, navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="light-content" backgroundColor={lightTheme.primary} />
       
       <View style={styles.mainContent}>
         <SafeAreaView style={styles.topSection}>
@@ -235,8 +235,8 @@ const Router = () => {
 
     if (isLoading) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#04324C' }}>
-                <ActivityIndicator size="large" color="#fff" />
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: lightTheme.primary }}>
+                <ActivityIndicator size="large" color={lightTheme.secondary} />
             </View>
         );
     }
@@ -269,27 +269,28 @@ const Router = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#04324C',
+    backgroundColor: lightTheme.primary,
   },
   mainContent: {
     flex: 1,
+    backgroundColor: lightTheme.primary,
   },
   topSection: {
-    backgroundColor: '#04324C',
+    backgroundColor: "#007A8C",
   },
   roleLabel: {
-    color: '#aaa',
+    color: "#fff",
     fontSize: 14,
     letterSpacing: 1,
   },
   dashboardTitle: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 26,
     fontWeight: '700',
   },
   whiteSheet: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: lightTheme.primary,
     paddingTop: 0,
   },
   overlay: {
@@ -303,7 +304,7 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: DRAWER_WIDTH,
-    backgroundColor: '#fff',
+    backgroundColor: lightTheme.primary,
     zIndex: 100,
   }
 });

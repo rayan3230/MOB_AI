@@ -1,14 +1,14 @@
 export const lightTheme = {
-  // Primary colors
-  primary: '#04324C',
-  secondary: '#FFDD1C',
-  thirdary: '#5DB86D',
-  
+  // Primary colors - BMS Electric Brand
+  primary: '#007A8C', // Teal - main brand color
+  secondary: '#FFDD1C', // Yellow - accent color
+  thirdary: '#5DB86D', // Green - success/positive
+  accent: '#8B9556', // Olive - from logo
   
   // Neutral colors
   white: '#FFFFFF',
   black: '#000000',
-  background: '#FFFFFF',
+  background: '#F8F9FA',
   cardBackground: '#FFFFFF',
   
   // Text colors
@@ -42,9 +42,11 @@ export const lightTheme = {
 };
 
 export const darkTheme = {
-  // Primary colors (Neon green inspired by the image)
-  primary: '#00FF9D',
-  secondary: '#2ECC71',
+  // Primary colors - BMS Electric Brand (Dark Mode)
+  primary: '#00A3BA', // Lighter teal for dark mode
+  secondary: '#FFE54D', // Brighter yellow for dark mode
+  thirdary: '#5DB86D', // Green
+  accent: '#A8B26E', // Lighter olive
   
   // Neutral colors
   white: '#FFFFFF',

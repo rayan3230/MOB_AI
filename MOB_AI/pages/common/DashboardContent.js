@@ -79,9 +79,9 @@ const DashboardContent = ({ navigation, onNavigate }) => {
     : 'Unique SKUs (all warehouses)';
 
   const chartData = stats ? [
-    { name: 'Occupied', value: stats.warehouse.occupied || 0, color: '#0055FF' },
-    { name: 'Available', value: stats.warehouse.available || 1, color: '#ADD8E6' },
-    { name: 'Blocked', value: stats.warehouse.blocked || 0, color: '#FF4444' },
+    { name: 'Occupied', value: stats.warehouse.occupied || 0, color: lightTheme.primary },
+    { name: 'Available', value: stats.warehouse.available || 1, color: lightTheme.thirdary },
+    { name: 'Blocked', value: stats.warehouse.blocked || 0, color: lightTheme.error },
   ] : [
     { name: 'Loading', value: 100, color: '#eee' }
   ];
@@ -97,8 +97,8 @@ const DashboardContent = ({ navigation, onNavigate }) => {
 
   if (loading && !refreshing) {
     return (
-      <View style={[styles.container, { backgroundColor: '#fff', justifyContent: 'center' }]}>
-        <ActivityIndicator size="large" color="#0055FF" />
+      <View style={[styles.container, { backgroundColor: lightTheme.white, justifyContent: 'center' }]}>
+        <ActivityIndicator size="large" color={lightTheme.primary} />
       </View>
     );
   }
@@ -135,7 +135,7 @@ const DashboardContent = ({ navigation, onNavigate }) => {
             {selectedWarehouseId && <Text style={styles.mainCardSubtitle}>Locations managed</Text>}
           </View>
           <View style={styles.mainCardIcon}>
-            <Logo width={120} height={120} color="rgba(255,255,255,0.2)" />
+            <Logo width={120} height={120} colorTop="rgba(0,122,140,0.2)" colorBottom="rgba(255,221,28,0.2)" />
           </View>
         </View>
 
@@ -259,7 +259,7 @@ const DashboardContent = ({ navigation, onNavigate }) => {
           <Text style={styles.tasksTitle}>System Activity (24h)</Text>
           <View style={styles.taskCard}>
             <View style={styles.taskIcon}>
-              <FontAwesome name="exchange" size={20} color="#0055FF" />
+              <FontAwesome name="exchange" size={20} color={lightTheme.primary} />
             </View>
             <View style={styles.taskInfo}>
               <Text style={styles.taskName}>{stats?.activity?.total_movements_24h || 0} Movements</Text>
@@ -338,12 +338,12 @@ const StatBox = ({ icon, title, subtitle, value, percentage }) => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#04324C', // Dark background behind the rounded header
+    backgroundColor: lightTheme.primary,
   },
   content: {
     flex: 1,
     paddingHorizontal: 20,
-    backgroundColor: '#fff', // White background for the actual content    
+    backgroundColor: lightTheme.white,
   },
   filterCard: {
     marginBottom: 14,
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   mainCard: {
-    backgroundColor: '#0055FF',
+    backgroundColor: lightTheme.primary,
     borderRadius: 15,
     padding: 25,
     flexDirection: 'row',
