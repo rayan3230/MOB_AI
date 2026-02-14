@@ -61,12 +61,15 @@ class ForecastDecisionLayer:
         
         if trend_significant:
             reasoning = "Using calibrated deterministic forecast (trend-aware, REG-dominant)."
+            model_selected = "REG"
         else:
             reasoning = "Using calibrated deterministic forecast (REG-primary for accuracy)."
+            model_selected = "SMA"
 
         return {
             'final_forecast': round(max(0.0, final_forecast), 2),
-            'reasoning': reasoning
+            'reasoning': reasoning,
+            'model_selected': model_selected
         }
 
     def prepare_llm_prompt(self, sku_data):
@@ -199,7 +202,8 @@ class ForecastDecisionLayer:
             return {
                 "sku_id": str(sku_data.get('id')),
                 "final_forecast": round(forecast, 2),
-                "explanation": explanation
+                "explanation": explanation,
+                "model_selected": "HYBRID (Mistral)"
             }
 
         except Exception as e:
@@ -216,5 +220,6 @@ class ForecastDecisionLayer:
         return {
             "sku_id": str(sku_data.get('id')),
             "final_forecast": decision['final_forecast'],
-            "explanation": decision['reasoning']
+            "explanation": decision['reasoning'],
+            "model_selected": decision.get('model_selected', 'SIMULATED')
         }

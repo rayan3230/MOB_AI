@@ -5,10 +5,8 @@ import uuid
 from datetime import datetime, timedelta
 import os
 from sklearn.linear_model import LinearRegression
-try:
-    from .decision_layer import ForecastDecisionLayer
-except (ImportError, ValueError):
-    from decision_layer import ForecastDecisionLayer
+from .decision_layer import ForecastDecisionLayer
+from .learning_engine import LearningFeedbackEngine
 
 # Set up paths for reports
 REPORT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "reports")
@@ -26,8 +24,9 @@ logging.basicConfig(
 logger = logging.getLogger("ForecastingService")
 
 class DataLoader:
-    def __init__(self, excel_path):
-        self.excel_path = excel_path
+    def __init__(self, data_path, is_csv=False):
+        self.data_path = data_path
+        self.is_csv = is_csv
         self.demand_history = None
         self.transactions = None
         self.transaction_lines = None
@@ -37,15 +36,30 @@ class DataLoader:
         if hasattr(self, 'demand_history') and self.demand_history is not None:
             return
             
-        logger.info(f"Loading data from {self.excel_path}")
+        logger.info(f"Loading data from {self.data_path} (is_csv={self.is_csv})")
         
-        # Load sheets
-        xls = pd.ExcelFile(self.excel_path)
-        
-        self.demand_history = pd.read_excel(xls, sheet_name='historique_demande')
-        self.transactions = pd.read_excel(xls, sheet_name='transactions')
-        self.transaction_lines = pd.read_excel(xls, sheet_name='lignes_transaction')
-        self.products = pd.read_excel(xls, sheet_name='produits')
+        if not self.is_csv:
+            # Load sheets from Excel
+            xls = pd.ExcelFile(self.data_path)
+            self.demand_history = pd.read_excel(xls, sheet_name='historique_demande')
+            self.transaction_lines = pd.read_excel(xls, sheet_name='lignes_transaction')
+            self.products = pd.read_excel(xls, sheet_name='produits')
+            if 'transactions' in xls.sheet_names:
+                self.transactions = pd.read_excel(xls, sheet_name='transactions')
+        else:
+            # Load from CSV files in the directory
+            self.demand_history = pd.read_csv(os.path.join(self.data_path, 'historique_demande.csv'))
+            self.transaction_lines = pd.read_csv(os.path.join(self.data_path, 'lignes_transaction.csv'))
+            self.products = pd.read_csv(os.path.join(self.data_path, 'produits.csv'))
+            # Transactions might be missing in some exports, but let's try
+            t_path = os.path.join(self.data_path, 'transactions.csv')
+            if os.path.exists(t_path):
+                self.transactions = pd.read_csv(t_path)
+
+        # Ensure column names are clean
+        for df in [self.demand_history, self.transaction_lines, self.products, self.transactions]:
+            if df is not None:
+                df.columns = df.columns.str.strip()
 
         # Clean Demand History
         self.demand_history = self._clean_df(self.demand_history, 'date')
@@ -262,6 +276,25 @@ class DeterministicForecastModel:
             z = 1.0
         return float(max(0.0, z * std_dev))
 
+    def calculate_confidence(self, series, demand_class, has_seasonality):
+        """
+        Calculates a confidence score (0-100) based on data volume and stability.
+        """
+        if len(series) == 0: return 0
+        
+        # 1. Volume Score (0-40 points)
+        volume_score = min(40, len(series)) # Max 40 points if 40+ days of history
+        
+        # 2. Stability Score (0-40 points)
+        cv = series.std() / series.mean() if series.mean() > 0 else 2.0
+        stability_score = max(0, 40 - (cv * 20))
+        
+        # 3. Pattern Bonus (0-20 points)
+        bonus = 20 if has_seasonality else 0
+        
+        total = volume_score + stability_score + bonus
+        return int(min(100, max(10, total)))
+
     def get_yoy_seasonal_demand(self, history, product_id, target_date=None):
         """
         Year-over-Year Seasonality: Check demand from the same day/month in previous years.
@@ -305,20 +338,21 @@ class DeterministicForecastModel:
         
         return {'yoy_avg': 0.0, 'yoy_count': 0, 'has_pattern': False}
 
-    def predict(self, history, product_id, regression_model, target_date=None):
+    def predict(self, history, product_id, regression_model, target_date=None, learning_engine=None):
         prepared = self._prepare_series(history, product_id)
-        if prepared.empty:
+        if prepared is None or prepared.empty or prepared['quantite_demande'].sum() == 0:
             return {
-                'forecast': 0.0,
+                'forecast': 1.0 if not prepared.empty else 0.0, # Baseline 1 for active but zero-demand SKUs
                 'ses': 0.0,
                 'regression': 0.0,
+                'confidence': 10 if not prepared.empty else 0,
                 'yoy_seasonal': 0.0,
                 'trend': 'stable',
                 'volatility': 'stable',
                 'trend_strength': 0.0,
                 'demand_class': 'slow_mover',
                 'safety_stock': 0.0,
-                'reasoning': 'No history available.'
+                'reasoning': 'Active SKU but zero demand in history.' if not prepared.empty else 'No history available.'
             }
 
         series = prepared['quantite_demande'].astype(float)
@@ -365,14 +399,23 @@ class DeterministicForecastModel:
                 rationale = 'Stable demand: REG-primary strategy.'
 
         safety_stock = self.compute_safety_stock(series, demand_class)
+        confidence = self.calculate_confidence(series, demand_class, has_seasonal_pattern)
         
-        # Optimal calibration: 1.27x targets WAP ~31% and Bias ~0.3%
-        forecast = float(max(0.0, forecast * 1.27))
+        # Adaptive calibration: Using the learning engine to adjust over time
+        if learning_engine:
+            factor = learning_engine.get_calibration_factor(product_id)
+            if abs(factor - 1.27) > 0.01:
+                rationale += f" [Adaptive Feedback: {factor:.2f}x]"
+        else:
+            factor = 1.27
+            
+        forecast = float(max(0.0, forecast * factor))
 
         return {
             'forecast': forecast,
             'ses': float(ses),
             'regression': float(reg_pred),
+            'confidence': confidence,
             'yoy_seasonal': float(yoy_seasonal),
             'yoy_pattern_detected': has_seasonal_pattern,
             'trend': trend,
@@ -405,6 +448,7 @@ class PreparationOrderService:
                     'quantity': round(prep_qty, 2),
                     'target_forecast': round(forecast, 2),
                     'current_stock': stock,
+                    'confidence': data.get('confidence', 0),
                     'reasoning': data.get('reasoning', '')
                 })
         
@@ -421,7 +465,7 @@ class PreparationOrderService:
         }
         return order_object
 
-    def validate_order(self, order_obj, sku_id=None, override_qty=None, justification=None):
+    def validate_order(self, order_obj, sku_id=None, override_qty=None, justification=None, learning_engine=None):
         """
         Step 1 — If Approved / Step 2 — If Overridden
         Implements auditability for manual interventions.
@@ -450,6 +494,11 @@ class PreparationOrderService:
                         logger.warning(f"AUDIT-LOG | Order: {order_obj['order_id']} | SKU: {sku_id} | "
                                        f"Changed from {item['original_ai_forecast']} to {override_qty} | "
                                        f"Reason: {justification}")
+                        
+                        # --- Model Learning: Supervisor Correction ---
+                        if learning_engine:
+                            # If supervisor reduces qty, AI was over-forecasting
+                            learning_engine.update_with_actuals(sku_id, item['original_ai_forecast'], override_qty)
                     break
             
         # Step 1: If Approved (Status -> VALIDATED)
@@ -459,10 +508,13 @@ class PreparationOrderService:
         return order_obj
 
 class ForecastingService:
-    def __init__(self, excel_path):
-        self.loader = DataLoader(excel_path)
+    def __init__(self, data_path, is_csv=False):
+        self.loader = DataLoader(data_path, is_csv=is_csv)
         self.baseline = BaselineModel()
         self.regression = RegressionModel()
+        self.learning_engine = LearningFeedbackEngine(
+            storage_path=os.path.join(REPORT_DIR, "model_learning.json")
+        )
         self.deterministic = DeterministicForecastModel()
         self.decision_layer = ForecastDecisionLayer()
         self.order_service = PreparationOrderService()
@@ -501,11 +553,13 @@ class ForecastingService:
                 test_date = history.iloc[t]['date'] if t < len(history) else datetime.now()
                 actual_value = float(history.iloc[t:t + horizon]['quantite_demande'].sum())
 
-                # Candidate models: REG and HYBRID only
+                # Candidate models: SMA, REG and HYBRID
+                sma_pred = self.baseline.predict(train_data, pid) * horizon
+                
                 reg_results = self.regression.analyze(train_data, pid)
                 reg_pred = float(reg_results.get('prediction', 0.0)) * horizon
 
-                deterministic = self.deterministic.predict(train_data, pid, self.regression, target_date=test_date)
+                deterministic = self.deterministic.predict(train_data, pid, self.regression, target_date=test_date, learning_engine=self.learning_engine)
                 hybrid_input = {
                     'id': pid,
                     'sma': deterministic['ses'],
@@ -528,6 +582,7 @@ class ForecastingService:
                 rolling_rows.append({
                     'sku_id': pid,
                     'actual': actual_value,
+                    'sma': max(0.0, sma_pred),
                     'reg': max(0.0, reg_pred),
                     'hybrid': max(0.0, hybrid_pred)
                 })
@@ -538,9 +593,9 @@ class ForecastingService:
 
         eval_df = pd.DataFrame(rolling_rows)
         
-        # Calculate Metrics (SMA removed)
+        # Calculate Metrics
         metrics = []
-        for model in ['reg', 'hybrid']:
+        for model in ['sma', 'reg', 'hybrid']:
             total_abs_error = (eval_df[model] - eval_df['actual']).abs().sum()
             total_actual = eval_df['actual'].sum()
             wap = (total_abs_error / total_actual) * 100 if total_actual > 0 else 0
@@ -553,10 +608,15 @@ class ForecastingService:
                 'WAP (%)': round(wap, 2),
                 'Bias (%)': round(bias_pct, 2)
             })
+            
+            # --- Model Learning Loop ---
+            if model == 'hybrid':
+                self.learning_engine.update_global_bias(bias_pct)
 
         metrics_df = pd.DataFrame(metrics)
 
         previous_reference = pd.DataFrame([
+            {'Model': 'SMA', 'WAP (%)': 52.12, 'Bias (%)': -2.15},
             {'Model': 'REG', 'WAP (%)': 44.59, 'Bias (%)': 3.53},
             {'Model': 'HYBRID', 'WAP (%)': 40.95, 'Bias (%)': 3.98},
         ])
@@ -712,7 +772,7 @@ class ForecastingService:
             if len(history) < 2: continue
             
             # 1. Deterministic Engine Outputs
-            deterministic = self.deterministic.predict(history, int(pid), self.regression, target_date=None)
+            deterministic = self.deterministic.predict(history, int(pid), self.regression, target_date=None, learning_engine=self.learning_engine)
             reg_results = self.regression.analyze(history, int(pid))
             guarded_input = {
                 'id': int(pid),
@@ -738,24 +798,64 @@ class ForecastingService:
             # Use Mistral API
             llm_decision = self.decision_layer.call_mistral_api(guarded_input)
             
-            logger.info(f"Product {pid} | SES: {deterministic['ses']:.2f} | Reg: {deterministic['regression']:.2f}")
-            logger.info(f"Decision: {llm_decision.get('final_forecast')} | Reason: {llm_decision.get('explanation')}")
+            # Explicit logging of selection
+            selected_model = llm_decision.get('model_selected', 'UNKNOWN')
+            confidence = deterministic.get('confidence', 0)
+            logger.info(f"Product {pid} | SES: {deterministic['ses']:.2f} | Reg: {deterministic['regression']:.2f} | Confidence: {confidence}%")
+            logger.info(f"WINNER -> Model: {selected_model} | Forecast: {llm_decision.get('final_forecast')} | Reason: {llm_decision.get('explanation')}")
             
             # Format combined results for Order Service
             forecast_metadata[pid] = {
                 'forecast': float(llm_decision.get('final_forecast', deterministic['forecast'])),
                 'safety_stock': float(deterministic.get('safety_stock', 0)), 
-                'reasoning': str(llm_decision.get('explanation', "Error in LLM response"))
+                'confidence': confidence,
+                'reasoning': f"[{selected_model}] {llm_decision.get('explanation', '')}"
             }
 
         # Generate Orders
         orders = self.order_service.generate_order_advanced(forecast_metadata, current_stock)
         return orders
 
+    def get_high_demand_skus(self, threshold_quantile=0.85):
+        """
+        Returns a list of SKUs that are predicted to have high demand tomorrow.
+        Uses the deterministic forecast engine.
+        """
+        self.loader.load_and_clean()
+        all_products = self.loader.demand_history['id_produit'].unique()
+        predictions = {}
+
+        for pid in all_products:
+            history = self.loader.demand_history[self.loader.demand_history['id_produit'] == pid]
+            if len(history) < 3:
+                continue
+            
+            # Use deterministic predict
+            target_date = datetime.now() + timedelta(days=1)
+            deterministic = self.deterministic.predict(history, pid, self.regression, target_date=target_date, learning_engine=self.learning_engine)
+            predictions[pid] = deterministic['forecast']
+
+        if not predictions:
+            return []
+
+        # Find top N%
+        pred_values = [v for v in predictions.values() if v > 0]
+        if not pred_values: return []
+        
+        thresh = np.quantile(pred_values, threshold_quantile)
+        high_demand_skus = [pid for pid, val in predictions.items() if val >= thresh and val > 0]
+        return high_demand_skus
+
 def main():
     # Adjusted path for reorganized structure
-    base_dir = os.path.dirname(os.path.dirname(__file__))
-    excel_path = os.path.join(base_dir, 'data', 'WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx')
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__))) # MOB_AI/backend
+    # The file should be in the backend root
+    excel_path = os.path.join(base_dir, 'backend', 'WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx')
+    
+    # Fallback if not found
+    if not os.path.exists(excel_path):
+        excel_path = "WMS_Hackathon_DataPack_Templates_FR_FV_B7_ONLY.xlsx"
+
     service = ForecastingService(excel_path)
     
     # --- REQUIREMENT 8.1: FORECASTING SERVICE ---
@@ -784,7 +884,7 @@ def main():
         
         # Display items for review
         items_df = pd.DataFrame(order['items'])
-        logger.info(f"\n--- ITEMS TO REVIEW ---\n{items_df[['sku_id', 'quantity', 'target_forecast', 'current_stock']].to_string(index=False)}")
+        logger.info(f"\n--- ITEMS TO REVIEW ---\n{items_df[['sku_id', 'quantity', 'target_forecast', 'confidence', 'current_stock']].to_string(index=False)}")
         
         # 2. Supervisor Actions
         if len(order['items']) > 0:
@@ -795,7 +895,8 @@ def main():
                 order, 
                 sku_id=sku_to_change, 
                 override_qty=50.0, 
-                justification="Manual buffer added for upcoming promotion detected by local manager."
+                justification="Manual buffer added for upcoming promotion detected by local manager.",
+                learning_engine=service.learning_engine
             )
             
             # Action B: Supervisor validates the rest of the order (Status moves to VALIDATED)

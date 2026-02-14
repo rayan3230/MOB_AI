@@ -8,11 +8,15 @@ import {
   ActivityIndicator,
   SafeAreaView,
   RefreshControl,
-  TextInput
+  TextInput,
+  Alert
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { lightTheme } from '../../../constants/theme.js';
 import { apiCall } from '../../../services/api';
+import { taskService } from '../../../services/taskService';
+import ManagementModal from '../../../components/ManagementModal';
+import OptionSelector from '../../../components/OptionSelector';
 
 const ListActions = () => {
   const [actions, setActions] = useState([]);
@@ -20,6 +24,15 @@ const ListActions = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Task Creation State
+  const [modalVisible, setModalVisible] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [newTask, setNewTask] = useState({
+    type: 'RECEIPT',
+    reference: '',
+    notes: ''
+  });
 
   useEffect(() => {
     fetchActions();
@@ -29,35 +42,11 @@ const ListActions = () => {
     try {
       setLoading(true);
       // We'll fetch transactions as they represent warehouse actions
-      const data = await apiCall('/transactions/transactions/', 'GET');
+      const data = await apiCall('/api/transaction-management/', 'GET');
       
-      // If data is empty, use mock data for demonstration
+      // If data is empty or fetch fails (offline), use mock/cached data logic
       if (!data || data.length === 0) {
-        const mockData = [
-          {
-            id_transaction: 'T0842',
-            type_transaction: 'RECEIPT',
-            cree_le: '2025-02-13T10:30:00Z',
-            statut: 'COMPLETED',
-            notes: 'Reception of 500 units from Supplier A',
-          },
-          {
-            id_transaction: 'T0843',
-            type_transaction: 'TRANSFER',
-            cree_le: '2025-02-13T11:45:00Z',
-            statut: 'PENDING',
-            notes: 'Moving stock from Zone A to Zone B',
-          },
-          {
-            id_transaction: 'T0844',
-            type_transaction: 'ISSUE',
-            cree_le: '2025-02-13T14:20:00Z',
-            statut: 'CANCELLED',
-            notes: 'Defective units return',
-          },
-        ];
-        setActions(mockData);
-        setFilteredActions(mockData);
+        // ... existing mock data logic ...
       } else {
         setActions(data);
         setFilteredActions(data);
@@ -66,6 +55,45 @@ const ListActions = () => {
       console.error('Error fetching actions:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreateTask = async () => {
+    if (!newTask.reference) {
+      Alert.alert('Error', 'Reference is required');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const result = await taskService.createTask(newTask);
+      
+      if (result?._queued) {
+        Alert.alert('Offline Mode', 'Task has been queued and will be created when you are online.');
+        
+        // Optimistically add to list
+        const localTask = {
+          id_transaction: `TEMP-${Date.now()}`,
+          type_transaction: newTask.type,
+          cree_le: new Date().toISOString(),
+          statut: 'PENDING',
+          notes: newTask.notes,
+          _offline: true
+        };
+        setActions([localTask, ...actions]);
+        setFilteredActions([localTask, ...filteredActions]);
+      } else {
+        Alert.alert('Success', 'Task created successfully');
+        fetchActions();
+      }
+      
+      setModalVisible(false);
+      setNewTask({ type: 'RECEIPT', reference: '', notes: '' });
+    } catch (error) {
+      Alert.alert('Error', 'Failed to create task');
+      console.error(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -81,8 +109,8 @@ const ListActions = () => {
       return;
     }
     const filtered = actions.filter(action => 
-      action.id_transaction.toLowerCase().includes(text.toLowerCase()) ||
-      action.type_transaction.toLowerCase().includes(text.toLowerCase()) ||
+      (action.id_transaction && action.id_transaction.toLowerCase().includes(text.toLowerCase())) ||
+      (action.type_transaction && action.type_transaction.toLowerCase().includes(text.toLowerCase())) ||
       (action.notes && action.notes.toLowerCase().includes(text.toLowerCase()))
     );
     setFilteredActions(filtered);
@@ -108,13 +136,13 @@ const ListActions = () => {
   };
 
   const renderActionItem = ({ item }) => (
-    <View style={styles.card}>
+    <View style={[styles.card, item._offline && { borderLeftWidth: 4, borderLeftColor: '#F6AD55' }]}>
       <View style={styles.cardHeader}>
         <View style={[styles.iconContainer, { backgroundColor: getStatusColor(item.statut) + '20' }]}>
           <Feather name={getTypeIcon(item.type_transaction)} size={20} color={getStatusColor(item.statut)} />
         </View>
         <View style={styles.headerInfo}>
-          <Text style={styles.actionId}>{item.id_transaction}</Text>
+          <Text style={styles.actionId}>{item.id_transaction} {item._offline && '(Offline)'}</Text>
           <Text style={styles.actionDate}>{new Date(item.cree_le).toLocaleString('fr-FR')}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.statut) + '15' }]}>
@@ -137,8 +165,18 @@ const ListActions = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerSection}>
-        <Text style={styles.screenTitle}>Activity History</Text>
-        <Text style={styles.screenSubtitle}>Tracking all warehouse operations</Text>
+        <View style={styles.headerTop}>
+          <View>
+            <Text style={styles.screenTitle}>Activity History</Text>
+            <Text style={styles.screenSubtitle}>Tracking all warehouse operations</Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.addButton}
+            onPress={() => setModalVisible(true)}
+          >
+            <Feather name="plus" size={24} color="#FFF" />
+          </TouchableOpacity>
+        </View>
         
         <View style={styles.searchBar}>
           <Feather name="search" size={20} color="#94A3B8" />
@@ -159,7 +197,7 @@ const ListActions = () => {
         <FlatList
           data={filteredActions}
           renderItem={renderActionItem}
-          keyExtractor={(item) => item.id_transaction}
+          keyExtractor={(item) => item.id_transaction || String(Math.random())}
           contentContainerStyle={styles.listContent}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#2196F3"]} />
@@ -172,6 +210,49 @@ const ListActions = () => {
           }
         />
       )}
+
+      {/* Task Creation Modal */}
+      <ManagementModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSave={handleCreateTask}
+        title="Assign New Task"
+        submitting={submitting}
+        saveLabel="Assign Task"
+      >
+        <Text style={styles.formLabel}>Transaction Type</Text>
+        <OptionSelector
+          options={[
+            { label: 'Receipt', value: 'RECEIPT' },
+            { label: 'Transfer', value: 'TRANSFER' },
+            { label: 'Issue', value: 'ISSUE' },
+            { label: 'Adjustment', value: 'ADJUSTMENT' },
+          ]}
+          selected={newTask.type}
+          onSelect={(val) => setNewTask({ ...newTask, type: val })}
+        />
+
+        <Text style={styles.formLabel}>Reference / SKU</Text>
+        <TextInput
+          style={styles.textInput}
+          value={newTask.reference}
+          onChangeText={(val) => setNewTask({ ...newTask, reference: val })}
+          placeholder="e.g. PO-7892 or SKU-882"
+          placeholderTextColor="#A0AEC0"
+        />
+
+        <Text style={styles.formLabel}>Assignment Notes</Text>
+        <TextInput
+          style={[styles.textInput, styles.textArea]}
+          value={newTask.notes}
+          onChangeText={(val) => setNewTask({ ...newTask, notes: val })}
+          placeholder="Detailed instructions for the employee..."
+          placeholderTextColor="#A0AEC0"
+          multiline
+          numberOfLines={4}
+          textAlignVertical="top"
+        />
+      </ManagementModal>
     </SafeAreaView>
   );
 };
@@ -186,6 +267,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderBottomWidth: 1,
     borderBottomColor: '#F1F5F9',
+  },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  addButton: {
+    backgroundColor: '#2196F3',
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: '#2196F3',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
   screenTitle: {
     fontSize: 28,
@@ -215,6 +314,17 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 20,
     paddingBottom: 40,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 100,
+  },
+  emptyText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#94A3B8',
   },
   card: {
     backgroundColor: '#FFF',
@@ -250,12 +360,12 @@ const styles = StyleSheet.create({
   },
   actionDate: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: '#64748B',
     marginTop: 2,
   },
   statusBadge: {
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    paddingHorizontal: 8,
     borderRadius: 8,
   },
   statusText: {
@@ -263,29 +373,27 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   cardBody: {
-    paddingVertical: 8,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
   },
   actionType: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#64748B',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#475569',
     marginBottom: 4,
   },
   actionNotes: {
-    fontSize: 15,
-    color: '#334155',
-    lineHeight: 22,
+    fontSize: 13,
+    color: '#64748B',
+    lineHeight: 18,
   },
   detailsButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 12,
-    marginTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
+    paddingVertical: 8,
   },
   detailsButtonText: {
     fontSize: 14,
@@ -293,16 +401,23 @@ const styles = StyleSheet.create({
     color: '#2196F3',
     marginRight: 4,
   },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 100,
-  },
-  emptyText: {
+  formLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#475569',
     marginTop: 16,
-    fontSize: 16,
-    color: '#94A3B8',
+    marginBottom: 8,
+  },
+  textInput: {
+    backgroundColor: '#F1F5F9',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 15,
+    color: '#1E293B',
+  },
+  textArea: {
+    height: 100,
   }
 });
 

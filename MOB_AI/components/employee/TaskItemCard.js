@@ -17,9 +17,10 @@ const formatDateTime = (value) => {
   return date.toLocaleString();
 };
 
-const TaskItemCard = ({ task, onDone, loading }) => {
+const TaskItemCard = ({ task, onDone, onStart, loading }) => {
   const statusColor = statusColorMap[task.status] || lightTheme.textSecondary;
-  const canBeCompleted = task.status !== 'COMPLETED' && task.status !== 'CANCELLED';
+  const canBeCompleted = task.status === 'CONFIRMED' || task.status === 'PENDING';
+  const canBeStarted = task.status === 'PENDING';
   
   // Priority logic (can be from backend or calculated)
   const priority = task.priority || 'NORMAL'; // HIGH, NORMAL, LOW
@@ -46,7 +47,7 @@ const TaskItemCard = ({ task, onDone, loading }) => {
       <View style={styles.headerRow}>
         <Text style={styles.title}>{task.title}</Text>
         <View style={[styles.statusChip, { backgroundColor: statusColor }]}>
-          <Text style={styles.statusText}>{task.status}</Text>
+          <Text style={styles.statusText}>{task.status === 'CONFIRMED' ? 'IN PROGRESS' : task.status}</Text>
         </View>
       </View>
 
@@ -63,17 +64,35 @@ const TaskItemCard = ({ task, onDone, loading }) => {
         </View>
       </View>
 
-      {canBeCompleted && (
-        <TouchableOpacity
-          style={[styles.doneButton, loading && styles.disabledButton]}
-          onPress={() => onDone(task.id)}
-          disabled={loading}
-          activeOpacity={0.8}
-        >
-          <Feather name="check-circle" size={15} color={lightTheme.white} />
-          <Text style={styles.doneButtonText}>{loading ? 'Saving...' : 'Mark as done'}</Text>
-        </TouchableOpacity>
-      )}
+      <View style={styles.actionContainer}>
+        {canBeStarted && (
+          <TouchableOpacity
+            style={[styles.startButton, loading && styles.disabledButton]}
+            onPress={() => onStart(task.id)}
+            disabled={loading}
+            activeOpacity={0.8}
+          >
+            <Feather name="play-circle" size={15} color={lightTheme.white} />
+            <Text style={styles.doneButtonText}>{loading ? '...' : 'Start'}</Text>
+          </TouchableOpacity>
+        )}
+
+        {canBeCompleted && (
+          <TouchableOpacity
+            style={[
+              styles.doneButton, 
+              loading && styles.disabledButton,
+              task.status === 'PENDING' && { flex: 2, backgroundColor: lightTheme.secondary }
+            ]}
+            onPress={() => onDone(task.id)}
+            disabled={loading}
+            activeOpacity={0.8}
+          >
+            <Feather name="check-circle" size={15} color={lightTheme.white} />
+            <Text style={styles.doneButtonText}>{loading ? 'Saving...' : 'Complete'}</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
@@ -87,6 +106,39 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 10,
     overflow: 'hidden',
+  },
+  actionContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 10,
+  },
+  startButton: {
+    flex: 1,
+    backgroundColor: lightTheme.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 10,
+    gap: 6,
+  },
+  doneButton: {
+    flex: 1,
+    backgroundColor: lightTheme.success,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 10,
+    gap: 6,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  doneButtonText: {
+    color: lightTheme.white,
+    fontWeight: '600',
+    fontSize: 14,
   },
   urgentCard: {
     borderColor: '#DC2626',

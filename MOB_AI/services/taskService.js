@@ -24,4 +24,23 @@ export const taskService = {
   markTaskDone: async (taskId) => {
     return await apiCall(`/api/transaction-management/${taskId}/complete_transaction/`, 'POST');
   },
+
+  startTask: async (taskId) => {
+    return await apiCall(`/api/transaction-management/${taskId}/confirm_transaction/`, 'POST');
+  },
+
+  createTask: async (taskData) => {
+    // Generate a temporary ID for offline tracking if needed
+    const tempId = `T${Date.now().toString().slice(-4)}`;
+    const payload = {
+      id_transaction: tempId,
+      type_transaction: taskData.type,
+      reference_transaction: taskData.reference || `REF-${tempId}`,
+      cree_le: new Date().toISOString(),
+      statut: 'PENDING',
+      notes: taskData.notes || '',
+      ...taskData
+    };
+    return await apiCall('/api/transaction-management/', 'POST', payload);
+  },
 };

@@ -1,34 +1,75 @@
 import { apiCall } from './api';
+import { offlineService } from './offlineService';
 
 export const warehouseService = {
     getWarehouses: async () => {
-        const response = await apiCall('/api/warehouse/warehouses/', 'GET');
-        if (Array.isArray(response)) {
-            return response;
+        try {
+            const response = await apiCall('/api/warehouse/warehouses/', 'GET');
+            const data = Array.isArray(response) ? response : (Array.isArray(response?.results) ? response.results : []);
+            if (data.length > 0) {
+                await offlineService.cacheData('warehouses', data);
+            }
+            return data;
+        } catch (error) {
+            const cached = await offlineService.getCachedData('warehouses');
+            if (cached) return cached;
+            throw error;
         }
-        if (Array.isArray(response?.results)) {
-            return response.results;
-        }
-        return [];
     },
 
     getWarehouseDetail: async (warehouseId) => {
-        return await apiCall(`/api/warehouse/warehouses/${warehouseId}/`, 'GET');
+        try {
+            const data = await apiCall(`/api/warehouse/warehouses/${warehouseId}/`, 'GET');
+            await offlineService.cacheData(`warehouse_detail_${warehouseId}`, data);
+            return data;
+        } catch (error) {
+            const cached = await offlineService.getCachedData(`warehouse_detail_${warehouseId}`);
+            if (cached) return cached;
+            throw error;
+        }
     },
 
     getWarehouseFloors: async (warehouseId) => {
-        return await apiCall(`/api/warehouse/warehouses/${warehouseId}/warehouse_floors/`, 'GET');
+        try {
+            const data = await apiCall(`/api/warehouse/warehouses/${warehouseId}/warehouse_floors/`, 'GET');
+            await offlineService.cacheData(`warehouse_floors_${warehouseId}`, data);
+            return data;
+        } catch (error) {
+            const cached = await offlineService.getCachedData(`warehouse_floors_${warehouseId}`);
+            if (cached) return cached;
+            throw error;
+        }
     },
 
     // Floor Management
     getFloors: async (warehouseId = null) => {
         const url = warehouseId ? `/api/warehouse/floors/?warehouse_id=${warehouseId}` : '/api/warehouse/floors/';
-        return await apiCall(url, 'GET');
+        try {
+            const data = await apiCall(url, 'GET');
+            if (warehouseId) await offlineService.cacheData(`floors_${warehouseId}`, data);
+            return data;
+        } catch (error) {
+            if (warehouseId) {
+                const cached = await offlineService.getCachedData(`floors_${warehouseId}`);
+                if (cached) return cached;
+            }
+            throw error;
+        }
     },
 
     getPickingFloors: async (warehouseId = null) => {
         const url = warehouseId ? `/api/warehouse/picking-floors/?warehouse_id=${warehouseId}` : '/api/warehouse/picking-floors/';
-        return await apiCall(url, 'GET');
+        try {
+            const data = await apiCall(url, 'GET');
+            if (warehouseId) await offlineService.cacheData(`picking_floors_${warehouseId}`, data);
+            return data;
+        } catch (error) {
+            if (warehouseId) {
+                const cached = await offlineService.getCachedData(`picking_floors_${warehouseId}`);
+                if (cached) return cached;
+            }
+            throw error;
+        }
     },
 
     createFloor: async (floorData) => {
@@ -71,7 +112,18 @@ export const warehouseService = {
         const url = hasValidWarehouseId
             ? `/api/warehouse/locations/?warehouse_id=${encodeURIComponent(normalizedWarehouseId)}`
             : '/api/warehouse/locations/';
-        return await apiCall(url, 'GET');
+        
+        try {
+            const data = await apiCall(url, 'GET');
+            if (hasValidWarehouseId) await offlineService.cacheData(`locations_${normalizedWarehouseId}`, data);
+            return data;
+        } catch (error) {
+            if (hasValidWarehouseId) {
+                const cached = await offlineService.getCachedData(`locations_${normalizedWarehouseId}`);
+                if (cached) return cached;
+            }
+            throw error;
+        }
     },
 
     getLocationsPaged: async (warehouseId = null, { limit = 20, offset = 0 } = {}) => {
@@ -88,7 +140,21 @@ export const warehouseService = {
         params.append('offset', String(offset));
 
         const url = `/api/warehouse/locations/?${params.toString()}`;
-        return await apiCall(url, 'GET');
+        
+        try {
+            const data = await apiCall(url, 'GET');
+            // We only cache the first page for offline map viewing
+            if (offset === 0 && normalizedWarehouseId) {
+                await offlineService.cacheData(`locations_paged_0_${normalizedWarehouseId}`, data);
+            }
+            return data;
+        } catch (error) {
+            if (offset === 0 && normalizedWarehouseId) {
+                const cached = await offlineService.getCachedData(`locations_paged_0_${normalizedWarehouseId}`);
+                if (cached) return cached;
+            }
+            throw error;
+        }
     },
 
     createLocation: async (locationData) => {
@@ -144,7 +210,17 @@ export const warehouseService = {
 
     getDashboardStats: async (warehouseId = null) => {
         const url = warehouseId ? `/api/warehouse/warehouses/dashboard_stats/?warehouse_id=${warehouseId}` : '/api/warehouse/warehouses/dashboard_stats/';
-        return await apiCall(url, 'GET');
+        try {
+            const data = await apiCall(url, 'GET');
+            const cacheKey = warehouseId ? `dashboard_stats_${warehouseId}` : 'dashboard_stats_global';
+            await offlineService.cacheData(cacheKey, data);
+            return data;
+        } catch (error) {
+            const cacheKey = warehouseId ? `dashboard_stats_${warehouseId}` : 'dashboard_stats_global';
+            const cached = await offlineService.getCachedData(cacheKey);
+            if (cached) return cached;
+            throw error;
+        }
     },
 
     adjustVrackQuantity: async (vrackId, delta) => {

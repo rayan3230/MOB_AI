@@ -1,0 +1,14 @@
+{
+    "global_calibration_history": [
+        1.27,
+        1.2954
+    ],
+    "sku_feedback": {
+        "31335": {
+            "total_error": 110.08000000000001,
+            "total_forecast": 210.08,
+            "adj": 0.9475196220541628
+        }
+    },
+    "category_bias": {}
+}

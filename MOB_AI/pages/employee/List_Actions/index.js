@@ -1,9 +1,11 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Modal, TextInput, FlatList } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { lightTheme } from '../../../constants/theme';
 import { warehouseService } from '../../../services/warehouseService';
 import { taskService } from '../../../services/taskService';
+import { offlineService } from '../../../services/offlineService';
+import { productService } from '../../../services/productService';
 import { apiCall } from '../../../services/api';
 import HeroMetricCard from '../../../components/employee/HeroMetricCard';
 import MetricCard from '../../../components/employee/MetricCard';
@@ -21,9 +23,28 @@ const EmployeeListActions = ({ route }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [error, setError] = useState(null);
 
+  // Product Locator State
+  const [locatorVisible, setLocatorVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+
   const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
+
+    // Try to sync any offline actions first
+    await offlineService.syncQueue();
+
+    // Initial load from cache to show something immediately
+    const [cachedStats, cachedTasks] = await Promise.all([
+      offlineService.getCachedData('employee_dashboard_stats'),
+      offlineService.getCachedData('employee_dashboard_tasks')
+    ]);
+
+    if (cachedStats) setStats(cachedStats);
+    if (cachedTasks) setTasks(cachedTasks);
+
     try {
       const [statsRes, taskRes] = await Promise.allSettled([
         warehouseService.getDashboardStats(),
@@ -32,6 +53,7 @@ const EmployeeListActions = ({ route }) => {
 
       if (statsRes.status === 'fulfilled') {
         setStats(statsRes.value);
+        await offlineService.cacheData('employee_dashboard_stats', statsRes.value);
       }
 
       // Hardcoded tasks with priority indicators
@@ -97,14 +119,16 @@ const EmployeeListActions = ({ route }) => {
           }
           return task;
         });
-        setTasks([...hardcodedTasks, ...tasksWithPriority]);
-      } else {
-        // Use only hardcoded tasks
+        const finalTasks = [...hardcodedTasks, ...tasksWithPriority];
+        setTasks(finalTasks);
+        await offlineService.cacheData('employee_dashboard_tasks', finalTasks);
+      } else if (!cachedTasks) {
+        // Use only hardcoded tasks if no cache exists
         setTasks(hardcodedTasks);
       }
       
-      // Check if both failed
-      if (statsRes.status === 'rejected' && taskRes.status === 'rejected') {
+      // Check if both failed and no cache
+      if (statsRes.status === 'rejected' && taskRes.status === 'rejected' && !cachedTasks && !cachedStats) {
         setError('Unable to connect to server. Please check your internet connection.');
       }
     } catch (error) {
@@ -117,6 +141,13 @@ const EmployeeListActions = ({ route }) => {
 
   useEffect(() => {
     loadData();
+    
+    // Set up a background sync interval every 30 seconds
+    const syncInterval = setInterval(() => {
+      offlineService.syncQueue();
+    }, 30000);
+
+    return () => clearInterval(syncInterval);
   }, [loadData]);
 
   const activeWarehouseCount = useMemo(
@@ -165,9 +196,15 @@ const EmployeeListActions = ({ route }) => {
   const handleMarkDone = async (taskId) => {
     setUpdatingTaskId(taskId);
     try {
-      await taskService.markTaskDone(taskId);
+      const response = await taskService.markTaskDone(taskId);
+      
       setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, status: 'COMPLETED' } : task)));
-      Alert.alert('✅ Success', 'Task completed successfully!', [{ text: 'OK' }]);
+      
+      if (response?._queued) {
+        Alert.alert('📡 Offline Mode', 'You are currently offline. This task status will be updated on the server once you reconnect.', [{ text: 'OK' }]);
+      } else {
+        Alert.alert('✅ Success', 'Task marked as completed!', [{ text: 'OK' }]);
+      }
     } catch (error) {
       console.error(error);
       const errorMsg = error?.detail || error?.message || 'Unable to update this task. Please try again.';
@@ -177,6 +214,43 @@ const EmployeeListActions = ({ route }) => {
       ]);
     } finally {
       setUpdatingTaskId(null);
+    }
+  };
+
+  const handleStartTask = async (taskId) => {
+    setUpdatingTaskId(taskId);
+    try {
+      const response = await taskService.startTask(taskId);
+      
+      setTasks((prev) => prev.map((task) => (task.id === taskId ? { ...task, status: 'CONFIRMED' } : task)));
+      
+      if (response?._queued) {
+        Alert.alert('📡 Offline Mode', 'You are currently offline. Task started locally and will sync later.', [{ text: 'OK' }]);
+      }
+    } catch (error) {
+      console.error(error);
+      const errorMsg = error?.detail || error?.message || 'Unable to start this task.';
+      Alert.alert('❌ Error', errorMsg);
+    } finally {
+      setUpdatingTaskId(null);
+    }
+  };
+
+  const handleSearch = async (text) => {
+    setSearchQuery(text);
+    if (text.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+    
+    setSearching(true);
+    try {
+      const results = await productService.locateProduct(text);
+      setSearchResults(results);
+    } catch (err) {
+      console.error('Search error:', err);
+    } finally {
+      setSearching(false);
     }
   };
 
@@ -337,18 +411,22 @@ const EmployeeListActions = ({ route }) => {
                 </View>
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.actionCard, styles.scanCard]} activeOpacity={0.85}>
+              <TouchableOpacity 
+                style={[styles.actionCard, styles.scanCard]} 
+                activeOpacity={0.85}
+                onPress={() => setLocatorVisible(true)}
+              >
                 <View style={styles.actionTop}>
                   <View style={[styles.actionIconCircle, styles.scanIcon]}>
-                    <Feather name="camera" size={24} color={lightTheme.white} />
+                    <Feather name="search" size={24} color={lightTheme.white} />
                   </View>
                   <View style={[styles.actionBadge, styles.scanBadge]}>
-                    <Feather name="zap" size={12} color={lightTheme.white} />
+                    <Feather name="map-pin" size={12} color={lightTheme.white} />
                   </View>
                 </View>
                 <View style={styles.actionBottom}>
-                  <Text style={[styles.actionTitle, { color: lightTheme.white }]}>Scan</Text>
-                  <Text style={[styles.actionSubtitle, { color: 'rgba(255,255,255,0.9)' }]}>Barcode reader</Text>
+                  <Text style={[styles.actionTitle, { color: lightTheme.white }]}>Locate</Text>
+                  <Text style={[styles.actionSubtitle, { color: 'rgba(255,255,255,0.9)' }]}>Find items</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -385,11 +463,73 @@ const EmployeeListActions = ({ route }) => {
               key={task.id}
               task={task}
               onDone={handleMarkDone}
+              onStart={handleStartTask}
               loading={updatingTaskId === task.id}
             />
           ))
         )}
       </ScrollView>
+
+      {/* Product Locator Modal */}
+      <Modal
+        visible={locatorVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setLocatorVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Product Locator</Text>
+              <TouchableOpacity onPress={() => setLocatorVisible(false)}>
+                <Feather name="x" size={24} color={lightTheme.textPrimary} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.searchBarContainer}>
+              <Feather name="search" size={20} color={lightTheme.textSecondary} style={styles.searchIcon} />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search by SKU or Name..."
+                value={searchQuery}
+                onChangeText={handleSearch}
+                autoFocus
+              />
+            </View>
+
+            {searching ? (
+              <ActivityIndicator style={{ marginTop: 20 }} color={lightTheme.primary} />
+            ) : (
+              <FlatList
+                data={searchResults}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={{ paddingBottom: 20 }}
+                ListEmptyComponent={
+                  <View style={styles.emptySearch}>
+                    <Text style={styles.emptySearchText}>
+                      {searchQuery.length < 2 ? 'Type at least 2 characters' : 'No products found'}
+                    </Text>
+                    {searchQuery.length >= 2 && <Text style={styles.offlineNote}>Showing results from local cache if offline</Text>}
+                  </View>
+                }
+                renderItem={({ item }) => (
+                  <View style={styles.resultItem}>
+                    <View style={styles.resultInfo}>
+                      <Text style={styles.resultName}>{item.name}</Text>
+                      <Text style={styles.resultSku}>{item.sku} • {item.category}</Text>
+                    </View>
+                    <View style={styles.resultLocation}>
+                      <Feather name="map-pin" size={14} color={lightTheme.primary} />
+                      <Text style={styles.locationText}>{item.location}</Text>
+                      <Text style={styles.warehouseText}>{item.warehouse}</Text>
+                    </View>
+                  </View>
+                )}
+              />
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -436,6 +576,95 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: lightTheme.textPrimary,
+  },
+  // Modal & Search Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: lightTheme.white,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    height: '80%',
+    padding: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: lightTheme.textPrimary,
+  },
+  searchBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F3F4F6',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    marginBottom: 16,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 44,
+    fontSize: 16,
+    color: lightTheme.textPrimary,
+  },
+  resultItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: lightTheme.border,
+  },
+  resultInfo: {
+    flex: 1,
+    marginRight: 8,
+  },
+  resultName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: lightTheme.textPrimary,
+  },
+  resultSku: {
+    fontSize: 13,
+    color: lightTheme.textSecondary,
+    marginTop: 2,
+  },
+  resultLocation: {
+    alignItems: 'flex-end',
+  },
+  locationText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: lightTheme.primary,
+  },
+  warehouseText: {
+    fontSize: 11,
+    color: lightTheme.textSecondary,
+    marginTop: 2,
+  },
+  emptySearch: {
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  emptySearchText: {
+    color: lightTheme.textSecondary,
+    fontSize: 16,
+  },
+  offlineNote: {
+    color: lightTheme.primary,
+    fontSize: 12,
+    marginTop: 8,
+    fontStyle: 'italic',
   },
   refreshButton: {
     flexDirection: 'row',
