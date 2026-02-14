@@ -1,4 +1,4 @@
-﻿id_produit,sku,nom_produit,unite_mesure,categorie,actif,collisage_fardeau,collisage_palette,poidsu 
+﻿id_produit,sku,nom_produit,unite_mesure,categorie,actif,collisage_fardeau,collisage_palette,poids
 31334,f2ee815bef75b7fecadf,14c03f68f1b77ab81c155e147dc6309129a85c9564d2b35d73103d11c26ec301,Unité(s),MOULURE,True,32,1600,0
 31335,fd874c7598d3465d97b4,afa26d113685cc9928ba6f6e5c2b44d8ebbf53226accb8c4a460feb2692b02e4,Unité(s),MOULURE,True,32,2100,0
 31336,a2dc16d4ff33ef593b3f,291e260b8fbb3204acba996d71e7e29afb54bb2a4dfdb17e94be82faf6fb580f,Unité(s),MOULURE,True,32,2300,0
