@@ -5513,3 +5513,10 @@ Final Items Sent to Warehouse:
   31348     80.94            80.94              0          46 [REG] Using calibrated deterministic forecast (trend-aware, REG-dominant).                   NaN               NaN                                                                   NaN         NaN
   31352     40.16            40.16              0          24  [SMA] Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
   31353    129.54           129.54              0          80  [SMA] Using calibrated deterministic forecast (REG-primary for accuracy).                   NaN               NaN                                                                   NaN         NaN
+2026-02-14 01:06:34,791 - ForecastingService - INFO - Loading data from folder_data/csv_cleaned/historique_demande.csv (is_csv=True)
+2026-02-14 01:06:53,657 - ForecastingService - INFO - Loading data from folder_data/csv_cleaned/ (is_csv=True)
+2026-02-14 01:06:54,226 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-14 01:06:54,448 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-14 01:11:00,739 - ForecastingService - INFO - Loading data from folder_data/csv_cleaned/ (is_csv=True)
+2026-02-14 01:11:01,254 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
+2026-02-14 01:11:01,441 - ForecastingService - INFO - Data loaded and cleaned successfully.
