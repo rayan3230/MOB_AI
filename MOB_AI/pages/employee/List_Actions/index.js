@@ -6,6 +6,7 @@ import { warehouseService } from '../../../services/warehouseService';
 import { taskService } from '../../../services/taskService';
 import { offlineService } from '../../../services/offlineService';
 import { productService } from '../../../services/productService';
+import { aiService } from '../../../services/aiService';
 import { apiCall } from '../../../services/api';
 import HeroMetricCard from '../../../components/employee/HeroMetricCard';
 import MetricCard from '../../../components/employee/MetricCard';
@@ -13,6 +14,7 @@ import TaskDonutCard from '../../../components/employee/TaskDonutCard';
 import TaskItemCard from '../../../components/employee/TaskItemCard';
 import NotificationBell from '../../../components/employee/NotificationBell';
 import TaskNotificationPanel from '../../../components/employee/TaskNotificationPanel';
+import WarehouseMap from '../../../components/WarehouseMap';
 
 const EmployeeListActions = ({ route }) => {
   const employeeName = route?.params?.user?.user_name || route?.params?.user?.username;
@@ -22,6 +24,12 @@ const EmployeeListActions = ({ route }) => {
   const [updatingTaskId, setUpdatingTaskId] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [error, setError] = useState(null);
+
+  // Route Optimization State
+  const [routeVisible, setRouteVisible] = useState(false);
+  const [optimizedRoute, setOptimizedRoute] = useState(null);
+  const [loadingRoute, setLoadingRoute] = useState(false);
+  const [mapData, setMapData] = useState(null);
 
   // Product Locator State
   const [locatorVisible, setLocatorVisible] = useState(false);
@@ -270,20 +278,37 @@ const EmployeeListActions = ({ route }) => {
     );
   };
 
-  const handlePick = () => {
-    Alert.alert(
-      '🛍️ Pick Orders',
-      'Start picking products for orders?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Start',
-          onPress: () => {
-            Alert.alert('✅ Success', 'Pick mode activated. Scan items to prepare orders.');
-          }
-        }
-      ]
-    );
+  const handlePick = async () => {
+    setLoadingRoute(true);
+    setRouteVisible(true);
+    
+    try {
+      // 1. Fetch Digital Twin map data (Floor 0)
+      const mapInfo = await aiService.getDigitalTwinMap(0);
+      setMapData(mapInfo);
+
+      // 2. Mock some pick locations for the demo
+      // In a real app, these would come from the task's order details
+      const picks = [
+        { x: 3, y: 12 },
+        { x: 18, y: 5 },
+        { x: 12, y: 15 },
+        { x: 5, y: 2 }
+      ];
+
+      // 3. Get AI optimized route
+      const result = await aiService.getAIPathOptimization(0, { x: 0, y: 0 }, picks);
+      if (result.status === 'success') {
+        setOptimizedRoute(result.data);
+      } else {
+        Alert.alert('AI Error', result.message || 'Failed to optimize route');
+      }
+    } catch (err) {
+      console.error('Pick session error:', err);
+      Alert.alert('Error', 'Unable to start optimized pick session. Please check your connection.');
+    } finally {
+      setLoadingRoute(false);
+    }
   };
 
   const handleMove = () => {
@@ -464,11 +489,90 @@ const EmployeeListActions = ({ route }) => {
               task={task}
               onDone={handleMarkDone}
               onStart={handleStartTask}
+              onViewMap={() => handlePick(task)}
               loading={updatingTaskId === task.id}
             />
           ))
         )}
       </ScrollView>
+
+      {/* Route Optimization Modal */}
+      <Modal
+        visible={routeVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setRouteVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { height: '85%' }]}>
+            <View style={styles.modalHeader}>
+              <View>
+                <Text style={styles.modalTitle}>AI Optimized Route</Text>
+                <Text style={styles.modalSubtitle}>Picking Sequence & Path</Text>
+              </View>
+              <TouchableOpacity onPress={() => setRouteVisible(false)}>
+                <Feather name="x" size={24} color={lightTheme.textPrimary} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.mapContainer}>
+              {loadingRoute ? (
+                <View style={styles.centerFixed}>
+                  <ActivityIndicator size="large" color={lightTheme.primary} />
+                  <Text style={styles.loadingText}>Calculating optimal path...</Text>
+                </View>
+              ) : optimizedRoute && mapData ? (
+                <>
+                  <WarehouseMap 
+                    mapData={mapData}
+                    pathData={optimizedRoute}
+                    width={350}
+                    height={400}
+                  />
+                  <View style={styles.routeLegend}>
+                    <View style={styles.legendItem}>
+                      <View style={[styles.legendDot, { backgroundColor: '#3B82F6' }]} />
+                      <Text style={styles.legendText}>Picking Point</Text>
+                    </View>
+                    <View style={styles.legendItem}>
+                      <View style={[styles.legendLine, { backgroundColor: '#10B981' }]} />
+                      <Text style={styles.legendText}>Optimized Path</Text>
+                    </View>
+                  </View>
+                  
+                  <View style={styles.statsSummary}>
+                    <View style={styles.statBox}>
+                      <Text style={styles.statVal}>{optimizedRoute.total_distance?.toFixed(1)}m</Text>
+                      <Text style={styles.statLab}>Distance</Text>
+                    </View>
+                    <View style={styles.statBox}>
+                      <Text style={styles.statVal}>{optimizedRoute.route_sequence?.length - 1}</Text>
+                      <Text style={styles.statLab}>Picks</Text>
+                    </View>
+                    <View style={styles.statBox}>
+                      <Text style={[styles.statVal, { color: lightTheme.success }]}>~{Math.ceil(optimizedRoute.total_distance * 0.1)}m</Text>
+                      <Text style={styles.statLab}>Time Est.</Text>
+                    </View>
+                  </View>
+                </>
+              ) : (
+                <View style={styles.centerFixed}>
+                  <Feather name="alert-triangle" size={40} color={lightTheme.warning} />
+                  <Text style={styles.errorText}>Unavailable to load route map</Text>
+                </View>
+              )}
+            </View>
+
+            <TouchableOpacity 
+              style={styles.confirmPickButton}
+              onPress={() => setRouteVisible(false)}
+            >
+              <Text style={styles.confirmPickText}>Start Picking Session</Text>
+              <Feather name="arrow-right" size={18} color={lightTheme.white} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Product Locator Modal */}
       <Modal
@@ -854,6 +958,106 @@ const styles = StyleSheet.create({
     color: lightTheme.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+  },
+  modalSubtitle: {
+    fontSize: 12,
+    color: lightTheme.textSecondary,
+    marginTop: 2,
+  },
+  mapContainer: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: lightTheme.border,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 10,
+    minHeight: 420,
+  },
+  centerFixed: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 12,
+  },
+  loadingText: {
+    color: lightTheme.textSecondary,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  errorText: {
+    color: lightTheme.textSecondary,
+    fontSize: 14,
+    marginTop: 8,
+  },
+  routeLegend: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+    marginTop: 10,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+    width: '100%',
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  legendDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  legendLine: {
+    width: 20,
+    height: 3,
+    borderRadius: 2,
+  },
+  legendText: {
+    fontSize: 11,
+    color: lightTheme.textSecondary,
+    fontWeight: '600',
+  },
+  statsSummary: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    paddingVertical: 15,
+    backgroundColor: '#F8FAFC',
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+  },
+  statBox: {
+    alignItems: 'center',
+  },
+  statVal: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: lightTheme.textPrimary,
+  },
+  statLab: {
+    fontSize: 11,
+    color: lightTheme.textSecondary,
+    textTransform: 'uppercase',
+    marginTop: 2,
+  },
+  confirmPickButton: {
+    backgroundColor: lightTheme.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 12,
+    gap: 10,
+    marginTop: 5,
+  },
+  confirmPickText: {
+    color: lightTheme.white,
+    fontSize: 16,
+    fontWeight: '700',
   },
 });
 

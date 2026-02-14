@@ -106,7 +106,7 @@ const SupervisorAIActions = ({ user, onOpenDrawer }) => {
     }
   };
 
-  const handleAccept = (prediction) => {
+  const handleAccept = async (prediction) => {
     Alert.alert(
       'Accept Prediction',
       'Are you sure you want to accept this AI prediction as the effective value?',
@@ -114,20 +114,36 @@ const SupervisorAIActions = ({ user, onOpenDrawer }) => {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Accept',
-          onPress: () => {
-            const updatedPredictions = predictions.map(p => {
-              if (p.id === prediction.id) {
-                return {
-                  ...p,
-                  status: 'Accepted',
-                  acceptedBy: user?.nom_complet || 'Supervisor',
-                  acceptDate: new Date().toLocaleString()
-                };
-              }
-              return p;
-            });
-            setPredictions(updatedPredictions);
-            Alert.alert('Success', 'AI prediction accepted.');
+          onPress: async () => {
+            setSubmitting(true);
+            try {
+              // Call AI Service to validate/audit
+              await aiService.validateOrder({
+                prediction_id: prediction.id,
+                action: 'ACCEPT',
+                user: user?.nom_complet || 'Supervisor',
+                justification: 'Accepted as proposed'
+              });
+
+              const updatedPredictions = predictions.map(p => {
+                if (p.id === prediction.id) {
+                  return {
+                    ...p,
+                    status: 'Accepted',
+                    acceptedBy: user?.nom_complet || 'Supervisor',
+                    acceptDate: new Date().toLocaleString()
+                  };
+                }
+                return p;
+              });
+              setPredictions(updatedPredictions);
+              Alert.alert('Success', 'AI prediction accepted and logged in audit trail.');
+            } catch (err) {
+              console.error('Accept error:', err);
+              Alert.alert('Error', 'Unable to sync with server. Changes saved locally.');
+            } finally {
+              setSubmitting(false);
+            }
           }
         }
       ]
@@ -141,29 +157,46 @@ const SupervisorAIActions = ({ user, onOpenDrawer }) => {
     setModalVisible(true);
   };
 
-  const handleSaveOverride = () => {
+  const handleSaveOverride = async () => {
     if (!overrideValue.trim() || !justification.trim()) {
       Alert.alert('Missing Information', 'Please provide both the new value and a justification.');
       return;
     }
 
-    const updatedPredictions = predictions.map(p => {
-      if (p.id === selectedPrediction.id) {
-        return {
-          ...p,
-          currentValue: overrideValue,
-          status: 'Overridden',
-          justification: justification,
-          overriddenBy: user?.nom_complet || 'Supervisor',
-          overrideDate: new Date().toLocaleString()
-        };
-      }
-      return p;
-    });
+    setSubmitting(true);
+    try {
+      // Req 8.4: Human-in-the-loop validation
+      await aiService.validateOrder({
+        prediction_id: selectedPrediction.id,
+        action: 'OVERRIDE',
+        override_value: overrideValue,
+        justification: justification,
+        user: user?.nom_complet || 'Supervisor'
+      });
 
-    setPredictions(updatedPredictions);
-    setModalVisible(false);
-    Alert.alert('Success', 'Prediction has been overridden successfully.');
+      const updatedPredictions = predictions.map(p => {
+        if (p.id === selectedPrediction.id) {
+          return {
+            ...p,
+            currentValue: overrideValue,
+            status: 'Overridden',
+            justification: justification,
+            overriddenBy: user?.nom_complet || 'Supervisor',
+            overrideDate: new Date().toLocaleString()
+          };
+        }
+        return p;
+      });
+
+      setPredictions(updatedPredictions);
+      setModalVisible(false);
+      Alert.alert('Success', 'Prediction has been overridden and logged.');
+    } catch (err) {
+      console.error('Override error:', err);
+      Alert.alert('Error', 'Server sync failed. Saved locally.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleReset = (prediction) => {

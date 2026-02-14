@@ -1,0 +1,44 @@
+# AI Integration Todo List - MOB_AI Project
+
+## Phase 1: Infrastructure & API (Foundation)
+- [x] **Project Scan**: Identified AI logic in `backend/ai_service` and corresponding frontend services.
+- [x] **Backend API Expansion**: 
+    - [x] Create `optimize-route/` endpoint in `ai_service.api.views`.
+    - [x] Create `map/<floor_idx>/` endpoint for Digital Twin layout.
+    - [x] Register new paths in `ai_service.api.urls`.
+- [x] **Frontend Service Update**: 
+    - [x] Added `getAIPathOptimization` to `aiService.js`.
+    - [x] Added `getDigitalTwinMap` to `aiService.js`.
+
+## Phase 2: Data Synchronization (Live Supabase)
+- [x] **Database Verification**: Confirmed connection to Supabase via `backend/settings.py`.
+- [x] **Django-AI Linkage**: Refactor `DataLoader` in `ai_service` to fetch data from Django Models (`Produit`, `Transaction`, `HistoriqueDemande`) instead of static CSV/Excel files.
+- [x] **Live Forecasting**: Transition `ForecastingService` to use live Supabase data for next-day demand predictions.
+- [x] **Live Picking Optimization**: Ensure `PickingOptimizationService` maps picking coordinates to live `Emplacement` models in the Supabase DB.
+
+## Phase 3: Frontend UI Integration
+- [x] **Route Visualization Component**:
+    - [x] Build `WarehouseMap.js` (SVG based viewer).
+    - [x] Plot `path_segments` from AI response on the map.
+    - [x] Integrated zooming and sequence markers.
+- [x] **Employee Task Screen**:
+    - [x] Updated `EmployeeListActions` to handle route optimization.
+    - [x] Added "Route" button to `TaskItemCard` for pick tasks.
+    - [x] Displaying distance and time estimates.
+- [x] **Supervisor Dashboard**:
+    - [x] Enabled real AI forecast fetching in `SupervisorAIActions`.
+    - [x] Integrated `WarehouseMap` support for Zoning Visualization (FAST/MEDIUM/SLOW heatmaps).
+
+## Phase 4: Intelligence & Governance
+- [x] **Human-in-the-loop**: Integrated `validateOrder` calls in Supervisor portal for accepting/overriding AI predictions.
+- [x] **Auditability**: All overrides now require justification and are logged in the backend.
+- [x] **Learning Loop**: 
+    - [x] Created `AIPerformanceLog` model to track predicted vs actual metrics.
+    - [x] Enhanced `LearningFeedbackEngine` to adjust travel speed based on real performance.
+    - [x] Built `run_learning_loop` management command for continuous background processing.
+    - [x] Added `/api/forecast/record-performance/` endpoint for frontend integration.
+- [x] **Governance Logging**: Verified `AuditTrail` is populated on every manual override interaction.
+
+---
+*Created on 2026-02-14*
+*Completed on 2026-02-14*

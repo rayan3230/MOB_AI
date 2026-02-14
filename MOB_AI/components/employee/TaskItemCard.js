@@ -17,10 +17,11 @@ const formatDateTime = (value) => {
   return date.toLocaleString();
 };
 
-const TaskItemCard = ({ task, onDone, onStart, loading }) => {
+const TaskItemCard = ({ task, onDone, onStart, onViewMap, loading }) => {
   const statusColor = statusColorMap[task.status] || lightTheme.textSecondary;
   const canBeCompleted = task.status === 'CONFIRMED' || task.status === 'PENDING';
   const canBeStarted = task.status === 'PENDING';
+  const isPickTask = task.title?.toLowerCase().includes('pick');
   
   // Priority logic (can be from backend or calculated)
   const priority = task.priority || 'NORMAL'; // HIGH, NORMAL, LOW
@@ -65,6 +66,18 @@ const TaskItemCard = ({ task, onDone, onStart, loading }) => {
       </View>
 
       <View style={styles.actionContainer}>
+        {isPickTask && (
+          <TouchableOpacity
+            style={[styles.mapButton, loading && styles.disabledButton]}
+            onPress={() => onViewMap(task)}
+            disabled={loading}
+            activeOpacity={0.8}
+          >
+            <Feather name="map" size={15} color={lightTheme.primary} />
+            <Text style={styles.mapButtonText}>Route</Text>
+          </TouchableOpacity>
+        )}
+
         {canBeStarted && (
           <TouchableOpacity
             style={[styles.startButton, loading && styles.disabledButton]}
@@ -111,6 +124,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     marginTop: 10,
+  },
+  mapButton: {
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: lightTheme.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 10,
+    gap: 6,
+    backgroundColor: lightTheme.bgHighlight,
+  },
+  mapButtonText: {
+    color: lightTheme.primary,
+    fontWeight: '700',
+    fontSize: 14,
   },
   startButton: {
     flex: 1,

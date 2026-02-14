@@ -5520,3 +5520,227 @@ Final Items Sent to Warehouse:
 2026-02-14 01:11:00,739 - ForecastingService - INFO - Loading data from folder_data/csv_cleaned/ (is_csv=True)
 2026-02-14 01:11:01,254 - ForecastingService - INFO - Aggregating demand history to daily level per SKU.
 2026-02-14 01:11:01,441 - ForecastingService - INFO - Data loaded and cleaned successfully.
+2026-02-14 02:21:40,679 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:21:43,401 - ForecastingService - ERROR - Error fetching data from Supabase: column transactions.cree_par_id_utilisateur_id does not exist
+LINE 1: ...reference_transaction", "transactions"."cree_le", "transacti...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "transactions.cree_par_id_utilisateur".
+
+2026-02-14 02:22:31,575 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:22:36,057 - ForecastingService - ERROR - Error fetching data from Supabase: column transactions.cree_par_id_utilisateur_id does not exist
+LINE 1: ...reference_transaction", "transactions"."cree_le", "transacti...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "transactions.cree_par_id_utilisateur".
+
+2026-02-14 02:22:46,271 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 1.1593333333333333 m/s based on performance data.
+2026-02-14 02:26:07,450 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:26:07,915 - ForecastingService - ERROR - Error fetching data from Supabase: column transactions.cree_par_id_utilisateur_id does not exist
+LINE 1: ...reference_transaction", "transactions"."cree_le", "transacti...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "transactions.cree_par_id_utilisateur".
+
+2026-02-14 02:26:39,226 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:26:39,681 - ForecastingService - ERROR - Error fetching data from Supabase: column transactions.cree_par_id_utilisateur_id does not exist
+LINE 1: ...reference_transaction", "transactions"."cree_le", "transacti...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "transactions.cree_par_id_utilisateur".
+
+2026-02-14 02:26:39,973 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 1.1190777777777778 m/s based on performance data.
+2026-02-14 02:27:28,058 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:27:28,502 - ForecastingService - ERROR - Error fetching data from Supabase: column transactions.cree_par_id_utilisateur_id does not exist
+LINE 1: ...reference_transaction", "transactions"."cree_le", "transacti...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "transactions.cree_par_id_utilisateur".
+
+2026-02-14 02:27:28,798 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 1.0814222222222223 m/s based on performance data.
+2026-02-14 02:31:24,479 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:31:24,919 - ForecastingService - ERROR - Error fetching data from Supabase: column transactions.cree_par_id_utilisateur_id does not exist
+LINE 1: ...reference_transaction", "transactions"."cree_le", "transacti...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "transactions.cree_par_id_utilisateur".
+
+2026-02-14 02:31:25,225 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 1.0346454545454546 m/s based on performance data.
+2026-02-14 02:32:46,126 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:32:46,577 - ForecastingService - ERROR - Error fetching data from Supabase: column transactions.cree_par_id_utilisateur_id does not exist
+LINE 1: ...reference_transaction", "transactions"."cree_le", "transacti...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "transactions.cree_par_id_utilisateur".
+
+2026-02-14 02:32:46,932 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.9833118686868687 m/s based on performance data.
+2026-02-14 02:34:19,346 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:34:19,801 - ForecastingService - ERROR - Error fetching data from Supabase: column transactions.cree_par_id_utilisateur_id does not exist
+LINE 1: ...reference_transaction", "transactions"."cree_le", "transacti...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "transactions.cree_par_id_utilisateur".
+
+2026-02-14 02:34:20,163 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.934489393939394 m/s based on performance data.
+2026-02-14 02:34:22,606 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:34:23,473 - ForecastingService - ERROR - Error fetching data from Supabase: column transactions.cree_par_id_utilisateur_id does not exist
+LINE 1: ...reference_transaction", "transactions"."cree_le", "transacti...
+                                                             ^
+HINT:  Perhaps you meant to reference the column "transactions.cree_par_id_utilisateur".
+
+2026-02-14 02:34:23,476 - django.request - ERROR - Internal Server Error: /api/forecast/all/
+2026-02-14 02:34:25,545 - django.request - ERROR - Internal Server Error: /api/forecast/map/0/
+2026-02-14 02:34:29,655 - django.request - ERROR - Internal Server Error: /api/forecast/optimize-route/
+2026-02-14 02:34:34,246 - ForecastingService - ERROR - No order object provided for validation.
+2026-02-14 02:34:34,295 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.893269696969697 m/s based on performance data.
+2026-02-14 02:38:00,932 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\Transaction\models.py changed, reloading.
+2026-02-14 02:38:25,497 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\Transaction\models.py changed, reloading.
+2026-02-14 02:38:50,734 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 02:39:06,394 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:39:07,087 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:39:07,422 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.8526244949494949 m/s based on performance data.
+2026-02-14 02:39:09,567 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:39:10,615 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:39:10,619 - django.request - ERROR - Internal Server Error: /api/forecast/all/
+2026-02-14 02:39:12,683 - django.request - ERROR - Internal Server Error: /api/forecast/map/0/
+2026-02-14 02:39:16,767 - django.request - ERROR - Internal Server Error: /api/forecast/optimize-route/
+2026-02-14 02:39:21,451 - ForecastingService - ERROR - No order object provided for validation.
+2026-02-14 02:40:10,897 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 02:40:25,490 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 02:40:37,035 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:40:37,691 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:40:38,078 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.8119861111111111 m/s based on performance data.
+2026-02-14 02:40:40,191 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:40:41,205 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:40:41,208 - django.request - ERROR - Internal Server Error: /api/forecast/all/
+2026-02-14 02:40:43,248 - django.request - ERROR - Internal Server Error: /api/forecast/map/0/
+2026-02-14 02:40:47,373 - django.request - ERROR - Internal Server Error: /api/forecast/optimize-route/
+2026-02-14 02:40:51,985 - ForecastingService - ERROR - No order object provided for validation.
+2026-02-14 02:41:24,148 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 02:41:34,683 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:41:35,317 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:41:35,669 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.7759840909090909 m/s based on performance data.
+2026-02-14 02:41:37,799 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:41:38,759 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:41:38,763 - django.request - ERROR - Internal Server Error: /api/forecast/all/
+2026-02-14 02:41:40,823 - django.request - ERROR - Internal Server Error: /api/forecast/map/0/
+2026-02-14 02:41:44,920 - django.request - ERROR - Internal Server Error: /api/forecast/optimize-route/
+2026-02-14 02:41:49,463 - ForecastingService - ERROR - No order object provided for validation.
+2026-02-14 02:42:19,789 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:42:20,479 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:42:20,922 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.7446439393939395 m/s based on performance data.
+2026-02-14 02:42:23,090 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:42:23,090 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:42:23,090 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:42:23,090 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:42:25,137 - django.request - ERROR - Internal Server Error: /api/forecast/map/0/
+2026-02-14 02:42:29,250 - django.request - ERROR - Internal Server Error: /api/forecast/optimize-route/
+2026-02-14 02:42:33,831 - ForecastingService - ERROR - No order object provided for validation.
+2026-02-14 02:42:48,304 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 02:43:00,790 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:43:01,419 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:43:01,571 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:43:01,571 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:43:01,572 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:43:01,572 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:43:01,813 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.7056348484848485 m/s based on performance data.
+2026-02-14 02:43:03,952 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:43:04,966 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:43:05,006 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:43:05,006 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:43:05,007 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:43:05,007 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:43:07,056 - django.request - ERROR - Internal Server Error: /api/forecast/map/0/
+2026-02-14 02:43:11,161 - django.request - ERROR - Internal Server Error: /api/forecast/optimize-route/
+2026-02-14 02:43:15,746 - ForecastingService - ERROR - No order object provided for validation.
+2026-02-14 02:43:15,798 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.6819585858585858 m/s based on performance data.
+2026-02-14 02:43:41,379 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\core\forecasting_service.py changed, reloading.
+2026-02-14 02:44:40,974 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 02:44:58,696 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:44:59,518 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:44:59,801 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:44:59,802 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:44:59,802 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:44:59,803 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:45:00,087 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.6514434343434343 m/s based on performance data.
+2026-02-14 02:45:02,212 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:45:03,229 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:45:03,278 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:45:03,279 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:45:03,279 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:45:03,279 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:45:09,453 - django.request - ERROR - Internal Server Error: /api/forecast/optimize-route/
+2026-02-14 02:45:14,032 - ForecastingService - ERROR - No order object provided for validation.
+2026-02-14 02:46:35,350 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 02:46:51,911 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:46:52,543 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:46:52,721 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:46:52,722 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:46:52,722 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:46:52,726 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:46:53,033 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.6209305555555555 m/s based on performance data.
+2026-02-14 02:46:55,161 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:46:56,145 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:46:56,186 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:46:56,187 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:46:56,187 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:46:56,187 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:47:02,342 - django.request - ERROR - Internal Server Error: /api/forecast/optimize-route/
+2026-02-14 02:47:06,726 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 02:47:21,499 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:47:22,123 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:47:22,268 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:47:22,268 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:47:22,268 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:47:22,268 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:47:22,492 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.5939631313131313 m/s based on performance data.
+2026-02-14 02:47:24,616 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:47:25,750 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:47:25,788 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:47:25,788 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:47:25,789 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:47:25,789 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:47:31,981 - django.request - ERROR - Internal Server Error: /api/forecast/optimize-route/
+2026-02-14 02:47:36,549 - ForecastingService - ERROR - No order object provided for validation.
+2026-02-14 02:48:57,385 - django.request - ERROR - Internal Server Error: /api/forecast/optimize-route/
+2026-02-14 02:49:23,314 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 02:50:42,912 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:50:43,538 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:50:43,592 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:50:43,593 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:50:43,593 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:50:43,593 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:50:43,817 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 1.1496060606060605 m/s based on performance data.
+2026-02-14 02:50:45,946 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:50:47,395 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:50:47,437 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:50:47,438 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:50:47,438 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:50:47,438 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:50:53,806 - django.request - ERROR - Internal Server Error: /api/forecast/optimize-route/
+2026-02-14 02:50:58,396 - ForecastingService - ERROR - No order object provided for validation.
+2026-02-14 02:51:09,645 - django.request - ERROR - Internal Server Error: /api/forecast/optimize-route/
+2026-02-14 02:51:28,376 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 02:51:29,255 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 02:52:12,754 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:52:13,366 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:52:13,421 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:52:13,422 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:52:13,422 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:52:13,422 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:52:13,684 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 1.0985694444444443 m/s based on performance data.
+2026-02-14 02:52:15,797 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:52:16,856 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:52:16,935 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:52:16,935 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:52:16,936 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:52:16,936 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:52:27,632 - ForecastingService - ERROR - No order object provided for validation.
+2026-02-14 02:53:08,055 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 02:53:08,229 - django.utils.autoreload - INFO - C:\Users\PC\Desktop\Studies\MOB_AI\backend\ai_service\api\views.py changed, reloading.
+2026-02-14 02:54:34,322 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:54:34,949 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:54:35,095 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:54:35,095 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:54:35,096 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:54:35,096 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:54:35,332 - LearningEngine - INFO - LEARNING: Adjusted AI travel speed to 0.5632563131313131 m/s based on performance data.
+2026-02-14 02:54:37,463 - ForecastingService - INFO - No data path provided. Loading from Supabase (Django Models)...
+2026-02-14 02:54:38,636 - ForecastingService - INFO - Successfully fetched 1574 products and 0 history points from Supabase.
+2026-02-14 02:54:38,671 - ForecastingService - INFO - Data workflow complete.
+2026-02-14 02:54:38,671 - ForecastingService - INFO - Computing current stock levels from transaction history.
+2026-02-14 02:54:38,675 - ForecastingService - WARNING - No transaction lines available for stock calculation.
+2026-02-14 02:54:38,676 - ForecastingService - WARNING - No demand history available. Cannot generate forecasts.
+2026-02-14 02:54:49,402 - ForecastingService - ERROR - No order object provided for validation.

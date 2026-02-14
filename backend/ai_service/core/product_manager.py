@@ -2,9 +2,10 @@ import pandas as pd
 import numpy as np
 from typing import Dict, List, Tuple
 from ..engine.base import StorageClass
+from Produit.models import Produit, HistoriqueDemande
 
 class ProductStorageManager:
-    def __init__(self, products_csv: str, demand_csv: str):
+    def __init__(self, products_csv: str = None, demand_csv: str = None):
         self.products_path = products_csv
         self.demand_path = demand_csv
         self.products_df = pd.DataFrame()
@@ -15,13 +16,25 @@ class ProductStorageManager:
         self.calculate_product_classes()
 
     def load_data(self):
-        try:
-            self.products_df = pd.read_csv(self.products_path)
-            self.products_df.columns = self.products_df.columns.str.strip()
-            self.demand_df = pd.read_csv(self.demand_path)
-            self.demand_df.columns = self.demand_df.columns.str.strip()
-        except Exception as e:
-            print(f"Error loading CSV data: {e}")
+        if self.products_path is None or self.demand_path is None:
+            try:
+                # Load from Supabase via Django
+                self.products_df = pd.DataFrame(list(Produit.objects.all().values()))
+                self.demand_df = pd.DataFrame(list(HistoriqueDemande.objects.all().values()))
+                if not self.products_df.empty:
+                    self.products_df.columns = self.products_df.columns.str.strip()
+                if not self.demand_df.empty:
+                    self.demand_df.columns = self.demand_df.columns.str.strip()
+            except Exception as e:
+                print(f"Error loading data from Supabase: {e}")
+        else:
+            try:
+                self.products_df = pd.read_csv(self.products_path)
+                self.products_df.columns = self.products_df.columns.str.strip()
+                self.demand_df = pd.read_csv(self.demand_path)
+                self.demand_df.columns = self.demand_df.columns.str.strip()
+            except Exception as e:
+                print(f"Error loading CSV data: {e}")
 
     def calculate_product_classes(self):
         """

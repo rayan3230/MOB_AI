@@ -8,6 +8,11 @@ from sklearn.linear_model import LinearRegression
 from .decision_layer import ForecastDecisionLayer
 from .learning_engine import LearningFeedbackEngine
 
+# Import Django models
+from django.forms.models import model_to_dict
+from Produit.models import Produit, HistoriqueDemande, DelaisApprovisionnement, PolitiqueReapprovisionnement, cmd_achat_ouvertes_opt
+from Transaction.models import Transaction, LigneTransaction
+
 # Set up paths for reports
 REPORT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "reports")
 os.makedirs(REPORT_DIR, exist_ok=True)
@@ -24,7 +29,7 @@ logging.basicConfig(
 logger = logging.getLogger("ForecastingService")
 
 class DataLoader:
-    def __init__(self, data_path, is_csv=False):
+    def __init__(self, data_path=None, is_csv=False):
         self.data_path = data_path
         self.is_csv = is_csv
         self.demand_history = None
@@ -36,59 +41,103 @@ class DataLoader:
         if hasattr(self, 'demand_history') and self.demand_history is not None:
             return
             
-        logger.info(f"Loading data from {self.data_path} (is_csv={self.is_csv})")
-        
-        if not self.is_csv:
-            # Load sheets from Excel
-            xls = pd.ExcelFile(self.data_path)
-            self.demand_history = pd.read_excel(xls, sheet_name='historique_demande')
-            self.transaction_lines = pd.read_excel(xls, sheet_name='lignes_transaction')
-            self.products = pd.read_excel(xls, sheet_name='produits')
-            if 'transactions' in xls.sheet_names:
-                self.transactions = pd.read_excel(xls, sheet_name='transactions')
+        if self.data_path is None:
+            logger.info("No data path provided. Loading from Supabase (Django Models)...")
+            self._load_from_django()
         else:
-            # Load from CSV files in the directory
-            self.demand_history = pd.read_csv(os.path.join(self.data_path, 'historique_demande.csv'))
-            self.transaction_lines = pd.read_csv(os.path.join(self.data_path, 'lignes_transaction.csv'))
-            self.products = pd.read_csv(os.path.join(self.data_path, 'produits.csv'))
-            # Transactions might be missing in some exports, but let's try
-            t_path = os.path.join(self.data_path, 'transactions.csv')
-            if os.path.exists(t_path):
-                self.transactions = pd.read_csv(t_path)
+            logger.info(f"Loading data from {self.data_path} (is_csv={self.is_csv})")
+            if not self.is_csv:
+                # Load sheets from Excel
+                xls = pd.ExcelFile(self.data_path)
+                self.demand_history = pd.read_excel(xls, sheet_name='historique_demande')
+                self.transaction_lines = pd.read_excel(xls, sheet_name='lignes_transaction')
+                self.products = pd.read_excel(xls, sheet_name='produits')
+                if 'transactions' in xls.sheet_names:
+                    self.transactions = pd.read_excel(xls, sheet_name='transactions')
+            else:
+                # Load from CSV files in the directory
+                self.demand_history = pd.read_csv(os.path.join(self.data_path, 'historique_demande.csv'))
+                self.transaction_lines = pd.read_csv(os.path.join(self.data_path, 'lignes_transaction.csv'))
+                self.products = pd.read_csv(os.path.join(self.data_path, 'produits.csv'))
+                t_path = os.path.join(self.data_path, 'transactions.csv')
+                if os.path.exists(t_path):
+                    self.transactions = pd.read_csv(t_path)
 
         # Ensure column names are clean
         for df in [self.demand_history, self.transaction_lines, self.products, self.transactions]:
-            if df is not None:
-                df.columns = df.columns.str.strip()
+            if df is not None and not df.empty:
+                # Convert column names to strings first, then strip whitespace
+                df.columns = [str(col).strip() for col in df.columns]
 
+    def _load_from_django(self):
+        """Fetches data directly from Supabase via Django ORM."""
+        try:
+            # 1. Products
+            prods = Produit.objects.all().values()
+            self.products = pd.DataFrame(list(prods))
+            
+            # 2. Demand History
+            history = HistoriqueDemande.objects.all().values()
+            self.demand_history = pd.DataFrame(list(history))
+            
+            # 3. Transactions & Lines - Now safe to use .values() with db_column fix
+            transactions = Transaction.objects.all().values(
+                'id_transaction', 'type_transaction', 'reference_transaction', 
+                'cree_le', 'statut', 'notes'
+            )
+            self.transactions = pd.DataFrame(list(transactions))
+            
+            lines = LigneTransaction.objects.all().values()
+            self.transaction_lines = pd.DataFrame(list(lines))
+            
+            logger.info(f"Successfully fetched {len(self.products)} products and {len(self.demand_history)} history points from Supabase.")
+        except Exception as e:
+            logger.error(f"Error fetching data from Supabase: {e}")
+            # Fallback to empty DataFrames to avoid crash
+            self.products = pd.DataFrame()
+            self.demand_history = pd.DataFrame()
+            self.transactions = pd.DataFrame()
+            self.transaction_lines = pd.DataFrame()
+
+    def load_and_clean_wrapper(self):
+        """Main entry point for loading and cleaning."""
+        self.load_and_clean()
+        
         # Clean Demand History
-        self.demand_history = self._clean_df(self.demand_history, 'date')
-        self.demand_history['quantite_demande'] = pd.to_numeric(self.demand_history['quantite_demande'], errors='coerce')
-        self.demand_history = self.demand_history.dropna(subset=['date', 'id_produit', 'quantite_demande'])
-        self.demand_history = self.demand_history[self.demand_history['quantite_demande'] >= 0]
-        
-        # Step 3 — Aggregate to Daily Level
-        logger.info("Aggregating demand history to daily level per SKU.")
-        self.demand_history['date'] = self.demand_history['date'].dt.normalize()
-        self.demand_history = self.demand_history.groupby(['id_produit', 'date'], as_index=False)['quantite_demande'].sum()
-        
-        self.demand_history = self.demand_history.sort_values(['id_produit', 'date'])
+        if self.demand_history is not None and not self.demand_history.empty:
+            if 'date' in self.demand_history.columns:
+                self.demand_history['date'] = pd.to_datetime(self.demand_history['date'], errors='coerce')
+                self.demand_history['quantite_demande'] = pd.to_numeric(self.demand_history['quantite_demande'], errors='coerce')
+                self.demand_history = self.demand_history.dropna(subset=['date', 'id_produit', 'quantite_demande'])
+                self.demand_history = self.demand_history[self.demand_history['quantite_demande'] >= 0]
+                self.demand_history['date'] = self.demand_history['date'].dt.normalize()
+                self.demand_history = self.demand_history.groupby(['id_produit', 'date'], as_index=False)['quantite_demande'].sum()
+                self.demand_history = self.demand_history.sort_values(['id_produit', 'date'])
 
         # Clean Products
-        self.products = self._clean_df(self.products)
+        if self.products is not None and not self.products.empty:
+            self.products = self._clean_df(self.products)
         
         # Clean Transactions and Lines
-        self.transactions = self._clean_df(self.transactions, 'cree_le')
-        self.transaction_lines = self._clean_df(self.transaction_lines)
-        
-        logger.info("Data loaded and cleaned successfully.")
+        if self.transactions is not None and not self.transactions.empty:
+            self.transactions = self._clean_df(self.transactions, 'cree_le')
+        if self.transaction_lines is not None and not self.transaction_lines.empty:
+            self.transaction_lines = self._clean_df(self.transaction_lines)
+            
+        logger.info("Data workflow complete.")
 
     def _clean_df(self, df, date_col=None):
         # Remove template/dummy rows (commonly 'texte' or 'O')
-        if not df.empty:
+        if not df.empty and len(df.columns) > 0:
             # Assuming 'id' columns or first columns might have 'texte'
             first_col = df.columns[0]
-            df = df[~df[first_col].astype(str).str.contains('texte|identifiant|entier|^O$', case=False, na=False)]
+            # Convert to string safely, handling any non-string types
+            try:
+                df_copy = df.copy()
+                df_copy[first_col] = df_copy[first_col].fillna('').astype(str)
+                df = df[~df_copy[first_col].str.contains('texte|identifiant|entier|^O$', case=False, na=False)]
+            except Exception as e:
+                logger.warning(f"Could not clean DataFrame using first column: {e}")
         
         if date_col and date_col in df.columns:
             df[date_col] = pd.to_datetime(df[date_col], errors='coerce')
@@ -105,9 +154,28 @@ class DataLoader:
             return self._cached_stock
 
         logger.info("Computing current stock levels from transaction history.")
-        movements = pd.merge(self.transaction_lines, self.transactions, on='id_transaction')
         
-        movements['qty_numeric'] = pd.to_numeric(movements['quantite'], errors='coerce')
+        # Check if we have data to work with
+        if self.transaction_lines is None or self.transaction_lines.empty:
+            logger.warning("No transaction lines available for stock calculation.")
+            self._cached_stock = {}
+            return self._cached_stock
+            
+        if self.transactions is None or self.transactions.empty:
+            logger.warning("No transactions available for stock calculation.")
+            self._cached_stock = {}
+            return self._cached_stock
+        
+        movements = pd.merge(self.transaction_lines, self.transactions, on='id_transaction', how='inner')
+        
+        if movements.empty:
+            logger.warning("No movements found after merging transactions and lines.")
+            self._cached_stock = {}
+            return self._cached_stock
+        
+        movements['qty_numeric'] = pd.to_numeric(movements['quantite'], errors='coerce').fillna(0)
+        # Ensure type_transaction is string before using .str accessor
+        movements['type_transaction'] = movements['type_transaction'].astype(str).str.strip().fillna('UNKNOWN')
         multipliers = {'RECEIPT': 1, 'DELIVERY': -1, 'PICKING': -1, 'TRANSFER': -1}
         movements['net_change'] = (movements['qty_numeric'] * 
                                   movements['type_transaction'].str.upper().map(multipliers).fillna(0))
@@ -508,7 +576,7 @@ class PreparationOrderService:
         return order_obj
 
 class ForecastingService:
-    def __init__(self, data_path, is_csv=False):
+    def __init__(self, data_path=None, is_csv=False):
         self.loader = DataLoader(data_path, is_csv=is_csv)
         self.baseline = BaselineModel()
         self.regression = RegressionModel()
@@ -524,7 +592,7 @@ class ForecastingService:
         Leakage-safe evaluation with train/test split + rolling one-step forecast.
         Reports MAE, RMSE, WAP, and Bias for SMA, REG, and HYBRID.
         """
-        self.loader.load_and_clean()
+        self.loader.load_and_clean_wrapper()
         all_products = self.loader.demand_history['id_produit'].unique()
         rolling_rows = []
 
@@ -655,7 +723,7 @@ class ForecastingService:
         """
         Calculates forecast for a specific SKU.
         """
-        self.loader.load_and_clean()
+        self.loader.load_and_clean_wrapper()
         current_stock = self.loader.get_current_stock()
         
         history = self.loader.demand_history[self.loader.demand_history['id_produit'] == int(pid)]
@@ -712,7 +780,7 @@ class ForecastingService:
             
         logger.info(f"--- TRIGGERING PREPARATION FOR {target_date.strftime('%Y-%m-%d')} ---")
         
-        self.loader.load_and_clean()
+        self.loader.load_and_clean_wrapper()
         current_stock = self.loader.get_current_stock()
         all_products = self.loader.demand_history['id_produit'].unique()
         
@@ -758,8 +826,20 @@ class ForecastingService:
         return order
 
     def run(self, limit_products=10):
-        self.loader.load_and_clean()
+        self.loader.load_and_clean_wrapper()
         current_stock = self.loader.get_current_stock()
+        
+        # Check if we have demand history data
+        if self.loader.demand_history is None or self.loader.demand_history.empty:
+            logger.warning("No demand history available. Cannot generate forecasts.")
+            return {
+                'order_id': str(uuid.uuid4())[:8],
+                'status': 'DRAFT',
+                'items': [],
+                'total_items': 0,
+                'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+        
         all_products = self.loader.demand_history['id_produit'].unique()
         
         evaluation_results = []

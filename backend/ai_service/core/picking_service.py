@@ -1,16 +1,22 @@
 from typing import List, Dict, Tuple, Optional
 from ..engine.base import DepotB7Map, WarehouseCoordinate, AuditTrail, Role
+from .learning_engine import LearningFeedbackEngine
 import math
 
 class PickingOptimizationService:
     def __init__(self, floors: Dict[int, DepotB7Map]):
         self.floors = floors
-        self.travel_speed = 1.2 # m/s (Average walking speed)
+        self.learning_engine = LearningFeedbackEngine()
+        self.travel_speed = self.learning_engine.get_current_travel_speed()
         self.global_path_cache = {} # (floor_idx, coord_a, coord_b) -> (dist, path)
+
+    def _refresh_speed(self):
+        """Syncs the travel speed with the latest AI learning data."""
+        self.travel_speed = self.learning_engine.get_current_travel_speed()
 
     def _get_cached_path(self, floor_idx: int, a: WarehouseCoordinate, b: WarehouseCoordinate) -> Tuple[float, List[WarehouseCoordinate]]:
         """Requirement: Caching enabled."""
-        key = tuple(sorted([a, b], key=lambda c: (c.x, c.y, c.z)))
+        key = tuple(sorted([a, b], key=lambda c: (c.x, c.y)))
         full_key = (floor_idx, *key)
         
         if full_key in self.global_path_cache:
@@ -38,6 +44,8 @@ class PickingOptimizationService:
             AuditTrail.log(Role.SYSTEM, err_msg)
             return {"error": err_msg}
             
+        self._refresh_speed()
+
         if not picks:
             return {
                 "floor_idx": floor_idx,

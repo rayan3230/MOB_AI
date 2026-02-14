@@ -22,6 +22,11 @@ class LearningFeedbackEngine:
                 logger.error(f"Error loading learning data: {e}")
         return {
             "global_calibration_history": [1.27], # Initial optimized value
+            "picking_performance": {
+                "travel_speed_history": [1.2], # m/s (Average walking speed)
+                "samples_count": 0,
+                "accumulated_error": 0.0
+            },
             "sku_feedback": {}, # product_id: { "bias_accumulated": 0.0, "weight": 0.0 }
             "category_bias": {}
         }
@@ -82,3 +87,46 @@ class LearningFeedbackEngine:
             sku_adj = self.learning_data["sku_feedback"].get(str(pid), {}).get("adj", 1.0)
             return base_factor * sku_adj
         return base_factor
+
+    def record_picking_performance(self, predicted_sec, actual_sec):
+        """
+        Records the performance of a picking task to adjust AI travel speed estimates.
+        """
+        perf = self.learning_data.get("picking_performance", {
+            "travel_speed_history": [1.2],
+            "samples_count": 0,
+            "accumulated_error": 0.0
+        })
+        
+        # Calculate error percentage
+        if predicted_sec > 0:
+            error = (actual_sec - predicted_sec) / predicted_sec
+            perf["accumulated_error"] += error
+            perf["samples_count"] += 1
+            
+            # If we have enough samples (e.g., 5), adjust the global speed
+            if perf["samples_count"] >= 5:
+                avg_error = perf["accumulated_error"] / perf["samples_count"]
+                current_speed = perf["travel_speed_history"][-1]
+                
+                # If actual is slower (avg_error > 0), reduce speed constant
+                # If actual is faster (avg_error < 0), increase speed constant
+                # Adjustment is dampened for stability
+                adjustment = 1.0 - (avg_error * 0.5)
+                new_speed = max(0.5, min(2.5, current_speed * adjustment))
+                
+                perf["travel_speed_history"].append(round(new_speed, 2))
+                if len(perf["travel_speed_history"]) > 10:
+                    perf["travel_speed_history"].pop(0)
+                
+                perf["samples_count"] = 0
+                perf["accumulated_error"] = 0.0
+                logger.info(f"LEARNING: Adjusted AI travel speed to {new_speed} m/s based on performance data.")
+        
+        self.learning_data["picking_performance"] = perf
+        self._save_data()
+
+    def get_current_travel_speed(self):
+        perf = self.learning_data.get("picking_performance", {})
+        history = perf.get("travel_speed_history", [1.2])
+        return history[-1]

@@ -83,6 +83,70 @@ export const aiService = {
             if (cached) return cached;
             throw error;
         }
+    },
+
+    /**
+     * Get AI-optimized picking route (based on Requirement 8.3)
+     */
+    getAIPathOptimization: async (floorIdx, startPos, picks) => {
+        try {
+            const data = await apiCall('/api/forecast/optimize-route/', 'POST', {
+                floor_idx: floorIdx,
+                start_pos: startPos,
+                picks: picks
+            });
+            return data;
+        } catch (error) {
+            console.error('AI Path Optimization Error:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Get Digital Twin map data for a specific floor
+     */
+    getDigitalTwinMap: async (floorIdx) => {
+        try {
+            const data = await apiCall(`/api/forecast/map/${floorIdx}/`, 'GET');
+            await offlineService.cacheData(`digital_twin_map_${floorIdx}`, data);
+            return data;
+        } catch (error) {
+            const cached = await offlineService.getCachedData(`digital_twin_map_${floorIdx}`);
+            if (cached) return cached;
+            throw error;
+        }
+    },
+
+    /**
+     * Get AI storage zoning (FAST/MEDIUM/SLOW slots)
+     */
+    getWarehouseZoning: async (floorIdx) => {
+        try {
+            const data = await apiCall(`/api/forecast/zoning/${floorIdx}/`, 'GET');
+            await offlineService.cacheData(`warehouse_zoning_${floorIdx}`, data);
+            return data;
+        } catch (error) {
+            const cached = await offlineService.getCachedData(`warehouse_zoning_${floorIdx}`);
+            if (cached) return cached;
+            throw error;
+        }
+    },
+
+    /**
+     * Record actual picking performance for AI learning
+     */
+    recordPickingPerformance: async (taskId, predictedSec, actualSec) => {
+        try {
+            return await apiCall('/api/forecast/record-performance/', 'POST', {
+                task_id: taskId,
+                predicted_time_seconds: predictedSec,
+                actual_time_seconds: actualSec
+            });
+        } catch (error) {
+            console.error('Performance recording error:', error);
+            // Non-critical, don't throw
+            return null;
+        }
     }
 };
 
