@@ -897,7 +897,7 @@ def create_chariot_for_stock_floor(sender, instance, created, **kwargs):
             id_entrepot=instance.id_entrepot,
             code_chariot=f"CH-STK-{instance.id_niveau}",
             statut='AVAILABLE',
-            capacite=500.00  # Default capacity for stock floor chariot
+            capacite=3.00  # Default capacity of 3 pallets
         )
 
 
@@ -911,6 +911,6 @@ def create_chariot_for_picking_floor(sender, instance, created, **kwargs):
             id_entrepot=instance.id_entrepot,
             code_chariot=f"CH-PCK-{instance.id_niveau_picking}",
             statut='AVAILABLE',
-            capacite=200.00  # Default capacity for picking floor chariot
+            capacite=3.00  # Default capacity of 3 pallets
         )
 

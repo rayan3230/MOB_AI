@@ -6,7 +6,7 @@
     "regression": 0.7,
     "sma": 0.3
   },
-  "calibration_factor": 1.27,
+  "calibration_factor": 1.0,
   "training_metrics": {
     "WAP_percent": 34.31,
     "Bias_percent": 1.84,

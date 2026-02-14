@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-02-14T08:31:42.095593",
+  "generated_at": "2026-02-14T10:24:26.906724",
   "assumptions": {
     "location_actif_true_considered_occupied_or_unavailable": true,
     "chariots": [
@@ -9,11 +9,11 @@
       },
       {
         "code": "CH-02",
-        "capacity": 1
+        "capacity": 3
       },
       {
         "code": "CH-03",
-        "capacity": 1
+        "capacity": 3
       }
     ],
     "corridor_H_used_as_expedition_anchor": true,
@@ -22,8 +22,8 @@
   "kpis": {
     "operations_count": 5,
     "reroutes_count": 0,
-    "total_distance_meters": 45.0,
-    "naive_distance_meters": 51.75,
+    "total_distance_meters": 81.0,
+    "naive_distance_meters": 93.15,
     "improvement_percentage": 13.04,
     "unique_products_processed": 5
   },

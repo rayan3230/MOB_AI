@@ -141,8 +141,8 @@ class HackathonDeliverableGenerator:
 
         chariots = [
             ChariotState(code="CH-01", capacity=3, remaining_capacity=3),
-            ChariotState(code="CH-02", capacity=1, remaining_capacity=1),
-            ChariotState(code="CH-03", capacity=1, remaining_capacity=1),
+            ChariotState(code="CH-02", capacity=3, remaining_capacity=3),
+            ChariotState(code="CH-03", capacity=3, remaining_capacity=3),
         ]
 
         product_slots = defaultdict(list)
@@ -196,8 +196,11 @@ class HackathonDeliverableGenerator:
                 if was_rerouted:
                     reroutes += 1
 
-                # Distance: Travel from Receipt (H) to the selected corridor/slot
-                travel_distance = self._estimate_distance("H", selected_corridor)
+                # Distance: Travel from Current -> Receipt ('H') -> Job Storage ('selected_corridor')
+                dist_to_receipt = self._estimate_distance(chariot.current_corridor, "H")
+                dist_to_slot = self._estimate_distance("H", selected_corridor)
+                travel_distance = dist_to_receipt + dist_to_slot
+                
                 total_distance += travel_distance
                 naive_distance += travel_distance * 1.15 # Assume AI is 15% better than manual search
                 
@@ -206,7 +209,7 @@ class HackathonDeliverableGenerator:
                 if trips > 1:
                     capacity_text = f"{capacity_text} (trips:{trips})"
 
-                route = f"Receipt Zone -> Corridor {route_corridor} -> {selected_code}"
+                route = f"{chariot.current_corridor} -> Receipt -> Corridor {route_corridor} -> {selected_code}"
                 action = f"Receipt -> Storage -> {selected_code}"
                 congestion_status = "REROUTED" if was_rerouted else "NORMAL"
 
@@ -262,7 +265,11 @@ class HackathonDeliverableGenerator:
                     if was_rerouted:
                         reroutes += 1
 
-                    travel_distance = self._estimate_distance(route_corridor, "H")
+                    # Distance: Travel from Current -> Source Corridor -> Expedition ('H')
+                    dist_to_source = self._estimate_distance(chariot.current_corridor, route_corridor)
+                    dist_to_expedition = self._estimate_distance(route_corridor, "H")
+                    travel_distance = dist_to_source + dist_to_expedition
+                    
                     total_distance += travel_distance
                     naive_distance += travel_distance * 1.22 # Outgoing usually has more "searching" waste
 
@@ -271,7 +278,7 @@ class HackathonDeliverableGenerator:
                     if trips > 1:
                         capacity_text = f"{capacity_text} (trips:{trips})"
 
-                    route = f"{source_slot} -> Corridor {route_corridor} -> Expedition Zone"
+                    route = f"{chariot.current_corridor} -> {source_slot} -> Expedition Zone"
                     congestion_status = "REROUTED" if was_rerouted else "NORMAL"
 
                 output_rows.append(
@@ -289,7 +296,11 @@ class HackathonDeliverableGenerator:
                     }
                 )
                 if action != "REJECTED_NO_STOCK":
-                    chariot.current_corridor = route_corridor
+                    if flow_type == "INGOING":
+                        chariot.current_corridor = route_corridor
+                    else:
+                        chariot.current_corridor = "H" # Ends at Expedition for picking
+                    
                     chariot.tasks_count += 1
                     chariot.remaining_capacity = max(0, chariot.remaining_capacity - min(required_pallets, chariot.capacity))
 
@@ -303,8 +314,8 @@ class HackathonDeliverableGenerator:
                 "location_actif_true_considered_occupied_or_unavailable": True,
                 "chariots": [
                     {"code": "CH-01", "capacity": 3},
-                    {"code": "CH-02", "capacity": 1},
-                    {"code": "CH-03", "capacity": 1},
+                    {"code": "CH-02", "capacity": 3},
+                    {"code": "CH-03", "capacity": 3},
                 ],
                 "corridor_H_used_as_expedition_anchor": True,
                 "palette_unit_size": self.palette_unit_size,
