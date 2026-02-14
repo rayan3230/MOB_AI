@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from forecasting_service import ForecastingService
+from ..core.forecasting_service import ForecastingService
 
 def plot_sku_forecast(service, product_id, test_days=7):
     """

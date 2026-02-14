@@ -1,9 +1,0 @@
-﻿WMS Hackathon - Modèles de pack de données (starter)
-""
-Comment utiliser
-1) Chaque onglet correspond à un modèle de fichier CSV.
-2) Ligne 1 = en-têtes de colonnes. Ligne 2 = types. Ligne 3 = obligatoire (O/N). Ligne 4 = valeurs d'exemple.
-"3) Les équipes peuvent ajouter des colonnes, mais ne doivent PAS renommer ni supprimer les colonnes de base."
-4) Les identifiants (ID) peuvent être des entiers ou des UUID ; ils doivent correspondre entre les tables (clés étrangères).
-"5) Si vous n'avez pas de commandes d'achat ouvertes ou de délais, vous pouvez laisser les tables optionnelles vides et utiliser des valeurs par défaut."
-"6) Utilisez les formats ISO : date = YYYY-MM-DD, date/heure = YYYY-MM-DD HH:MM:SS."

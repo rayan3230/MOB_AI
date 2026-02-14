@@ -1,14 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 import Router from './router/Router';
-import ErrorBoundary from './components/common/ErrorBoundary';
 
 export default function App() {
   return (
-    <ErrorBoundary>
+    <>
       <StatusBar style="dark" />
       <Router />
-    </ErrorBoundary>
+    </>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  safeArea: {
+    flex: 1,
+  }
+});
 

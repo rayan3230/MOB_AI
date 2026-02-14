@@ -117,15 +117,22 @@ const FloorManagement = () => {
 
     try {
       setSubmitting(true);
+      let result;
       if (isEditing) {
-        await warehouseService.updateFloor(editingId, newFloor);
+        result = await warehouseService.updateFloor(editingId, newFloor);
       } else {
-        await warehouseService.createFloor(newFloor);
+        result = await warehouseService.createFloor(newFloor);
       }
+
+      if (result?._queued) {
+        Alert.alert('Buffered Change', 'Floor changes have been queued for sync.');
+      } else {
+        Alert.alert('Success', `Niveau ${isEditing ? 'mis à jour' : 'ajouté'} avec succès`);
+      }
+
       floorsCacheRef.current = {};
       setModalVisible(false);
       fetchData(selectedWarehouseId, { forceRefresh: true });
-      Alert.alert('Succès', `Niveau ${isEditing ? 'mis à jour' : 'ajouté'} avec succès`);
     } catch (error) {
       Alert.alert('Erreur', error.detail || 'Échec de l\'opération');
     } finally {
@@ -140,7 +147,10 @@ const FloorManagement = () => {
         text: 'Supprimer', style: 'destructive',
         onPress: async () => {
           try {
-            await warehouseService.deleteFloor(id, type);
+            const result = await warehouseService.deleteFloor(id, type);
+            if (result?._queued) {
+              Alert.alert('Buffered Deletion', 'Floor deletion queued for sync.');
+            }
             floorsCacheRef.current = {};
             fetchData(selectedWarehouseId, { forceRefresh: true });
           } catch (error) {
@@ -324,7 +334,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 60,
     paddingBottom: 20,
     backgroundColor: '#FFF',
     borderBottomWidth: 1,

@@ -369,7 +369,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: lightTheme.primary },
   header: {
     paddingHorizontal: 24,
-    paddingTop: 60,
     paddingBottom: 24,
     backgroundColor: '#FFF',
     borderBottomWidth: 1,

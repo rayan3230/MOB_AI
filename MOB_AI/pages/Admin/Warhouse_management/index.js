@@ -78,13 +78,19 @@ const WarehouseManagement = () => {
 
     try {
       setSubmitting(true);
+      let result;
       if (isEditing) {
-        await warehouseService.updateWarehouse(editingId, newWarehouse);
-        Alert.alert('Success', 'Warehouse updated successfully');
+        result = await warehouseService.updateWarehouse(editingId, newWarehouse);
       } else {
-        await warehouseService.createWarehouse(newWarehouse);
-        Alert.alert('Success', 'Warehouse added successfully');
+        result = await warehouseService.createWarehouse(newWarehouse);
       }
+
+      if (result?._queued) {
+        Alert.alert('Buffered Change', 'This warehouse update has been queued and will be synced when you are back online.');
+      } else {
+        Alert.alert('Success', `Warehouse ${isEditing ? 'updated' : 'added'} successfully`);
+      }
+
       closeModal();
       fetchWarehouses();
     } catch (error) {
@@ -106,8 +112,12 @@ const WarehouseManagement = () => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await warehouseService.deleteWarehouse(id);
-              Alert.alert('Success', 'Warehouse deleted successfully');
+              const result = await warehouseService.deleteWarehouse(id);
+              if (result?._queued) {
+                Alert.alert('Buffered Deletion', 'The deletion request has been queued.');
+              } else {
+                Alert.alert('Success', 'Warehouse deleted successfully');
+              }
               fetchWarehouses();
             } catch (error) {
               console.error('Error deleting warehouse:', error);
@@ -288,7 +298,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: lightTheme.primary },
   header: {
     paddingHorizontal: 24,
-    paddingTop: 60,
     paddingBottom: 24,
     backgroundColor: '#FFF',
     borderBottomWidth: 1,
