@@ -14,7 +14,7 @@ import {
   StyleSheet,
   ActivityIndicator
 } from 'react-native';
-import lightTheme from '../constants/theme.js';
+import { lightTheme } from '../constants/theme.js';
 import { authService } from '../services/authService';
 
 // Import Components

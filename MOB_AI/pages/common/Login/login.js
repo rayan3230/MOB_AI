@@ -21,6 +21,7 @@ import { authService } from '../../../services/authService';
 import Logo from '../../../components/Logo';
 import { useNavigation } from '@react-navigation/native';
 import { Alert } from 'react-native';
+import { lightTheme } from '../../../constants/theme';
 
 const Signin = () => {
   const navigation = useNavigation();

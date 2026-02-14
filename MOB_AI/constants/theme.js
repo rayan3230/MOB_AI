@@ -116,6 +116,13 @@ export const SHADOWS = {
   },
 };
 
-const theme = { COLORS, SIZES, SHADOWS };
+const theme = {
+  ...lightTheme,
+  lightTheme,
+  darkTheme,
+  COLORS,
+  SIZES,
+  SHADOWS,
+};
 
 export default theme;
