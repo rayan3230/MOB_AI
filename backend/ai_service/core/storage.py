@@ -120,7 +120,7 @@ class StorageOptimizationService:
         
         return score
 
-    def suggest_slot(self, product_id: int) -> Optional[Dict]:
+    def suggest_slot(self, product_id: int, user_role: Role = Role.SYSTEM) -> Optional[Dict]:
         """
         STEP 6: Rank all feasible slots by score and return the best one.
         Returns: Dict with floor_index, coordinate, score, and formatted slot name.
@@ -147,28 +147,53 @@ class StorageOptimizationService:
 
                 # Compute Multi-Factor Score (Step 3)
                 score = self.calculate_slot_score(floor_idx, coord, product_id)
-                
                 candidate_slots.append({
                     "floor_idx": floor_idx,
                     "coord": coord,
-                    "score": score,
-                    "class": s_class
+                    "score": score
                 })
 
         if not candidate_slots:
+            AuditTrail.log(user_role, f"Placement scan for product {product_id} FAILED - No available slots found.")
             return None
 
-        # Sort slots by score (ascending: lower score is better)
-        candidate_slots.sort(key=lambda x: x["score"])
+        # Sort by best score (ascending)
+        best_candidate = min(candidate_slots, key=lambda x: x["score"])
+        
+        floor_idx = best_candidate["floor_idx"]
+        coord = best_candidate["coord"]
+        slot_id = self.floors[floor_idx].get_slot_name(coord)
+        
+        AuditTrail.log(user_role, f"AI Suggestion for product {product_id}: {slot_id} [Score: {best_candidate['score']:.2f}]")
 
-        # Select the best feasible slot
-        best = candidate_slots[0]
+        return {
+            "floor_idx": floor_idx,
+            "coordinate": coord,
+            "slot_id": slot_id,
+            "score": best_candidate["score"]
+        }
+
+    def manual_override_placement(self, product_id: int, floor_idx: int, coord: WarehouseCoordinate, supervisor_role: Role, justification: str) -> bool:
+        """Requirement 8.2 & Governance: Manual override with audit trail."""
+        if supervisor_role not in [Role.SUPERVISOR, Role.ADMIN]:
+            raise PermissionError("Access Denied: Manual overrides require Supervisor or Admin privileges.")
+            
+        if not justification or len(justification) < 10:
+            raise ValueError("Override rejected: Meaningful justification (min 10 chars) is mandatory.")
+
+        if floor_idx not in self.floors:
+            return False
+            
+        m_map = self.floors[floor_idx]
+        slot_name = m_map.get_slot_name(coord)
         
-        # Format mapping output: B7-L0-XX-YY
-        warehouse_map = self.floors[best["floor_idx"]]
-        best["slot_name"] = warehouse_map.get_slot_name(best["coord"])
+        # Log to immutable audit trail
+        AuditTrail.log(supervisor_role, f"Manual Override: Assigned product {product_id} to {slot_name}", justification)
         
-        return best
+        # Logic to occupy the slot
+        m_map.occupied_slots.add(coord.to_tuple())
+        self.slot_to_product[(floor_idx, int(coord.x), int(coord.y))] = product_id
+        return True
 
     def assign_slot(self, product_id: int, floor_idx: int, coord: WarehouseCoordinate, role: Role = Role.ADMIN) -> bool:
         """

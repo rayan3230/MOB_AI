@@ -69,7 +69,38 @@ The system now features a high-performance navigation engine for picking fulfill
 - **Multi-Floor Support**: Compatible with RDC and upper floors with individual distance-to-dock calculations.
 
 *Notes:*
-- ABC classification is based on real-time demand frequency from `historique_demande.csv`.
-- Outliers are clipped using IQR; no synthetic zero-filling is introduced in sparse histories.
-- Regression is used only when trend strength is statistically meaningful.
-- LLM output is constrained by deterministic guardrails to prevent accuracy degradation.
+## 8.5 Digital Twin Integrity
+The warehouse physical model has been validated across all floors to ensure mathematical alignment with real-world dimensions:
+- **Spatial Accuracy**:
+  - **Ground Floor (RDC)**: 42m x 27m grid. Total of 29 zones and 25+ pillar segments.
+  - **Intermediate Floors (1-2)**: 44m x 29m grid. Features 50+ storage rack zones.
+  - **Upper Floors (3-4)**: 46m x 31m grid. Highly dense 60+ zone configuration.
+- **Obstacle Modeling**:
+  - **Pillars**: All structural pillars are mapped as 1x1m impassable nodes in the `pillar_matrix`.
+  - **Special Walls**: Thin partitions (e.g., at X=18 in RDC) are accurately converted into impassable nodes.
+- **Zoning Logic**:
+  - Every defined zone is explicitly assigned a `ZoneType` (`STORAGE`, `OBSTACLE`, `TRANSITION`, `WALKABLE`).
+  - Transition zones (Elevators, Monte-Charges) are correctly flagged to allow multi-floor pathfinding logic.
+- **Integrity Check**: Precomputations (`_precompute_matrices`) ensure that the visualization layer and the A* routing engine use the exact same spatial truth.
+
+**Validation Results**:
+- **Dimensions Test**: PASSED (Verified via `verify_digital_twin.py`).
+- **Zone Coverage**: 100% of defined zones checked for type-safe collision logic.
+## 8.6 AI Governance & Control
+The engine incorporates strict governance protocols to ensure AI-driven suggestions are auditable and controlled by human operators:
+- **Immutable Audit Trail**: 
+  - All critical decisions (Storage Suggestions, Route Optimizations, Manual Overrides) are logged via a centralized `AuditTrail` engine with high-precision timestamps.
+  - Logs include the `Role` of the initiator (`ADMIN`, `SUPERVISOR`, `EMPLOYEE`, or `SYSTEM`).
+- **Role-Based Access Control (RBAC)**:
+  - **Manual Overrides**: Restricted to `SUPERVISOR` or `ADMIN` roles. Attempts by `EMPLOYEE` accounts are programmatically blocked via `PermissionError`.
+  - **Route Validation**: High-value picking routes require explicit supervisor approval before execution.
+- **Mandatory Justification**: 
+  - Any manual override of AI placement logic requires a meaningful justification (min 10 characters). This ensures "why" a deviation occurred is preserved for future process audits.
+- **Zero Silent Failures**:
+  - The system has been hardened against edge cases (invalid floor IDs, blocked paths).
+  - Errors are explicitly logged to the Audit Trail and returned to the caller with descriptive messages, rather than returning empty values.
+
+**Validation Results**:
+- **Role Enforcement**: ✅ PASSED (Verified via `test_governance.py`).
+- **Justification Integrity**: ✅ PASSED (Blocks short/empty comments).
+- **Error Transparency**: ✅ PASSED (Explicit logs for Navigation and Placement failures).

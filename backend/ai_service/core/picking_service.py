@@ -27,14 +27,17 @@ class PickingOptimizationService:
         self.global_path_cache[full_key] = (dist, path)
         return dist, path
 
-    def calculate_picking_route(self, floor_idx: int, start_coord: WarehouseCoordinate, picks: List[WarehouseCoordinate]) -> Dict:
+    def calculate_picking_route(self, floor_idx: int, start_coord: WarehouseCoordinate, picks: List[WarehouseCoordinate], user_role: Role = Role.SYSTEM) -> Dict:
         """
         Requirement 8.3: Optimized Picking Route with 2-Opt TSP.
         - Works for N items: Optimized distance matrix building.
         - Caching enabled: Persistent global path cache.
         """
         if floor_idx not in self.floors:
-            return {"error": f"Floor {floor_idx} not found."}
+            err_msg = f"Navigation Error: Floor {floor_idx} not found in digital twin map."
+            AuditTrail.log(Role.SYSTEM, err_msg)
+            return {"error": err_msg}
+            
         if not picks:
             return {
                 "floor_idx": floor_idx,
@@ -95,7 +98,26 @@ class PickingOptimizationService:
             route_sequence.append(nodes[j])
 
         travel_time_sec = total_distance / self.travel_speed
-        AuditTrail.log(Role.SYSTEM, f"Route optimized for {len(picks)} items. Distance: {total_distance}m")
+        AuditTrail.log(user_role, f"Route optimized for {len(picks)} items. Distance: {total_distance}m | Role: {user_role.value}")
+
+        return {
+            "floor_idx": floor_idx,
+            "route_sequence": route_sequence,
+            "path_segments": path_segments,
+            "total_distance": total_distance,
+            "estimated_time_seconds": travel_time_sec
+        }
+
+    def validate_and_approve_route(self, route_data: Dict, supervisor_role: Role, justification: str) -> bool:
+        """Governance: Supervisor must validate picking routes for high-value orders."""
+        if supervisor_role not in [Role.SUPERVISOR, Role.ADMIN]:
+            raise PermissionError("Access Denied: Route validation requires Supervisor privileges.")
+            
+        if not justification or len(justification) < 5:
+             raise ValueError("Validation rejected: Please provide a comment for the approval.")
+
+        AuditTrail.log(supervisor_role, f"Approved Picking Route (Dist: {route_data['total_distance']}m)", justification)
+        return True
 
         return {
             "floor_idx": floor_idx,
