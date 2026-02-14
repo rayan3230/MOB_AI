@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { Feather, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { authService } from '../../services/authService';
+import { lightTheme } from '../../constants/theme';
 
 const ProfileContent = ({ user: initialUser, role, navigation, onOpenDrawer }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -178,7 +179,7 @@ const ProfileContent = ({ user: initialUser, role, navigation, onOpenDrawer }) =
               onPress={handleUpdate}
               disabled={loading}
             >
-              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnSaveText}>Enregistrer</Text>}
+              {loading ? <ActivityIndicator color={lightTheme.white} /> : <Text style={styles.btnSaveText}>Enregistrer</Text>}
             </TouchableOpacity>
           </View>
         ) : (
@@ -219,7 +220,7 @@ const ProfileContent = ({ user: initialUser, role, navigation, onOpenDrawer }) =
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#04324C',
+    backgroundColor: lightTheme.primary,
   },
   headerContainer: {
     paddingTop: 10,
@@ -285,14 +286,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 5,
     right: 5,
-    backgroundColor: '#00a3ff',
+    backgroundColor: lightTheme.primary,
     width: 28,
     height: 28,
     borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#fff',
+    borderColor: lightTheme.white,
   },
   userName: {
     fontSize: 22,
@@ -403,7 +404,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
   },
   btnSave: {
-    backgroundColor: '#04324C',
+    backgroundColor: lightTheme.primary,
   },
   btnCancelText: {
     color: '#666',

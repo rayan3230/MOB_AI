@@ -1,6 +1,4 @@
-﻿id_produit,delai_jours
-texte,entier
-O,O
+﻿id_produit_id,delai_jours
 P001,14
 ,
 ,

@@ -7,9 +7,9 @@ class Produit(models.Model):
     nom_produit = models.CharField(max_length=255)
     unite_mesure = models.CharField(max_length=50)
     categorie = models.CharField(max_length=100)
-    collisage_palette = models.IntegerField(default=0)
-    collisage_fardeau = models.IntegerField(default=0)
-    poids = models.DecimalField(max_digits=10, decimal_places=3, default=0.0)
+    collisage_palette = models.IntegerField(default=0 , null=True, blank=True)
+    collisage_fardeau = models.IntegerField(default=0 , null=True, blank=True)
+    poids = models.DecimalField(max_digits=10, decimal_places=3, default=0.0 , null=True, blank=True)
     actif = models.BooleanField(default=True)
     
     # Store reference to main storage rack

@@ -15,6 +15,7 @@ import OptionSelector from '../../../components/OptionSelector';
 import { warehouseService } from '../../../services/warehouseService';
 import CollapsibleManagementCard from '../../../components/CollapsibleManagementCard';
 import ManagementModal from '../../../components/ManagementModal';
+import { lightTheme } from '../../../constants/theme';
 
 const FLOOR_CACHE_TTL_MS = 2 * 60 * 1000;
 
@@ -224,7 +225,7 @@ const FloorManagement = () => {
       </View>
 
       {loading && !refreshing ? (
-        <View style={styles.centered}><ActivityIndicator size="large" color="#2196F3" /></View>
+        <View style={styles.centered}><ActivityIndicator size="large" color={lightTheme.primary} /></View>
       ) : (
         <FlatList
           data={floors}
@@ -326,7 +327,7 @@ const FloorManagement = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
+  container: { flex: 1, backgroundColor: lightTheme.primary },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   emptyText: { color: '#666', fontSize: 16 },
   header: {
@@ -342,7 +343,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: '700', color: '#1a1a1a' },
   subtitle: { fontSize: 14, color: '#666', marginTop: 2 },
   addButton: {
-    width: 48, height: 48, borderRadius: 14, backgroundColor: '#2196F3',
+    width: 48, height: 48, borderRadius: 14, backgroundColor: lightTheme.primary,
     justifyContent: 'center', alignItems: 'center', marginLeft: 12, elevation: 4
   },
   filterButton: {

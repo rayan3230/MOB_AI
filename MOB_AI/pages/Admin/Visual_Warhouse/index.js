@@ -1,8 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Alert, Dimensions } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { lightTheme } from '../../../constants/theme';
-import { warehouseService } from '../../../services/warehouseService';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
 const VisualWarehouse = () => {
   const [loading, setLoading] = useState(true);
@@ -142,7 +139,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#fff',
   },
   mapHint: {
     marginTop: 16,

@@ -191,7 +191,7 @@ const ListActions = () => {
 
       {loading && !refreshing ? (
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color="#2196F3" />
+          <ActivityIndicator size="large" color={lightTheme.primary} />
         </View>
       ) : (
         <FlatList
@@ -260,7 +260,7 @@ const ListActions = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: lightTheme.primary,
   },
   headerSection: {
     padding: 24,

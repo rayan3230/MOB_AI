@@ -125,9 +125,12 @@ const Signin = () => {
             <View style={styles.topSection}>
               <View style={styles.logoContainer}>
                 <View style={styles.logoIcon}>
-                  <Logo width={60} height={60} color="#FFF" />
+                  <Logo width={60} height={60} />
                 </View>
-                <Text style={styles.logoText}>FLOWLOGIX</Text>
+                <Text style={styles.logoText}>
+                  <Text style={{ color: '#FFDD1C' }}>FLOW</Text>
+                  <Text style={{ color: '#007A8C' }}>LOGIX</Text>
+                </Text>
               </View>
             </View>
 
@@ -179,7 +182,7 @@ const Signin = () => {
                 disabled={loading}
               >
                 {loading ? (
-                  <ActivityIndicator color="#fff" />
+                  <ActivityIndicator color={lightTheme.white} />
                 ) : (
                   <Text style={styles.continueButtonText}>Continue</Text>
                 )}

@@ -1,22 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  FlatList, 
-  TouchableOpacity, 
-  ActivityIndicator,
-  SafeAreaView,
-  RefreshControl,
-  TextInput,
-  Alert
-} from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { lightTheme } from '../../../constants/theme.js';
-import { apiCall } from '../../../services/api';
-import { taskService } from '../../../services/taskService';
-import ManagementModal from '../../../components/ManagementModal';
-import OptionSelector from '../../../components/OptionSelector';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
 const SupervisorListActions = () => {
   const [actions, setActions] = useState([]);
@@ -262,43 +245,16 @@ const SupervisorListActions = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC' },
-  headerSection: { padding: 24, backgroundColor: '#FFF', borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
-  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  addButton: { 
-    backgroundColor: '#2196F3', width: 48, height: 48, borderRadius: 14, 
-    justifyContent: 'center', alignItems: 'center', elevation: 4 
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
-  screenTitle: { fontSize: 24, fontWeight: '800', color: '#0F172A' },
-  screenSubtitle: { fontSize: 13, color: '#64748B', marginTop: 4, marginBottom: 20 },
-  searchBar: { 
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#F1F5F9', 
-    borderRadius: 12, paddingHorizontal: 12, height: 48 
+  text: {
+    fontSize: 18,
+    fontWeight: '600',
   },
-  searchInput: { flex: 1, marginLeft: 8, fontSize: 15, color: '#1E293B' },
-  listContent: { padding: 20 },
-  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 100 },
-  emptyText: { marginTop: 12, fontSize: 16, color: '#94A3B8' },
-  card: { 
-    backgroundColor: '#FFF', borderRadius: 20, padding: 16, marginBottom: 16, 
-    elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, 
-    shadowOpacity: 0.05, shadowRadius: 15 
-  },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  iconContainer: { width: 40, height: 40, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
-  headerInfo: { flex: 1, marginLeft: 12 },
-  actionId: { fontSize: 16, fontWeight: '700', color: '#1E293B' },
-  actionDate: { fontSize: 12, color: '#64748B' },
-  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  statusText: { fontSize: 11, fontWeight: '700' },
-  cardBody: { backgroundColor: '#F8FAFC', borderRadius: 12, padding: 12, marginBottom: 12 },
-  actionType: { fontSize: 14, fontWeight: '700', color: '#475569', marginBottom: 4 },
-  actionNotes: { fontSize: 13, color: '#64748B' },
-  detailsButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  detailsButtonText: { fontSize: 14, fontWeight: '600', color: '#2196F3', marginRight: 4 },
-  formLabel: { fontSize: 14, fontWeight: '700', color: '#475569', marginTop: 16, marginBottom: 8 },
-  textInput: { backgroundColor: '#F1F5F9', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, fontSize: 15 },
-  textArea: { height: 100 }
 });
 
 export default SupervisorListActions;

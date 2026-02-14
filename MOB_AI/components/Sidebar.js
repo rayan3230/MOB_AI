@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert } fr
 import { FontAwesome } from '@expo/vector-icons';
 import Logo from './Logo';
 import { authService } from '../services/authService';
+import { lightTheme } from '../constants/theme';
 
 const Sidebar = ({ role, user, activePage = 'User_managment', onNavigate, onClose }) => {
   const adminLinks = [
@@ -58,8 +59,11 @@ const Sidebar = ({ role, user, activePage = 'User_managment', onNavigate, onClos
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.logoRow}>
-          <Logo width={30} height={30} color="#000" />
-          <Text style={styles.logoText}>FLOWLOGIX</Text>
+          <Logo width={30} height={30} />
+          <Text style={styles.logoText}>
+            <Text style={{ color: '#FFDD1C' }}>FLOW</Text>
+            <Text style={{ color: '#007A8C' }}>LOGIX</Text>
+          </Text>
         </View>
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <View style={styles.divider} />
@@ -76,7 +80,7 @@ const Sidebar = ({ role, user, activePage = 'User_managment', onNavigate, onClos
             <FontAwesome 
               name={link.icon} 
               size={18} 
-              color={activePage === link.id ? '#00a3ff' : '#666'} 
+              color={activePage === link.id ? lightTheme.primary : lightTheme.textMuted} 
               style={styles.navIcon} 
             />
             <Text style={[
@@ -106,7 +110,7 @@ const Sidebar = ({ role, user, activePage = 'User_managment', onNavigate, onClos
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <FontAwesome name="sign-out" size={20} color="#ff4d4d" />
+          <FontAwesome name="sign-out" size={20} color={lightTheme.error} />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
 
@@ -165,7 +169,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   activeNavText: {
-    color: '#00a3ff', // Bright blue from the image
+    color: lightTheme.primary,
     fontWeight: '600',
   },
   footer: {

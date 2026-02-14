@@ -38,7 +38,7 @@ const PredictionCard = ({ item, canOverride, onAccept, onOverride, onReset }) =>
       {item.status === 'AI Predicted' && (
         <View style={styles.aiInsightsContainer}>
           <View style={styles.confidenceRow}>
-            <Feather name="activity" size={14} color="#667EEA" />
+            <Feather name="activity" size={14} color={lightTheme.primary} />
             <Text style={styles.confidenceLabel}>AI Confidence:</Text>
             <View style={styles.confidenceBarContainer}>
               <View style={[styles.confidenceBarFill, { width: `${item.confidence || 85}%` }]} />
@@ -223,13 +223,13 @@ const styles = StyleSheet.create({
   },
   confidenceBarFill: {
     height: '100%',
-    backgroundColor: '#667EEA',
+    backgroundColor: lightTheme.primary,
     borderRadius: 3,
   },
   confidenceValue: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#667EEA',
+    color: lightTheme.primary,
     minWidth: 38,
     textAlign: 'right',
   },
@@ -359,8 +359,8 @@ const styles = StyleSheet.create({
     shadowColor: '#38A169',
   },
   overrideBtn: {
-    backgroundColor: '#00a3ff',
-    shadowColor: '#00a3ff',
+    backgroundColor: lightTheme.primary,
+    shadowColor: lightTheme.primary,
   },
   actionBtnText: {
     color: '#fff',

@@ -1,11 +1,12 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { lightTheme } from '../../../constants/theme';
 
 const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#0047AB', // Matches the top background color roughly
+    backgroundColor: lightTheme.primary,
   },
   backgroundContainer: {
     position: 'absolute',
@@ -38,12 +39,12 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#FFF',
+    color: lightTheme.secondary,
     letterSpacing: 2,
   },
   formContainer: {
     flex: 1,
-    backgroundColor: '#FFF',
+    backgroundColor: lightTheme.white,
     borderTopLeftRadius: 35,
     borderTopRightRadius: 35,
     paddingHorizontal: 30,
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 15,
     marginBottom: 20,
-    backgroundColor: '#FFF',
+    backgroundColor: lightTheme.white,
   },
   inputIcon: {
     marginRight: 10,
@@ -94,8 +95,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   checkboxChecked: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+    backgroundColor: lightTheme.primary,
+    borderColor: lightTheme.primary,
   },
   rememberText: {
     fontSize: 14,
@@ -105,19 +106,19 @@ const styles = StyleSheet.create({
   continueButton: {
     width: '100%',
     height: 55,
-    backgroundColor: '#007AFF',
+    backgroundColor: lightTheme.primary,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
-    shadowColor: '#007AFF',
+    shadowColor: lightTheme.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 5,
   },
   continueButtonText: {
-    color: '#FFF',
+    color: lightTheme.white,
     fontSize: 18,
     fontWeight: '700',
   },
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   footerLink: {
-    color: '#007AFF',
+    color: lightTheme.primary,
     fontSize: 14,
     fontWeight: '700',
   },

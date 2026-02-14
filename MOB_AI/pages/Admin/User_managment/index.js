@@ -186,7 +186,7 @@ const UserManagement = ({ user: currentUser }) => {
 
       {loading ? (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#2196F3" />
+          <ActivityIndicator size="large" color={lightTheme.primary} />
         </View>
       ) : (
         <FlatList
@@ -336,7 +336,7 @@ const UserManagement = ({ user: currentUser }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
+  container: { flex: 1, backgroundColor: lightTheme.primary },
   header: {
     paddingHorizontal: 24,
     paddingBottom: 24,
@@ -360,9 +360,9 @@ const styles = StyleSheet.create({
   searchIcon: { marginRight: 10 },
   searchInput: { flex: 1, fontSize: 16, color: '#1E293B' },
   addButton: {
-    width: 48, height: 48, borderRadius: 14, backgroundColor: '#2196F3',
+    width: 48, height: 48, borderRadius: 14, backgroundColor: lightTheme.primary,
     justifyContent: 'center', alignItems: 'center',
-    elevation: 4, shadowColor: '#2196F3', shadowOffset: { width: 0, height: 4 },
+    elevation: 4, shadowColor: lightTheme.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8
   },
   listContent: { paddingVertical: 12, paddingBottom: 100 },
@@ -393,8 +393,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
   },
   roleOptionSelected: {
-    backgroundColor: '#2196F3',
-    borderColor: '#2196F3',
+    backgroundColor: lightTheme.primary,
+    borderColor: lightTheme.primary,
   },
   roleOptionText: {
     fontSize: 12,

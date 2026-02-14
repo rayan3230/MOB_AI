@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { lightTheme } from '../../../constants/theme';
 
 const { width, height } = Dimensions.get('window');
 
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
     height: 60,
-    backgroundColor: '#007AFF',
+    backgroundColor: lightTheme.primary,
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     marginBottom: 60,
   },
   buttonText: {
-    color: '#FFF',
+    color: lightTheme.white,
     fontSize: 18,
     fontWeight: '700',
   },

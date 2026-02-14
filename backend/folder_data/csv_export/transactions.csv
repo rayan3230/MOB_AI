@@ -1,6 +1,4 @@
 ﻿id_transaction,type_transaction,reference_transaction,cree_le,cree_par_id_utilisateur,statut,notes
-texte,texte,texte,datetime,texte,texte,texte
-O,O,O,O,O,O,N
 T0001,RECEIPT,RCV-2026-0001,2026-02-03 09:15:00,U001,CONFIRMED,Inbound from supplier X
 BL/ME25/03449,DELIVERY,BL/ME25/03449,2025-03-12 00:00:00,U001,CONFIRMED,Outbound to customer id ME005
 BL/ME25/03441,DELIVERY,BL/ME25/03441,2025-03-12 00:00:00,U001,CONFIRMED,Outbound to customer id MC008

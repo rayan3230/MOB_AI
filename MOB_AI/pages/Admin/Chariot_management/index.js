@@ -16,6 +16,7 @@ import { warehouseService } from '../../../services/warehouseService';
 import { chariotService } from '../../../services/chariotService';
 import CollapsibleManagementCard from '../../../components/CollapsibleManagementCard';
 import ManagementModal from '../../../components/ManagementModal';
+import { lightTheme } from '../../../constants/theme';
 
 const ChariotManagement = () => {
   const [chariots, setChariots] = useState([]);
@@ -212,7 +213,7 @@ const ChariotManagement = () => {
       </View>
 
       {loading && !refreshing ? (
-        <View style={styles.centered}><ActivityIndicator size="large" color="#2196F3" /></View>
+        <View style={styles.centered}><ActivityIndicator size="large" color={lightTheme.primary} /></View>
       ) : (
         <FlatList
           data={chariots}
@@ -318,7 +319,7 @@ const ChariotManagement = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
+  container: { flex: 1, backgroundColor: lightTheme.primary },
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   emptyText: { color: '#94A3B8', marginTop: 20, fontSize: 16 },
   header: {
@@ -335,9 +336,9 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: '800', color: '#0F172A' },
   subtitle: { fontSize: 14, color: '#64748B', marginTop: 2 },
   addButton: {
-    width: 48, height: 48, borderRadius: 14, backgroundColor: '#2196F3',
+    width: 48, height: 48, borderRadius: 14, backgroundColor: lightTheme.primary,
     justifyContent: 'center', alignItems: 'center', marginLeft: 12,
-    elevation: 4, shadowColor: '#2196F3', shadowOffset: { width: 0, height: 4 },
+    elevation: 4, shadowColor: lightTheme.primary, shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3, shadowRadius: 8
   },
   filterButton: {
